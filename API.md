@@ -8,50 +8,51 @@ Welcome to the comprehensive API manual for **V Webview RAD Studio**. This guide
 
 1. [Architectural Philosophy: How Desktop Apps Are Built](#1-architectural-philosophy-how-desktop-apps-are-built)
 2. [Quickstart: Your First Application in 60 Seconds](#2-quickstart-your-first-application-in-60-seconds)
-3. [SimpleGUI: Declarative Window & UI Controls](#3-simplegui-declarative-window--ui-controls)
-   - [Window Setup & Configuration](#window-setup--configuration)
-   - [Containers & Layouts (Boxes, Rows, Cards, Columns)](#containers--layouts)
+3. [SimpleGUI: Declarative Window & UI Controls](#3-simplegui-declarative-window-ui-controls)
+   - [Window Setup & Configuration](#window-setup-configuration)
+   - [Containers & Layouts (Boxes, Rows, Cards, Columns)](#containers-layouts)
    - [Standard Controls (Buttons, Inputs, Textareas, Labels)](#standard-controls)
    - [Selection Controls (Checkboxes, Radios, Dropdowns, Toggles, Sliders)](#selection-controls)
-   - [Desktop Menubar & Custom Context Menus](#desktop-menubar--custom-context-menus)
+   - [Desktop Menubar & Custom Context Menus](#desktop-menubar-custom-context-menus)
    - [Data Displays (Tables, Key-Value Lists, Badges, Tags, Progress)](#data-displays)
    - [Desktop Triggers (Timers, File Pickers, Notifications, Dialogs)](#desktop-triggers)
-   - [Window Management & Shortcuts](#window-management--shortcuts)
+   - [Window Management & Shortcuts](#window-management-shortcuts)
    - [Dynamic Theme Switcher (42 Form Themes)](#dynamic-theme-switcher)
+   - [Named Builder & Fluent Control API (`vlang_simplegui` Parity)](#named-builder-fluent-control-api-vlang_simplegui-parity)
 4. [System Module: `system/sys.v` (OS & Hardware Telemetry)](#4-system-module-systemsysv)
-   - [Safe Command & Process Execution](#safe-command--process-execution)
-   - [Process Management & Lifecycle](#process-management--lifecycle)
-   - [Cross-Platform Paths & App Directories](#cross-platform-paths--app-directories)
-   - [File Operations, Directory Sizing & Archives](#file-operations-directory-sizing--archives)
+   - [Safe Command & Process Execution](#safe-command-process-execution)
+   - [Process Management & Lifecycle](#process-management-lifecycle)
+   - [Cross-Platform Paths & App Directories](#cross-platform-paths-app-directories)
+   - [File Operations, Directory Sizing & Archives](#file-operations-directory-sizing-archives)
    - [Hardware Telemetry (CPU, RAM, Battery, Uptime)](#hardware-telemetry)
-   - [Power, Display & Theme Controls](#power-display--theme-controls)
-   - [Audio, Speech & Sound Effects](#audio-speech--sound-effects)
-   - [Network Diagnostics & Font Resolution](#network-diagnostics--font-resolution)
+   - [Power, Display & Theme Controls](#power-display-theme-controls)
+   - [Audio, Speech & Sound Effects](#audio-speech-sound-effects)
+   - [Network Diagnostics & Font Resolution](#network-diagnostics-font-resolution)
 5. [Standard Library: `system/stdlib.v` (Algorithms & Encoders)](#5-standard-library-systemstdlibv)
    - [Resilient HTTP Client](#resilient-http-client)
    - [Cryptography (AES, Ed25519, PBKDF2, Bcrypt, UUID, Hashes)](#cryptography)
    - [Regular Expressions](#regular-expressions)
-   - [Gzip & Zlib Compression](#gzip--zlib-compression)
-   - [Randomness & Combinatorics](#randomness--combinatorics)
+   - [Gzip & Zlib Compression](#gzip-zlib-compression)
+   - [Randomness & Combinatorics](#randomness-combinatorics)
    - [Concurrency Helpers (Mutex & WaitGroup)](#concurrency-helpers)
-   - [Complex Numbers, Trigonometry & Math](#complex-numbers-trigonometry--math)
+   - [Complex Numbers, Trigonometry & Math](#complex-numbers-trigonometry-math)
    - [Statistical Analysis](#statistical-analysis)
-   - [String Metrics & Manipulations](#string-metrics--manipulations)
-   - [URL Object Model & HTML Scraper](#url-object-model--html-scraper)
-   - [CSV Matrices & Generic Data Structures](#csv-matrices--generic-data-structures)
-   - [Time, Calendar & JSON](#time-calendar--json)
+   - [String Metrics & Manipulations](#string-metrics-manipulations)
+   - [URL Object Model & HTML Scraper](#url-object-model-html-scraper)
+   - [CSV Matrices & Generic Data Structures](#csv-matrices-generic-data-structures)
+   - [Time, Calendar & JSON](#time-calendar-json)
 6. [Security Module: `system/security.v` (Defensive Coding)](#6-security-module-systemsecurityv)
    - [Shell Injection Prevention](#shell-injection-prevention)
-   - [Path Traversal & Filename Sanitization](#path-traversal--filename-sanitization)
-   - [Constant-Time Comparison & Secret Masking](#constant-time-comparison--secret-masking)
-   - [HTML Sanitization & Safe URLs](#html-sanitization--safe-urls)
+   - [Path Traversal & Filename Sanitization](#path-traversal-filename-sanitization)
+   - [Constant-Time Comparison & Secret Masking](#constant-time-comparison-secret-masking)
+   - [HTML Sanitization & Safe URLs](#html-sanitization-safe-urls)
    - [Cryptographic Token Generation](#cryptographic-token-generation)
 7. [State Module: `system/state.v` (Persistence & Configuration)](#7-state-module-systemstatev)
    - [Crash-Proof Atomic File Writing](#crash-proof-atomic-file-writing)
    - [Typesafe JSON State Serialization](#typesafe-json-state-serialization)
    - [Application-Scoped Preferences](#application-scoped-preferences)
 8. [End-to-End Tutorial: Building a Production DevOps Workstation](#8-end-to-end-tutorial-building-a-production-devops-workstation)
-9. [Packaging & Distribution Guide (`build.vsh`)](#9-packaging--distribution-guide-buildvsh)
+9. [Packaging & Distribution Guide (`build.vsh`)](#9-packaging-distribution-guide-buildvsh)
 
 ---
 
@@ -1108,6 +1109,43 @@ set.add('alpha')
 set.add('beta')
 set.add('alpha')
 assert set.size() == 2
+```
+
+---
+
+### Time, Calendar & JSON
+
+#### Date & Time Utilities
+```v
+// Current timestamp string: "YYYY-MM-DD HH:mm:ss"
+now := system.time_now()
+
+// Unix epoch timestamp
+ts := system.time_unix_timestamp()
+
+// Convert Unix epoch timestamp to formatted string
+formatted := system.time_from_unix(ts)
+
+// Calendar calculations & leap year checks
+is_leap := system.time_is_leap_year(2024)      // true
+days := system.time_days_in_month(2024, 2)     // 29
+
+// Validation helpers
+valid_date := system.is_valid_date_str('2026-09-10') // true
+valid_time := system.is_valid_time_str('14:30')      // true
+```
+
+#### JSON Validation & Prettification
+```v
+raw_json := '{"name":"RAD Studio","version":"1.0"}'
+
+// Validate syntax
+if system.json_validate(raw_json) {
+	println('Valid JSON payload')
+}
+
+// Pretty print with formatted indentation
+pretty := system.json_pretty_print(raw_json)
 ```
 
 ---
