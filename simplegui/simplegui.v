@@ -39,6 +39,7 @@ pub mut:
 	context_menu_handler_id string
 	wv                      &webview.Webview = unsafe { nil }
 	control_seq             int
+	input_seq               int
 	name_to_ctrl            map[string]int
 	last_ctrl_id            string
 	is_debug_mode           bool
@@ -75,6 +76,7 @@ pub fn new_window(opts SimpleWindowOptions) &SimpleWindow {
 		context_menu_items: []MenuItem{}
 		context_menu_handler_id: ''
 		control_seq: 0
+		input_seq: 0
 		name_to_ctrl: map[string]int{}
 		last_ctrl_id: ''
 		is_debug_mode: false
@@ -123,6 +125,14 @@ fn (mut win SimpleWindow) register_control(name string, spec ControlSpec) string
 	win.controls << final_spec
 	win.name_to_ctrl[id] = idx
 	win.last_ctrl_id = id
+	if spec.typ in [.input, .password, .textarea, .search_field] {
+		win.input_seq++
+		inp_alias := 'inp_${win.input_seq}'
+		win.name_to_ctrl[inp_alias] = idx
+		if spec.value != '' {
+			win.values[inp_alias] = spec.value
+		}
+	}
 	return id
 }
 
@@ -880,6 +890,17 @@ pub fn (mut win SimpleWindow) input(placeholder string, default_val string, on_c
 	return win
 }
 
+pub fn (mut win SimpleWindow) input_named(name string, placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
+	id := win.register_control(name, ControlSpec{
+		typ: .input
+		placeholder: placeholder
+		value: default_val
+	})
+	win.values[id] = default_val
+	win.event_handlers['change_${id}'] = on_change
+	return win
+}
+
 pub fn (mut win SimpleWindow) password(placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
 		typ: .password
@@ -893,6 +914,17 @@ pub fn (mut win SimpleWindow) password(placeholder string, default_val string, o
 
 pub fn (mut win SimpleWindow) textarea(placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
+		typ: .textarea
+		placeholder: placeholder
+		value: default_val
+	})
+	win.values[id] = default_val
+	win.event_handlers['change_${id}'] = on_change
+	return win
+}
+
+pub fn (mut win SimpleWindow) textarea_named(name string, placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
+	id := win.register_control(name, ControlSpec{
 		typ: .textarea
 		placeholder: placeholder
 		value: default_val
@@ -970,6 +1002,16 @@ pub fn (mut win SimpleWindow) table(headers []string, rows [][]string, on_select
 	return win
 }
 
+pub fn (mut win SimpleWindow) table_named(name string, headers []string, rows [][]string, on_select EventCallback) &SimpleWindow {
+	id := win.register_control(name, ControlSpec{
+		typ: .table
+		headers: headers
+		rows: rows
+	})
+	win.event_handlers['click_${id}'] = on_select
+	return win
+}
+
 pub fn (mut win SimpleWindow) progress(value int, max_val int) &SimpleWindow {
 	win.register_control('', ControlSpec{
 		typ: .progress
@@ -1033,20 +1075,38 @@ pub fn (mut win SimpleWindow) box_end() &SimpleWindow {
 // ---------------------------------------------------------
 
 pub fn (win &SimpleWindow) get_value(id string) string {
-	return win.values[id] or { '' }
+	if val := win.values[id] {
+		return val
+	}
+	if idx := win.name_to_ctrl[id] {
+		actual_id := win.controls[idx].id
+		if val := win.values[actual_id] {
+			return val
+		}
+		return win.controls[idx].value
+	}
+	return ''
 }
 
 pub fn (win &SimpleWindow) set_value(id string, val string) {
+	mut actual_id := id
 	unsafe {
 		mut mut_win := &SimpleWindow(voidptr(win))
 		mut_win.values[id] = val
 		if idx := mut_win.name_to_ctrl[id] {
+			actual_id = mut_win.controls[idx].id
+			mut_win.values[actual_id] = val
 			mut_win.controls[idx].value = val
+			for k, v in mut_win.name_to_ctrl {
+				if v == idx {
+					mut_win.values[k] = val
+				}
+			}
 		}
 	}
 	if !isnil(win.wv) {
 		esc := system.json_escape(val)
-		win.wv.eval('if (document.getElementById("${id}")) { const el = document.getElementById("${id}"); if (el.type === "checkbox" || el.type === "radio") { el.checked = (${val} === "true" || ${val} === true || el.value === ${esc}); } else { el.value = ${esc}; } }')
+		win.wv.eval('if (document.getElementById("${actual_id}")) { const el = document.getElementById("${actual_id}"); if (el.type === "checkbox" || el.type === "radio") { el.checked = (${val} === "true" || ${val} === true || el.value === ${esc}); } else { el.value = ${esc}; } }')
 	}
 }
 
@@ -1063,10 +1123,19 @@ fn table_rows_json(rows [][]string) string {
 }
 
 pub fn (win &SimpleWindow) set_table_rows(name string, rows [][]string) &SimpleWindow {
+	mut target_name := name
 	mut click_id := ''
 	unsafe {
 		mut mut_win := &SimpleWindow(voidptr(win))
-		if idx := mut_win.name_to_ctrl[name] {
+		if target_name == '' {
+			for ctrl in mut_win.controls {
+				if ctrl.typ == .table {
+					target_name = ctrl.id
+					break
+				}
+			}
+		}
+		if idx := mut_win.name_to_ctrl[target_name] {
 			if mut_win.controls[idx].typ != .table {
 				return win
 			}
@@ -1077,7 +1146,7 @@ pub fn (win &SimpleWindow) set_table_rows(name string, rows [][]string) &SimpleW
 		}
 	}
 	if !isnil(win.wv) {
-		table_id := system.json_escape(name)
+		table_id := system.json_escape(target_name)
 		click_handler_id := system.json_escape(click_id)
 		rows_data := table_rows_json(rows)
 		win.wv.eval('(function() {
@@ -1091,9 +1160,13 @@ pub fn (win &SimpleWindow) set_table_rows(name string, rows [][]string) &SimpleW
 				const tr = document.createElement("tr");
 				tr.dataset.sgRowIndex = String(rowIndex);
 				tr.addEventListener("click", () => window.vlangTriggerClick(${click_handler_id}, String(rowIndex)));
-				row.forEach((cell) => {
+				row.forEach((cell, cellIndex) => {
 					const td = document.createElement("td");
 					td.textContent = cell;
+					if (cellIndex === 1) {
+						td.style.fontFamily = "monospace";
+						td.style.wordBreak = "break-all";
+					}
 					tr.appendChild(td);
 				});
 				body.appendChild(tr);
@@ -1316,7 +1389,11 @@ pub fn (win &SimpleWindow) get_html() string {
 // ---------------------------------------------------------
 
 pub fn (win &SimpleWindow) alert(title string, message string) {
-	system.show_alert(title, message)
+	if !isnil(win.wv) {
+		win.modal_alert(title, message)
+	} else {
+		system.show_alert(title, message)
+	}
 }
 
 pub fn (win &SimpleWindow) confirm(title string, message string) bool {
@@ -1959,11 +2036,14 @@ pub fn (win &SimpleWindow) modal_alert(title string, message string) &SimpleWind
 				box.style.border = "1px solid var(--accent, #38bdf8)";
 				box.style.borderRadius = "12px";
 				box.style.padding = "24px 28px";
-				box.style.maxWidth = "460px";
+				box.style.maxWidth = "560px";
 				box.style.width = "90%";
+				box.style.boxSizing = "border-box";
 				box.style.boxShadow = "0 16px 48px rgba(0,0,0,0.7)";
 				box.style.color = "var(--text-main, #f8fafc)";
 				box.style.fontFamily = "system-ui,-apple-system,sans-serif";
+				box.style.wordBreak = "break-all";
+				box.style.overflowWrap = "anywhere";
 				
 				const h = document.createElement("h3");
 				h.style.marginTop = "0";
@@ -1974,11 +2054,22 @@ pub fn (win &SimpleWindow) modal_alert(title string, message string) &SimpleWind
 				box.appendChild(h);
 				
 				const p = document.createElement("div");
-				p.style.fontSize = "14px";
+				p.style.fontSize = "13px";
 				p.style.lineHeight = "1.6";
-				p.style.opacity = "0.9";
+				p.style.opacity = "0.95";
 				p.style.marginBottom = "20px";
 				p.style.whiteSpace = "pre-wrap";
+				p.style.wordBreak = "break-all";
+				p.style.overflowWrap = "anywhere";
+				p.style.wordWrap = "break-word";
+				p.style.maxHeight = "50vh";
+				p.style.overflowY = "auto";
+				p.style.background = "rgba(0, 0, 0, 0.25)";
+				p.style.padding = "14px";
+				p.style.borderRadius = "8px";
+				p.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+				p.style.fontFamily = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+				p.style.boxSizing = "border-box";
 				p.textContent = ${esc_msg};
 				box.appendChild(p);
 				
@@ -2306,8 +2397,9 @@ pub fn (win &SimpleWindow) generate_html() string {
 				mut tbody := ''
 				for row_idx, r in ctrl.rows {
 					tbody += '<tr onclick="window.vlangTriggerClick(\'${ctrl.click_id}\', \'${row_idx}\')">'
-					for col in r {
-						tbody += '<td>${col}</td>'
+					for col_idx, col in r {
+						mono_style := if col_idx == 1 { ' style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;font-size:12px;word-break:break-all;overflow-wrap:anywhere;"' } else { ' style="word-break:break-all;overflow-wrap:anywhere;"' }
+						tbody += '<td${mono_style}>${col}</td>'
 					}
 					tbody += '</tr>'
 				}
@@ -2442,6 +2534,10 @@ body {
 	outline: none;
 	transition: border-color 0.15s ease, background-color 0.25s ease;
 	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	word-break: break-all;
+	overflow-wrap: anywhere;
 }
 .sg-input::placeholder, .sg-textarea::placeholder { color: var(--text-main); opacity: 0.58; }
 .sg-select option { background-color: var(--bg-card); color: var(--text-main); }
@@ -2460,7 +2556,7 @@ body {
 	border-color: var(--accent);
 	box-shadow: 0 0 0 2px rgba(120, 160, 255, 0.2);
 }
-.sg-textarea { min-height: 100px; resize: vertical; }
+.sg-textarea { min-height: 90px; resize: vertical; word-break: break-all; overflow-wrap: anywhere; white-space: pre-wrap; line-height: 1.5; }
 
 .sg-checkbox-label, .sg-toggle-label, .sg-radio-label {
 	display: inline-flex;
@@ -2577,13 +2673,18 @@ body {
 .sg-table-container {
 	border: 1px solid var(--border-card);
 	border-radius: 8px;
-	overflow: hidden;
+	overflow-x: auto;
 	background-color: var(--bg-card);
 	transition: all 0.25s ease;
+	width: 100%;
+	box-sizing: border-box;
 }
-.sg-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+.sg-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; table-layout: fixed; }
 .sg-table th { background: rgba(128,128,128,0.12); padding: 10px 14px; font-weight: 600; border-bottom: 1px solid var(--border-card); color: var(--text-main); }
-.sg-table td { padding: 9px 14px; border-bottom: 1px solid var(--border-card); color: var(--text-main); }
+.sg-table th:first-child { width: 22%; min-width: 130px; }
+.sg-table th:last-child { width: 12%; min-width: 70px; text-align: right; }
+.sg-table td { padding: 9px 14px; border-bottom: 1px solid var(--border-card); color: var(--text-main); word-break: break-all; overflow-wrap: anywhere; box-sizing: border-box; }
+.sg-table td:last-child { text-align: right; }
 .sg-table tr:hover td { background-color: rgba(128,128,128,0.12); cursor: pointer; }
 .sg-table tr.sg-table-selected td { background-color: var(--accent); color: var(--btn-text); }
 .sg-progress-bar { width: 100%; height: 8px; background-color: var(--border-card); border-radius: 4px; overflow: hidden; }
@@ -2891,6 +2992,20 @@ pub fn (mut win SimpleWindow) run() {
 	w.bind('vlangEventHandler', fn [mut win] (e &webview.Event) string {
 		handler_id := e.get_arg[string](0) or { '' }
 		val := e.get_arg[string](1) or { '' }
+		if handler_id.starts_with('change_') {
+			ctrl_id := handler_id[7..]
+			win.values[ctrl_id] = val
+			if idx := win.name_to_ctrl[ctrl_id] {
+				win.controls[idx].value = val
+				actual_id := win.controls[idx].id
+				win.values[actual_id] = val
+				for k, v in win.name_to_ctrl {
+					if v == idx {
+						win.values[k] = val
+					}
+				}
+			}
+		}
 		if handler := win.event_handlers[handler_id] {
 			handler(win, val)
 		}
@@ -2901,6 +3016,16 @@ pub fn (mut win SimpleWindow) run() {
 		id := e.get_arg[string](0) or { '' }
 		val := e.get_arg[string](1) or { '' }
 		win.values[id] = val
+		if idx := win.name_to_ctrl[id] {
+			win.controls[idx].value = val
+			actual_id := win.controls[idx].id
+			win.values[actual_id] = val
+			for k, v in win.name_to_ctrl {
+				if v == idx {
+					win.values[k] = val
+				}
+			}
+		}
 		return 'ok'
 	})
 

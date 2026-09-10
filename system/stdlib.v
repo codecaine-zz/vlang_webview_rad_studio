@@ -250,7 +250,15 @@ pub fn encode_base64(text string) string {
 }
 
 pub fn decode_base64(encoded string) string {
-	return base64.decode_str(encoded)
+	mut s := encoded.trim_space().replace('\r', '').replace('\n', '').replace(' ', '')
+	s = s.replace('-', '+').replace('_', '/')
+	if s.len == 0 {
+		return ''
+	}
+	for s.len % 4 != 0 {
+		s += '='
+	}
+	return base64.decode_str(s)
 }
 
 pub fn encode_hex(data string) string {

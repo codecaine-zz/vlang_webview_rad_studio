@@ -251,11 +251,15 @@ mut win := simplegui.new_window(
 	width: 1024                    // Window initial width in pixels
 	height: 720                    // Window initial height in pixels
 	theme: 'monokai_pro'           // One of 42 built-in themes
-	fullscreen: true               // Start in fullscreen mode (default: true)
+	fullscreen: true               // Start in fullscreen mode (default: true across macOS & Linux)
 	min_width: 640                 // Minimum resizable width
 	min_height: 480                // Minimum resizable height
 )
 ```
+
+> 🖥️ **macOS & Linux Fullscreen Policy**:
+> By default, all applications and demos open in native **fullscreen** on macOS and Linux. If you are building tools specifically meant for custom window positioning, floating placement tests, or multi-window desktop workflows (such as `demos/04_window_placement_and_pin.v`), pass `fullscreen: false` in `SimpleWindowOptions`.
+
 
 ### Containers & Layouts
 
@@ -339,18 +343,33 @@ win.button('Submit Form', fn (w &simplegui.SimpleWindow, _ string) {
 Single-line text input field with placeholder and `on_change` callback:
 
 ```v
+// Anonymous input (automatically registers aliases 'ctrl_X' and 'inp_1'):
 win.input('Username', 'Enter your handle...', fn (w &simplegui.SimpleWindow, val string) {
 	println('Current username: ${val}')
 })
+
+// Named input for explicit ID access and two-way sync:
+win.input_named('txt_user', 'Username', 'default_user', fn (w &simplegui.SimpleWindow, val string) {
+	println('Updated: ${val}')
+})
 ```
 
-#### Textarea
+> 💡 **Automatic Sequential Aliases (`inp_1`, `inp_2`, ...)**:
+> All text inputs, passwords, and textareas automatically register ordinal aliases (`inp_1`, `inp_2`, etc.). You can read or mutate them using `w.get_value('inp_1')` or `w.set_value('inp_1', 'new_val')` with full two-way DOM synchronization.
 
-Multi-line text editor:
+#### Textarea (Auto-Wrapping Multi-Line Editor)
+
+Multi-line text editor featuring automatic text wrapping (`word-break: break-all; overflow-wrap: anywhere;`) so long continuous Base64 strings or cryptographic hashes auto-adjust and stay 100% within the container frame box:
 
 ```v
+// Anonymous multi-line editor:
 win.textarea('Log Output', 'System initialized.\nReady for commands.', fn (w &simplegui.SimpleWindow, val string) {
-	println('Log updated')
+	println('Log updated: ${val}')
+})
+
+// Named multi-line editor:
+win.textarea_named('txt_payload', 'Payload', 'Enter plain text or Base64...', fn (w &simplegui.SimpleWindow, val string) {
+	w.set_status('Payload modified: ${val.len} bytes')
 })
 ```
 
@@ -489,19 +508,43 @@ win.set_context_menu(context_items, fn (w &simplegui.SimpleWindow, action string
 
 ### Data Displays
 
-#### Data Table
+#### Data Table (Auto-Adjusting Grid & Live Row Mutation)
 
-Renders a structured grid of rows and columns:
+Renders a structured grid of rows and columns with fixed auto-adjusting column proportions, monospace digest formatting, and text auto-wrapping (`word-break: break-all; overflow-wrap: anywhere;`):
 
 ```v
-headers := ['ID', 'Process Name', 'Memory', 'Status']
+headers := ['Algorithm / Primitive', 'Computed Digest (Hex)', 'Bits']
 rows := [
-	['101', 'rad_studio', '34 MB', 'Running'],
-	['102', 'postgres', '142 MB', 'Active'],
-	['103', 'redis-server', '18 MB', 'Idle'],
+	['SHA-256', system.hash_sha256(text), '256'],
+	['HMAC-SHA256', system.hmac_sha256(key, text), '256'],
+	['Base64 Encoded', system.encode_base64(text), '${text.len * 8}'],
 ]
-win.table(headers, rows)
+
+// Named table with interactive click-to-inspect callback:
+win.table_named('crypto_table', headers, rows, fn (w &simplegui.SimpleWindow, idx string) {
+	row_idx := idx.int()
+	println('Clicked row #${row_idx}')
+})
 ```
+
+##### Live Runtime Table Mutation
+
+Update table rows dynamically at runtime with full DOM replacement and auto-wrapping:
+
+```v
+// Mutate table by name:
+w.set_table_rows('crypto_table', updated_rows)
+
+// Auto-target the window's primary table if name is empty:
+w.set_table_rows('', updated_rows)
+
+// Row-level additions and deletions:
+w.add_table_row('crypto_table', ['MD5', system.hash_md5(text), '128'])
+w.delete_table_row('crypto_table', 0)
+```
+
+> 🛡️ **Frame Box Safety**: Tables enforce `table-layout: fixed; width: 100%;` with `overflow-wrap: anywhere` so even 512-bit hashes or long Base64 strings will auto-adjust cleanly inside the frame box without blowing out horizontal layout borders.
+
 
 #### Key-Value List
 
@@ -548,9 +591,51 @@ win.timer(1000, fn (w &simplegui.SimpleWindow, _ string) {
 })
 ```
 
+#### In-Window Modal Alerts (`modal_alert` & `alert`)
+
+RAD Studio features a custom, high-fidelity in-window modal dialog that avoids OS-level blocking or window-focus freezes in fullscreen and headless modes:
+
+```v
+// Explicit in-window modal with frosted glass backdrop and auto-scrolling monospace code box:
+w.modal_alert('Payload Decoded', 'Decoded 4,096 bytes successfully:\n\n' + payload)
+
+// Universal alert: automatically routes to modal_alert when the webview is active:
+w.alert('Deployment Triggered', 'Pipeline v2.4 initialized.')
+```
+
+**Key Advantages of `modal_alert`:**
+- **No Window Lockup**: Does not block the native OS UI thread or trigger system-level modal sheets that can freeze on certain window managers.
+- **Glassmorphic Presentation**: Rendered with `backdrop-filter: blur(4px)` and responsive sizing (`max-width: 560px`, `width: 90%`).
+- **Monospace Code Container**: Message text is displayed inside an auto-scrolling monospace box (`max-height: 50vh; overflow-y: auto`) with `word-break: break-all; overflow-wrap: anywhere;` to prevent long cryptographic hashes, stacktraces, or tokens from overflowing.
+- **Dismiss Button**: Includes an accent-styled button and closes on ESC or click outside.
+
+#### In-Window Toast Notifications
+
+Display sleek, non-intrusive floating toasts in the top-right corner of the window:
+
+```v
+w.toast('Data saved to cache.')
+w.toast_success('Database connection established!')
+w.toast_info('Update check finished: version is up-to-date.')
+w.toast_warning('High CPU usage detected (88%).')
+w.toast_error('Failed to verify Ed25519 signature.')
+```
+
+Toasts automatically fade out after 3.2 seconds and stack cleanly without shifting your layout.
+
+#### Native Confirmation Dialogs
+
+Presents a native OS confirmation dialog returning a boolean:
+
+```v
+if w.confirm('Confirm Deletion', 'Are you sure you want to delete production table "users"?') {
+	w.toast_error('Table dropped.')
+}
+```
+
 #### Native Notification
 
-Displays an OS toast or banner:
+Displays an operating system banner or notification center toast:
 
 ```v
 win.notification('Backup Completed', 'All 4 databases saved successfully.')
@@ -1067,6 +1152,30 @@ uuid := system.crypto_uuid_v4()          // e.g. "c9a646d3-9c61-4cc9-bc01-90be5c
 sha := system.hash_sha256('Hello World') // Standard SHA-256 hex
 md5 := system.hash_md5('Hello World')
 hmac := system.hmac_sha256('secret_key', 'payload_data')
+```
+
+#### Encoders & Base64 (Standard, URL-Safe & Auto-Padded)
+
+The `system` module provides robust encoding and decoding routines with automated sanitization:
+
+```v
+// Base64 Encoding
+raw_text := 'The quick brown fox jumps over the lazy dog'
+b64 := system.encode_base64(raw_text)
+// "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZw=="
+
+// Resilient Base64 Decoding:
+// Automatically trims whitespace, strips carriage returns and newlines, converts
+// URL-safe '-' and '_' characters to '+' and '/', and appends missing '=' padding.
+decoded := system.decode_base64(b64)
+assert decoded == raw_text
+
+// Hexadecimal Encoders
+hex_str := system.encode_hex('Hello Webview') // "48656c6c6f2057656276696577"
+restored := system.decode_hex(hex_str)        // "Hello Webview"
+
+// Ultra-fast Non-Cryptographic 64-bit Wyhash
+fast_hash := system.crypto_wyhash('High throughput metric', 1337)
 ```
 
 ---
