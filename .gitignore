@@ -1,0 +1,29 @@
+# Binaries for programs and plugins
+main
+vlang_webview_rad_studio
+*.exe
+*.exe~
+*.so
+*.dylib
+*.dll
+
+# Ignore binary output folders
+bin/
+dist/
+rad_studio
+
+# Ignore common editor/system specific metadata
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# ENV
+.env
+
+# Web assets and local databases
+*.db
+*.js
+
+# Ignore installed modules through `v install --local`:
+modules/
