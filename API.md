@@ -8,69 +8,69 @@ Welcome to the comprehensive API manual for **V Webview RAD Studio**. This guide
 
 1. [Architectural Philosophy: How Desktop Apps Are Built](#1-architectural-philosophy-how-desktop-apps-are-built)
 2. [Quickstart: Your First Application in 60 Seconds](#2-quickstart-your-first-application-in-60-seconds)
-3. [SimpleGUI: Declarative Window & UI Controls](#3-simplegui-declarative-window-ui-controls)
-   - [Window Setup & Configuration](#window-setup-configuration)
-   - [Containers & Layouts (Boxes, Rows, Cards, Columns)](#containers-layouts)
+3. [SimpleGUI: Declarative Window & UI Controls](#3-simplegui-declarative-window--ui-controls)
+   - [Window Setup & Configuration](#window-setup--configuration)
+   - [Containers & Layouts (Boxes, Rows, Cards, Columns)](#containers--layouts)
    - [Standard Controls (Buttons, Inputs, Textareas, Labels)](#standard-controls)
    - [Selection Controls (Checkboxes, Radios, Dropdowns, Toggles, Sliders)](#selection-controls)
-   - [Desktop Menubar & Custom Context Menus](#desktop-menubar-custom-context-menus)
+   - [Desktop Menubar & Custom Context Menus](#desktop-menubar--custom-context-menus)
    - [Data Displays (Tables, Key-Value Lists, Badges, Tags, Progress)](#data-displays)
    - [Desktop Triggers (Timers, File Pickers, Notifications, Dialogs)](#desktop-triggers)
-   - [Window Management & Shortcuts](#window-management-shortcuts)
+   - [Window Management & Shortcuts](#window-management--shortcuts)
    - [Dynamic Theme Switcher (42 Form Themes)](#dynamic-theme-switcher)
-   - [Named Builder & Fluent Control API (`vlang_simplegui` Parity)](#named-builder-fluent-control-api-vlang_simplegui-parity)
+   - [Named Builder & Fluent Control API (`vlang_simplegui` Parity)](#named-builder--fluent-control-api-vlang_simplegui-parity)
 4. [System Module: `system/sys.v` (OS & Hardware Telemetry)](#4-system-module-systemsysv)
-   - [Safe Command & Process Execution](#safe-command-process-execution)
-   - [Process Management & Lifecycle](#process-management-lifecycle)
-   - [Cross-Platform Paths & App Directories](#cross-platform-paths-app-directories)
-   - [File Operations, Directory Sizing & Archives](#file-operations-directory-sizing-archives)
+   - [Safe Command & Process Execution](#safe-command--process-execution)
+   - [Process Management & Lifecycle](#process-management--lifecycle)
+   - [Cross-Platform Paths & App Directories](#cross-platform-paths--app-directories)
+   - [File Operations, Directory Sizing & Archives](#file-operations-directory-sizing--archives)
    - [Hardware Telemetry (CPU, RAM, Battery, Uptime)](#hardware-telemetry)
-   - [Power, Display & Theme Controls](#power-display-theme-controls)
-   - [Audio, Speech & Sound Effects](#audio-speech-sound-effects)
-   - [Network Diagnostics & Font Resolution](#network-diagnostics-font-resolution)
+   - [Power, Display & Theme Controls](#power-display--theme-controls)
+   - [Audio, Speech & Sound Effects](#audio-speech--sound-effects)
+   - [Network Diagnostics & Font Resolution](#network-diagnostics--font-resolution)
 5. [Standard Library: `system/stdlib.v` (Algorithms & Encoders)](#5-standard-library-systemstdlibv)
    - [Resilient HTTP Client](#resilient-http-client)
    - [Cryptography (AES, Ed25519, PBKDF2, Bcrypt, UUID, Hashes)](#cryptography)
    - [Regular Expressions](#regular-expressions)
-   - [Gzip & Zlib Compression](#gzip-zlib-compression)
-   - [Randomness & Combinatorics](#randomness-combinatorics)
+   - [Gzip & Zlib Compression](#gzip--zlib-compression)
+   - [Randomness & Combinatorics](#randomness--combinatorics)
    - [Concurrency Helpers (Mutex & WaitGroup)](#concurrency-helpers)
-   - [Complex Numbers, Trigonometry & Math](#complex-numbers-trigonometry-math)
+   - [Complex Numbers, Trigonometry & Math](#complex-numbers-trigonometry--math)
    - [Statistical Analysis](#statistical-analysis)
-   - [String Metrics & Manipulations](#string-metrics-manipulations)
-   - [URL Object Model & HTML Scraper](#url-object-model-html-scraper)
-   - [CSV Matrices & Generic Data Structures](#csv-matrices-generic-data-structures)
-   - [Time, Calendar & JSON](#time-calendar-json)
+   - [String Metrics & Manipulations](#string-metrics--manipulations)
+   - [URL Object Model & HTML Scraper](#url-object-model--html-scraper)
+   - [CSV Matrices & Generic Data Structures](#csv-matrices--generic-data-structures)
+   - [Time, Calendar & JSON](#time-calendar--json)
 6. [Security Module: `system/security.v` (Defensive Coding)](#6-security-module-systemsecurityv)
    - [Shell Injection Prevention](#shell-injection-prevention)
-   - [Path Traversal & Filename Sanitization](#path-traversal-filename-sanitization)
-   - [Constant-Time Comparison & Secret Masking](#constant-time-comparison-secret-masking)
-   - [HTML Sanitization & Safe URLs](#html-sanitization-safe-urls)
+   - [Path Traversal & Filename Sanitization](#path-traversal--filename-sanitization)
+   - [Constant-Time Comparison & Secret Masking](#constant-time-comparison--secret-masking)
+   - [HTML Sanitization & Safe URLs](#html-sanitization--safe-urls)
    - [Cryptographic Token Generation](#cryptographic-token-generation)
 7. [State Module: `system/state.v` (Persistence & Configuration)](#7-state-module-systemstatev)
    - [Crash-Proof Atomic File Writing](#crash-proof-atomic-file-writing)
    - [Typesafe JSON State Serialization](#typesafe-json-state-serialization)
    - [Application-Scoped Preferences](#application-scoped-preferences)
 8. [End-to-End Tutorial: Building a Production DevOps Workstation](#8-end-to-end-tutorial-building-a-production-devops-workstation)
-9. [Packaging & Distribution Guide (`build.vsh`)](#9-packaging-distribution-guide-buildvsh)
-10. [Companion CLI Suite & Automation API (16 Complete Tools)](#10-companion-cli-suite-automation-api-16-complete-tools)
-   - [CLI Architecture & Performance Advantages](#cli-architecture-performance-advantages)
+9. [Packaging & Distribution Guide (`build.vsh`)](#9-packaging--distribution-guide-buildvsh)
+10. [Companion CLI Suite & Automation API (16 Complete Tools)](#10-companion-cli-suite--automation-api-16-complete-tools)
+   - [CLI Architecture & Performance Advantages](#cli-architecture--performance-advantages)
    - [CLI Suite Quick Reference](#cli-suite-quick-reference)
-   - [System & Hardware Workstation (`system_cli`)](#system-hardware-workstation-system_cli)
-   - [Cryptographic Hashing & Encoders (`crypto_cli`)](#cryptographic-hashing-encoders-crypto_cli)
-   - [JSON Inspector, Validator & Formatter (`json_cli`)](#json-inspector-validator-formatter-json_cli)
-   - [Developer Omnitool & Math Statistics (`devtools_cli`)](#developer-omnitool-math-statistics-devtools_cli)
-   - [Process & Task Manager (`process_cli`)](#process-task-manager-process_cli)
+   - [System & Hardware Workstation (`system_cli`)](#system--hardware-workstation-system_cli)
+   - [Cryptographic Hashing & Encoders (`crypto_cli`)](#cryptographic-hashing--encoders-crypto_cli)
+   - [JSON Inspector, Validator & Formatter (`json_cli`)](#json-inspector-validator--formatter-json_cli)
+   - [Developer Omnitool & Math Statistics (`devtools_cli`)](#developer-omnitool--math-statistics-devtools_cli)
+   - [Process & Task Manager (`process_cli`)](#process--task-manager-process_cli)
    - [SQLite Database Console (`database_cli`)](#sqlite-database-console-database_cli)
-   - [HTTP & REST API Client (`api_cli`)](#http-rest-api-client-api_cli)
+   - [HTTP & REST API Client (`api_cli`)](#http--rest-api-client-api_cli)
    - [Data Format Converter (`dataconvert_cli`)](#data-format-converter-dataconvert_cli)
-   - [File System Watcher & Trigger (`watcher_cli`)](#file-system-watcher-trigger-watcher_cli)
+   - [File System Watcher & Trigger (`watcher_cli`)](#file-system-watcher--trigger-watcher_cli)
    - [Regular Expression Tester (`regex_cli`)](#regular-expression-tester-regex_cli)
-   - [Desktop App Packager & Bundler (`app_bundler_cli`)](#desktop-app-packager-bundler-app_bundler_cli)
-   - [Network Diagnostics & Ping Telemetry (`network_cli`)](#network-diagnostics-ping-telemetry-network_cli)
+   - [Desktop App Packager & Bundler (`app_bundler_cli`)](#desktop-app-packager--bundler-app_bundler_cli)
+   - [Network Diagnostics & Ping Telemetry (`network_cli`)](#network-diagnostics--ping-telemetry-network_cli)
    - [Visual Git Workstation (`git_cli`)](#visual-git-workstation-git_cli)
    - [Markdown to HTML Compiler (`markdown_cli`)](#markdown-to-html-compiler-markdown_cli)
-   - [Color & WCAG Contrast Inspector (`color_cli`)](#color-wcag-contrast-inspector-color_cli)
+   - [Color & WCAG Contrast Inspector (`color_cli`)](#color--wcag-contrast-inspector-color_cli)
    - [Environment Variables Manager (`env_cli`)](#environment-variables-manager-env_cli)
    - [Writing Custom CLI Tools with `flag.FlagParser`](#writing-custom-cli-tools-with-flagflagparser)
 
@@ -1429,22 +1429,22 @@ In addition to visual GUI applications, **V Webview RAD Studio** includes **16 c
 
 | CLI Utility | Source File | Primary Purpose | Key Flags |
 |---|---|---|---|
-| **`system_cli`** | [`cli_apps/system_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/system_cli.v) | Hardware telemetry, CPU, RAM, battery & OS inspection | `-t, --telemetry`, `-j, --json`, `-a, --audit` |
-| **`crypto_cli`** | [`cli_apps/crypto_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/crypto_cli.v) | Cryptographic digests, HMAC-SHA256, Base64 & Hex | `-a, --algo`, `-k, --key`, `-A, --all`, `-e, --b64-encode` |
-| **`json_cli`** | [`cli_apps/json_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/json_cli.v) | JSON formatting, validation & minification | `-f, --file`, `-m, --minify`, `-v, --validate` |
-| **`devtools_cli`** | [`cli_apps/devtools_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/devtools_cli.v) | UUIDs, epoch timestamps, string metrics & math stats | `-u, --uuid`, `-t, --timestamp`, `-s, --slug`, `-S, --stats` |
-| **`process_cli`** | [`cli_apps/process_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/process_cli.v) | Process listing, name filtering & process termination | `-f, --filter`, `-k, --kill`, `-t, --top` |
-| **`database_cli`** | [`cli_apps/database_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/database_cli.v) | SQLite database inspector, schema viewer & SQL query runner | `-d, --database`, `-t, --tables`, `-s, --schema`, `-q, --query` |
-| **`api_cli`** | [`cli_apps/api_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/api_cli.v) | REST client supporting GET, POST, PUT, DELETE, and body data | `-X, --method`, `-d, --data`, `-c, --content-type`, `-i, --headers` |
-| **`dataconvert_cli`** | [`cli_apps/dataconvert_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/dataconvert_cli.v) | Matrix conversion between CSV and JSON | `-f, --from`, `-t, --to`, `-i, --file` |
-| **`watcher_cli`** | [`cli_apps/watcher_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/watcher_cli.v) | Filesystem directory watcher with automated command triggers | `-p, --path`, `-e, --exec`, `-i, --interval` |
-| **`regex_cli`** | [`cli_apps/regex_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/regex_cli.v) | Regular expression testing, matching & string replacement | `-p, --pattern`, `-r, --replace` |
-| **`app_bundler_cli`** | [`cli_apps/app_bundler_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/app_bundler_cli.v) | Standalone distribution packager for macOS, Linux & Windows | `-n, --name`, `-e, --entry`, `-o, --out`, `-t, --target` |
-| **`network_cli`** | [`cli_apps/network_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/network_cli.v) | ICMP ping latency, DNS lookup, open ports & IP discovery | `-p, --ping`, `-i, --ip`, `-d, --dns`, `-l, --ports` |
-| **`git_cli`** | [`cli_apps/git_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/git_cli.v) | Git working tree inspector, branch manager & commit log | `-s, --status`, `-b, --branch`, `-l, --log`, `-d, --diff` |
-| **`markdown_cli`** | [`cli_apps/markdown_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/markdown_cli.v) | Markdown to HTML compiler and document converter | `-f, --file`, `-o, --out` |
-| **`color_cli`** | [`cli_apps/color_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/color_cli.v) | HEX/RGB converter, WCAG contrast ratio & accessibility | `-x, --hex`, `-b, --bg` |
-| **`env_cli`** | [`cli_apps/env_cli.v`](file:///Users/codecaine/vlang_webview_rad_studio/cli_apps/env_cli.v) | Environment variable auditor, search filter & JSON exporter | `-g, --get`, `-f, --filter`, `-j, --json` |
+| [**`system_cli`**](#system--hardware-workstation-system_cli) | [`cli_apps/system_cli.v`](cli_apps/system_cli.v) | Hardware telemetry, CPU, RAM, battery & OS inspection | `-t, --telemetry`, `-j, --json`, `-a, --audit` |
+| [**`crypto_cli`**](#cryptographic-hashing--encoders-crypto_cli) | [`cli_apps/crypto_cli.v`](cli_apps/crypto_cli.v) | Cryptographic digests, HMAC-SHA256, Base64 & Hex | `-a, --algo`, `-k, --key`, `-A, --all`, `-e, --b64-encode` |
+| [**`json_cli`**](#json-inspector-validator--formatter-json_cli) | [`cli_apps/json_cli.v`](cli_apps/json_cli.v) | JSON formatting, validation & minification | `-f, --file`, `-m, --minify`, `-v, --validate` |
+| [**`devtools_cli`**](#developer-omnitool--math-statistics-devtools_cli) | [`cli_apps/devtools_cli.v`](cli_apps/devtools_cli.v) | UUIDs, epoch timestamps, string metrics & math stats | `-u, --uuid`, `-t, --timestamp`, `-s, --slug`, `-S, --stats` |
+| [**`process_cli`**](#process--task-manager-process_cli) | [`cli_apps/process_cli.v`](cli_apps/process_cli.v) | Process listing, name filtering & process termination | `-f, --filter`, `-k, --kill`, `-t, --top` |
+| [**`database_cli`**](#sqlite-database-console-database_cli) | [`cli_apps/database_cli.v`](cli_apps/database_cli.v) | SQLite database inspector, schema viewer & SQL query runner | `-d, --database`, `-t, --tables`, `-s, --schema`, `-q, --query` |
+| [**`api_cli`**](#http--rest-api-client-api_cli) | [`cli_apps/api_cli.v`](cli_apps/api_cli.v) | REST client supporting GET, POST, PUT, DELETE, and body data | `-X, --method`, `-d, --data`, `-c, --content-type`, `-i, --headers` |
+| [**`dataconvert_cli`**](#data-format-converter-dataconvert_cli) | [`cli_apps/dataconvert_cli.v`](cli_apps/dataconvert_cli.v) | Matrix conversion between CSV and JSON | `-f, --from`, `-t, --to`, `-i, --file` |
+| [**`watcher_cli`**](#file-system-watcher--trigger-watcher_cli) | [`cli_apps/watcher_cli.v`](cli_apps/watcher_cli.v) | Filesystem directory watcher with automated command triggers | `-p, --path`, `-e, --exec`, `-i, --interval` |
+| [**`regex_cli`**](#regular-expression-tester-regex_cli) | [`cli_apps/regex_cli.v`](cli_apps/regex_cli.v) | Regular expression testing, matching & string replacement | `-p, --pattern`, `-r, --replace` |
+| [**`app_bundler_cli`**](#desktop-app-packager--bundler-app_bundler_cli) | [`cli_apps/app_bundler_cli.v`](cli_apps/app_bundler_cli.v) | Standalone distribution packager for macOS, Linux & Windows | `-n, --name`, `-e, --entry`, `-o, --out`, `-t, --target` |
+| [**`network_cli`**](#network-diagnostics--ping-telemetry-network_cli) | [`cli_apps/network_cli.v`](cli_apps/network_cli.v) | ICMP ping latency, DNS lookup, open ports & IP discovery | `-p, --ping`, `-i, --ip`, `-d, --dns`, `-l, --ports` |
+| [**`git_cli`**](#visual-git-workstation-git_cli) | [`cli_apps/git_cli.v`](cli_apps/git_cli.v) | Git working tree inspector, branch manager & commit log | `-s, --status`, `-b, --branch`, `-l, --log`, `-d, --diff` |
+| [**`markdown_cli`**](#markdown-to-html-compiler-markdown_cli) | [`cli_apps/markdown_cli.v`](cli_apps/markdown_cli.v) | Markdown to HTML compiler and document converter | `-f, --file`, `-o, --out` |
+| [**`color_cli`**](#color--wcag-contrast-inspector-color_cli) | [`cli_apps/color_cli.v`](cli_apps/color_cli.v) | HEX/RGB converter, WCAG contrast ratio & accessibility | `-x, --hex`, `-b, --bg` |
+| [**`env_cli`**](#environment-variables-manager-env_cli) | [`cli_apps/env_cli.v`](cli_apps/env_cli.v) | Environment variable auditor, search filter & JSON exporter | `-g, --get`, `-f, --filter`, `-j, --json` |
 
 ---
 
