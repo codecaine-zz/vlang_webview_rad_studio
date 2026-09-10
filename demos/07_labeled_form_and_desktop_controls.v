@@ -37,10 +37,13 @@ fn main() {
 
 	win.row_start()
 	win.button('💾 Save Configuration', fn (w &simplegui.SimpleWindow, _ string) {
-		w.alert('Saved', 'Configuration parameters written to disk.')
+		w.toast_success('Configuration parameters saved to disk')
+		w.set_status('Configuration saved.')
 	})
 	win.button('↺ Revert Defaults', fn (w &simplegui.SimpleWindow, _ string) {
-		w.alert('Reverted', 'Reset all fields back to factory presets.')
+		w.clear_form()
+		w.toast_warning('Fields reverted back to factory presets')
+		w.set_status('Reverted to default configuration.')
 	})
 	win.row_end()
 

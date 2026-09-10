@@ -17,14 +17,33 @@ fn main() {
 
 	win.box_start('Database Navigation & Operations')
 	win.row_start()
-	win.button('⏮ First', fn (w &simplegui.SimpleWindow, _ string) { println('First record') })
-	win.button('◀ Prior', fn (w &simplegui.SimpleWindow, _ string) { println('Prior record') })
-	win.button('▶ Next', fn (w &simplegui.SimpleWindow, _ string) { println('Next record') })
-	win.button('⏭ Last', fn (w &simplegui.SimpleWindow, _ string) { println('Last record') })
-	win.button('➕ Insert', fn (w &simplegui.SimpleWindow, _ string) { println('Insert record') })
-	win.button('🗑️ Delete', fn (w &simplegui.SimpleWindow, _ string) { println('Delete record') })
+	win.button('⏮ First', fn (w &simplegui.SimpleWindow, _ string) {
+		w.toast_info('Navigated to First record (ID: 101)')
+		w.set_status('Record 1 of 5: Acme Corporation')
+	})
+	win.button('◀ Prior', fn (w &simplegui.SimpleWindow, _ string) {
+		w.toast_info('Navigated to Prior record')
+		w.set_status('Record cursor moved back')
+	})
+	win.button('▶ Next', fn (w &simplegui.SimpleWindow, _ string) {
+		w.toast_info('Navigated to Next record')
+		w.set_status('Record cursor moved forward')
+	})
+	win.button('⏭ Last', fn (w &simplegui.SimpleWindow, _ string) {
+		w.toast_info('Navigated to Last record (ID: 105)')
+		w.set_status('Record 5 of 5: Umbrella Biotech')
+	})
+	win.button('➕ Insert', fn (w &simplegui.SimpleWindow, _ string) {
+		w.toast_success('Simulated record insertion: Customer #106 added')
+		w.set_status('Inserted new record into buffer')
+	})
+	win.button('🗑️ Delete', fn (w &simplegui.SimpleWindow, _ string) {
+		w.toast_warning('Simulated record deletion: Customer marked deleted')
+		w.set_status('Deleted current record')
+	})
 	win.button('🔔 Play Chime', fn (w &simplegui.SimpleWindow, _ string) {
 		system.play_system_sound('Hero')
+		w.toast_info('🔔 System chime played')
 	})
 	win.row_end()
 	win.box_end()

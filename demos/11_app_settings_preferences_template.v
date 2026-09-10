@@ -43,10 +43,13 @@ fn main() {
 
 	win.row_start()
 	win.button('💾 Save Preferences', fn (w &simplegui.SimpleWindow, _ string) {
-		w.notification('Settings Saved', 'Application preferences written to configuration store.')
+		w.toast_success('Preferences saved to configuration store')
+		w.set_status('Settings persisted to disk.')
 	})
 	win.button('↺ Reset to Defaults', fn (w &simplegui.SimpleWindow, _ string) {
-		w.alert('Defaults Restored', 'All settings restored to default values.')
+		w.clear_form()
+		w.toast_warning('Settings restored to default presets')
+		w.set_status('Preferences reset to default values.')
 	})
 	win.row_end()
 

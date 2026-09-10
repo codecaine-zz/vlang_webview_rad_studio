@@ -28,9 +28,14 @@ fn main() {
 	win.textarea('SQL Query', 'SELECT id, username, email, role, created_at FROM users WHERE active = 1 ORDER BY id DESC LIMIT 10;', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_start()
 	win.button('▶ Run Query (Cmd+Enter)', fn (w &simplegui.SimpleWindow, _ string) {
-		w.alert('Query Executed', 'Query completed in 0.8ms. 4 records returned.')
+		w.toast_success('Query executed in 0.8ms — 4 records returned')
+		w.set_status('Query finished in 0.8ms (Rows: 4, Cache: Hit)')
 	})
-	win.button('🧹 Clear SQL', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.button('🧹 Clear SQL', fn (w &simplegui.SimpleWindow, _ string) {
+		w.eval('const t = document.querySelector("textarea"); if (t) { t.value = ""; }')
+		w.toast_warning('SQL Query Buffer cleared')
+		w.set_status('SQL buffer empty')
+	})
 	win.row_end()
 	win.box_end()
 

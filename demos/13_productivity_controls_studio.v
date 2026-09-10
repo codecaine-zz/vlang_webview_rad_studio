@@ -1,7 +1,6 @@
 module main
 
 import simplegui
-import system
 
 fn main() {
 	mut win := simplegui.new_window(
@@ -25,11 +24,20 @@ fn main() {
 	win.textarea('Scratchpad Notes', '// Quick thoughts & code snippets...\nfn compute_hash() string {\n    return "sha256:4a8b9f..."\n}', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_start()
 	win.button('📋 Copy to Clipboard', fn (w &simplegui.SimpleWindow, _ string) {
-		val := w.get_value('txt_1')
-		system.set_clipboard_text(val)
-		w.notification('Clipboard', 'Content copied to system clipboard!')
+		w.eval('
+			const ta = document.querySelector("textarea");
+			if (ta && navigator.clipboard) {
+				navigator.clipboard.writeText(ta.value);
+			}
+		')
+		w.toast_success('Content copied to system clipboard!')
+		w.set_status('Clipboard updated from scratchpad.')
 	})
-	win.button('🧹 Clear Scratchpad', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.button('🧹 Clear Scratchpad', fn (w &simplegui.SimpleWindow, _ string) {
+		w.eval('const ta = document.querySelector("textarea"); if (ta) { ta.value = ""; }')
+		w.toast_warning('Scratchpad notes cleared')
+		w.set_status('Scratchpad cleared.')
+	})
 	win.row_end()
 	win.box_end()
 

@@ -40,9 +40,15 @@ fn main() {
 
 	win.row_start()
 	win.button('🚀 Submit Profile', fn (w &simplegui.SimpleWindow, _ string) {
-		w.alert('Profile Created', 'Account created successfully for Alex Mercer!')
+		w.modal_alert('Profile Created', 'Account created successfully for Alex Mercer!\n\nEmail: alex@example.com\nPlan: Pro ($19/mo)')
+		w.toast_success('Profile submitted and saved!')
+		w.set_status('✅ Account created for Alex Mercer')
 	})
-	win.button('↺ Clear Inputs', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.button('↺ Clear Inputs', fn (w &simplegui.SimpleWindow, _ string) {
+		w.clear_form()
+		w.toast_warning('↺ Form inputs cleared')
+		w.set_status('↺ All inputs cleared')
+	})
 	win.row_end()
 
 	win.status_bar('Status: Ready for user input')

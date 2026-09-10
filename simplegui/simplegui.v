@@ -1873,35 +1873,164 @@ pub fn (win &SimpleWindow) center_and_focus() &SimpleWindow {
 	return win.center()
 }
 
+pub fn (win &SimpleWindow) eval(js string) &SimpleWindow {
+	if !isnil(win.wv) {
+		win.wv.eval(js)
+	}
+	return win
+}
+
 pub fn (win &SimpleWindow) toast(msg string) &SimpleWindow {
 	if !isnil(win.wv) {
 		esc := system.json_escape(msg)
 		win.wv.eval('
-			const t = document.createElement("div");
-			t.textContent = ${esc};
-			t.style.position = "fixed";
-			t.style.bottom = "20px";
-			t.style.right = "20px";
-			t.style.backgroundColor = "rgba(0,0,0,0.85)";
-			t.style.color = "#fff";
-			t.style.padding = "10px 18px";
-			t.style.borderRadius = "6px";
-			t.style.zIndex = "999999";
-			t.style.fontSize = "13px";
-			t.style.boxShadow = "0 4px 12px rgba(0,0,0,0.4)";
-			document.body.appendChild(t);
-			setTimeout(() => { t.remove(); }, 2500);
+			(function() {
+				const t = document.createElement("div");
+				t.textContent = ${esc};
+				t.style.position = "fixed";
+				t.style.top = "20px";
+				t.style.left = "50%";
+				t.style.transform = "translateX(-50%) translateY(-10px)";
+				t.style.backgroundColor = "rgba(15, 23, 42, 0.94)";
+				t.style.color = "#f8fafc";
+				t.style.padding = "10px 22px";
+				t.style.borderRadius = "8px";
+				t.style.border = "1px solid rgba(255,255,255,0.2)";
+				t.style.zIndex = "9999999";
+				t.style.fontSize = "13px";
+				t.style.fontWeight = "600";
+				t.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
+				t.style.opacity = "0";
+				t.style.transition = "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
+				t.style.pointerEvents = "none";
+				document.body.appendChild(t);
+				requestAnimationFrame(() => {
+					t.style.opacity = "1";
+					t.style.transform = "translateX(-50%) translateY(0)";
+				});
+				setTimeout(() => {
+					t.style.opacity = "0";
+					t.style.transform = "translateX(-50%) translateY(-10px)";
+					setTimeout(() => { t.remove(); }, 300);
+				}, 2600);
+			})();
 		')
 	}
 	return win
 }
 
 pub fn (win &SimpleWindow) toast_success(msg string) &SimpleWindow {
-	return win.toast("✅ " + msg)
+	return win.toast('✅ ' + msg)
+}
+
+pub fn (win &SimpleWindow) toast_info(msg string) &SimpleWindow {
+	return win.toast('ℹ️ ' + msg)
+}
+
+pub fn (win &SimpleWindow) toast_warning(msg string) &SimpleWindow {
+	return win.toast('⚠️ ' + msg)
 }
 
 pub fn (win &SimpleWindow) toast_error(msg string) &SimpleWindow {
-	return win.toast("❌ " + msg)
+	return win.toast('❌ ' + msg)
+}
+
+pub fn (win &SimpleWindow) modal_alert(title string, message string) &SimpleWindow {
+	if !isnil(win.wv) {
+		esc_title := system.json_escape(title)
+		esc_msg := system.json_escape(message)
+		win.wv.eval('
+			(function() {
+				const old = document.getElementById("sgModalAlert");
+				if (old) old.remove();
+				const overlay = document.createElement("div");
+				overlay.id = "sgModalAlert";
+				overlay.style.position = "fixed";
+				overlay.style.inset = "0";
+				overlay.style.backgroundColor = "rgba(0,0,0,0.65)";
+				overlay.style.display = "flex";
+				overlay.style.alignItems = "center";
+				overlay.style.justifyContent = "center";
+				overlay.style.zIndex = "99999999";
+				overlay.style.backdropFilter = "blur(4px)";
+				
+				const box = document.createElement("div");
+				box.style.background = "var(--bg-card, #1e293b)";
+				box.style.border = "1px solid var(--accent, #38bdf8)";
+				box.style.borderRadius = "12px";
+				box.style.padding = "24px 28px";
+				box.style.maxWidth = "460px";
+				box.style.width = "90%";
+				box.style.boxShadow = "0 16px 48px rgba(0,0,0,0.7)";
+				box.style.color = "var(--text-main, #f8fafc)";
+				box.style.fontFamily = "system-ui,-apple-system,sans-serif";
+				
+				const h = document.createElement("h3");
+				h.style.marginTop = "0";
+				h.style.marginBottom = "12px";
+				h.style.fontSize = "17px";
+				h.style.color = "var(--accent, #38bdf8)";
+				h.textContent = ${esc_title};
+				box.appendChild(h);
+				
+				const p = document.createElement("div");
+				p.style.fontSize = "14px";
+				p.style.lineHeight = "1.6";
+				p.style.opacity = "0.9";
+				p.style.marginBottom = "20px";
+				p.style.whiteSpace = "pre-wrap";
+				p.textContent = ${esc_msg};
+				box.appendChild(p);
+				
+				const btnRow = document.createElement("div");
+				btnRow.style.display = "flex";
+				btnRow.style.justifyContent = "flex-end";
+				
+				const okBtn = document.createElement("button");
+				okBtn.textContent = "OK";
+				okBtn.style.padding = "8px 22px";
+				okBtn.style.background = "var(--accent, #38bdf8)";
+				okBtn.style.color = "var(--btn-text, #000)";
+				okBtn.style.fontWeight = "700";
+				okBtn.style.border = "none";
+				okBtn.style.borderRadius = "6px";
+				okBtn.style.cursor = "pointer";
+				okBtn.style.fontSize = "13px";
+				okBtn.onclick = function() { overlay.remove(); };
+				btnRow.appendChild(okBtn);
+				box.appendChild(btnRow);
+				
+				overlay.appendChild(box);
+				document.body.appendChild(overlay);
+				okBtn.focus();
+			})();
+		')
+	}
+	return win
+}
+
+pub fn (win &SimpleWindow) clear_form() &SimpleWindow {
+	if !isnil(win.wv) {
+		win.wv.eval('
+			(function() {
+				document.querySelectorAll("input:not([type=button]):not([type=submit]), textarea").forEach(el => {
+					if (el.type === "checkbox" || el.type === "radio") {
+						el.checked = false;
+					} else if (el.type === "range") {
+						el.value = el.min || "0";
+					} else {
+						el.value = "";
+					}
+					el.dispatchEvent(new Event("input", { bubbles: true }));
+				});
+				document.querySelectorAll("select").forEach(el => {
+					el.selectedIndex = 0;
+					el.dispatchEvent(new Event("change", { bubbles: true }));
+				});
+			})();
+		')
+	}
+	return win
 }
 
 pub fn (mut win SimpleWindow) set_menubar(categories []MenuCategory, on_select EventCallback) &SimpleWindow {

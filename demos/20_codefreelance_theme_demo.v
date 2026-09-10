@@ -27,10 +27,26 @@ fn main() {
 
 	win.box_start('Theme Demonstration Controls')
 	win.row_start()
-	win.button('Theme: Monokai Pro', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.button('Theme: Tokyo Night', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.button('Theme: Cyberpunk', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.button('Theme: macOS Sonoma', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.button('Theme: Monokai Pro', fn (w &simplegui.SimpleWindow, _ string) {
+		w.set_theme('monokai_pro')
+		w.toast_info('Theme switched to Monokai Pro')
+		w.set_status('Active Theme: Monokai Pro')
+	})
+	win.button('Theme: Tokyo Night', fn (w &simplegui.SimpleWindow, _ string) {
+		w.set_theme('tokyo_night')
+		w.toast_info('Theme switched to Tokyo Night')
+		w.set_status('Active Theme: Tokyo Night')
+	})
+	win.button('Theme: Cyberpunk', fn (w &simplegui.SimpleWindow, _ string) {
+		w.set_theme('cyberpunk')
+		w.toast_info('Theme switched to Cyberpunk')
+		w.set_status('Active Theme: Cyberpunk')
+	})
+	win.button('Theme: macOS Sonoma', fn (w &simplegui.SimpleWindow, _ string) {
+		w.set_theme('macos_sonoma')
+		w.toast_info('Theme switched to macOS Sonoma')
+		w.set_status('Active Theme: macOS Sonoma')
+	})
 	win.row_end()
 
 	win.row_start()
