@@ -20,6 +20,7 @@ This project is directly based upon and unifies several foundational open-source
 | **bun_rad_studio**                   | [codecaine-zz/bun_rad_studio](https://github.com/codecaine-zz/bun_rad_studio)                                     | **Primary IDE & RAD Blueprint**: Ported from Bun/TypeScript to native V. Provided the Borland Delphi & Visual Basic visual form designer architecture, 70+ drag-and-drop components, anchor & docking layout engines, property grid, 10 application templates, non-visual component tray, and complete 42-theme design system.                                                                                                                  |
 | **simple_gg**                        | [codecaine-zz/simple_gg](https://github.com/codecaine-zz/simple_gg)                                               | **RAD Development System Tools**: Ported native system and runtime toolkits (`system/sys.v` & `system/stdlib.v`): process execution (`exec`, `exec_or`, `exec_bg`), real-time hardware telemetry (CPU cores/model/usage, RAM, battery, network ping), native dialogs (`osascript`, PowerShell, `zenity`), clipboard manipulation, cryptography (SHA256, HMAC), encoders, and math statistics.                                                   |
 | **vlang_simplegui**                  | [codecaine-zz/vlang_simplegui](https://github.com/codecaine-zz/vlang_simplegui)                                   | **Declarative High-Level GUI & Themes**: Provided the fluent declarative GUI builder syntax (`win.button()`, `win.input()`, `win.radio()`, `win.toggle()`), reactive two-way value synchronization, KPI dashboards, table components, and dynamic live theme switching across all 42 desktop form themes.                                                                                                                                       |
+| **vlang_utils**                      | [codecaine-zz/vlang_utils](https://github.com/codecaine-zz/vlang_utils)                                           | **Comprehensive Developer Utility Suite**: 30 modular packages providing in-memory caching (LRU/TTL), synthetic mock data, color space engine, semantic versioning, string casing, SQLite helpers, streaming compression, TAR/ZIP archives, concurrency, and validation.                                                                                                            |
 
 ### 🪟 Window Management Foundation: `vlang_macos_webview_app_template`
 
@@ -285,6 +286,7 @@ Choosing the right architectural model for cross-platform desktop development de
 | **22 - Context Menu & Menubar**       | <img src="resources/screenshots/demo_22_context_menu_and_menu_demo.png" width="300" alt="Context Menu & Menubar" />     | Custom desktop menubar dropdowns and right-click context menus.<br>`v run demos/22_context_menu_and_menu_demo.v`                  |
 | **23 - 42 All-Themes Showcase**       | <img src="resources/screenshots/demo_23_all_themes_all_controls_showcase.png" width="300" alt="42 Themes Showcase" />   | Interactive live switcher across all 42 built-in desktop themes.<br>`v run demos/23_all_themes_all_controls_showcase.v`           |
 | **24 - DevOps Sentinel Workstation**  | <img src="resources/screenshots/demo_24_devops_sentinel_guide.png" width="300" alt="DevOps Sentinel" />                 | Production workstation with CPU, RAM, disk, and protected network health.<br>`v run demos/24_devops_sentinel_guide.v`             |
+| **25 - Developer Utilities Suite**    | 🛠️ Synthetic data, LRU caching, color spaces, semver, and validation.                                                     | Showcase of the 30-module developer utility suite embedded in SimpleGUI.<br>`v run demos/25_developer_utilities_suite_demo.v`        |
 
 ---
 
@@ -432,7 +434,51 @@ v run demos/04_window_placement_and_pin.v
 
 # The ultimate 42-theme showcase
 v run demos/23_all_themes_all_controls_showcase.v
+
+# 30-Module Developer Utility Suite showcase
+v run demos/25_developer_utilities_suite_demo.v
 ```
+
+---
+
+## 🧰 30-Module Comprehensive Developer Utility Suite
+
+Integrated directly from [**vlang_utils**](https://github.com/codecaine-zz/vlang_utils), this repository contains 30 production-grade, zero-dependency utility modules ready for immediate import in any desktop application, CLI tool, or background service:
+
+| Module | Core Purpose & Capabilities |
+| --- | --- |
+| **`archiveutils`** | ZIP archive creation, extraction, in-memory archive generation, and entry inspection. |
+| **`asyncutils`** | Worker pools, concurrent task scheduling, parallel mapping, futures, and channel fan-out. |
+| **`bitutils`** | Bitfield manipulation, bitsets, endianness conversions, masks, and binary flags. |
+| **`cacheutils`** | In-memory LRU (Least Recently Used) and TTL (Time-to-Live) auto-evicting caches. |
+| **`cliutils`** | Terminal formatting, ANSI color palettes, spinners, progress bars, and CLI prompts. |
+| **`colorutils`** | Hex, RGB, HSL, HSV conversions, contrast ratio calculation, and palette generation. |
+| **`compressutils`**| Streaming compression & decompression using Zlib, Gzip, and Deflate. |
+| **`cryptoutils`** | Secure hashes (SHA-256, SHA-512, MD5), HMAC, PBKDF2, AES-GCM encryption, and token generators. |
+| **`envutils`** | `.env` file parsing, environment variable loading, default fallback values, and type casting. |
+| **`fileutils`** | Safe atomic file writes, path traversals, temp file lifecycle, directory walkers, and checksums. |
+| **`flowutils`** | Function debouncing, throttling, exponential backoff retries, and circuit breakers. |
+| **`htmlutils`** | HTML entity escaping, tag stripping, sanitization, and lightweight web scraping helpers. |
+| **`httputils`** | High-level HTTP client with custom headers, query param encoding, and resilient error handling. |
+| **`logutils`** | Multi-level structured logger (Trace, Debug, Info, Warn, Error) with file and console sinks. |
+| **`mockutils`** | Synthetic mock data generation (names, emails, phones, IPv4 addresses, and user profiles). |
+| **`netutils`** | IPv4/IPv6 validation, CIDR subnet calculations, port availability checking, and DNS queries. |
+| **`regexutils`** | Cached compiled regular expression matching, capturing groups, and string replacements. |
+| **`semverutils`** | SemVer 2.0.0 parsing, version comparisons, range checking (`^`, `~`, `>=`, `<=`), and sorting. |
+| **`sliceutils`** | Generic slice operations: chunk, deduplicate, filter, map, reduce, flatten, and shuffle. |
+| **`sqliteutils`** | SQLite connection helpers, query mapping, transaction handling, and schema migrations. |
+| **`stateutils`** | Reactive application state container with change listeners and event-driven updates. |
+| **`statutils`** | Descriptive statistics: mean, median, mode, standard deviation, variance, and percentiles. |
+| **`structutils`** | Struct cloning, field inspection, dictionary conversion, and property mapping. |
+| **`strutils`** | String casing (snake_case, camelCase, kebab-case, PascalCase), slugification, and padding. |
+| **`sysutils`** | Hardware telemetry, CPU load, RAM usage, process lifecycle, and cross-platform OS detection. |
+| **`tarutils`** | POSIX TAR archive creation, tar extraction, gzip-compressed tarballs, and header parsing. |
+| **`templateutils`**| Lightweight mustache-style template interpolation and string rendering. |
+| **`timeutils`** | Relative time formatting ("2 hours ago"), date parsing, ISO8601 formatting, and stopwatches. |
+| **`tomlutils`** | Lightweight TOML configuration parser and key-value serializer. |
+| **`validutils`** | Comprehensive validation rules: email, URL, UUID, credit card numbers, and regex patterns. |
+
+> 📘 **Detailed Documentation**: See [**UTILS_API.md**](UTILS_API.md) for the complete reference manual with signatures and code examples for all 30 utility packages.
 
 ---
 
@@ -464,6 +510,7 @@ Special recognition and credits to the upstream projects that made this architec
 - **[vlang_macos_webview_app_template](https://github.com/codecaine-zz/vlang_macos_webview_app_template)** by [@codecaine-zz](https://github.com/codecaine-zz) — Cross-platform Webview window management, presets, and Cocoa Cocoa/Win32/GTK bindings.
 - **[simple_gg](https://github.com/codecaine-zz/simple_gg)** by [@codecaine-zz](https://github.com/codecaine-zz) — Native V GUI runtime, hardware telemetry, process runners, and system API tools.
 - **[vlang_simplegui](https://github.com/codecaine-zz/vlang_simplegui)** by [@codecaine-zz](https://github.com/codecaine-zz) — Declarative GUI builder ergonomics, reactive states, and desktop form themes.
+- **[vlang_utils](https://github.com/codecaine-zz/vlang_utils)** by [@codecaine-zz](https://github.com/codecaine-zz) — 30-Module developer utility suite for caching, crypto, SQLite, network, compression, and synthetic data.
 
 ---
 
