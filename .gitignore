@@ -27,3 +27,7 @@ rad_studio
 
 # Ignore installed modules through `v install --local`:
 modules/
+
+# V compiler temporary files & caches
+.*.v3cc*
+*.tmp.c

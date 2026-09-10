@@ -3,8 +3,10 @@ module webview
 #flag linux -DWEBVIEW_GTK
 #flag darwin -DWEBVIEW_COCOA -framework WebKit -framework Cocoa -framework AppKit -stdlib=libc++ -lstdc++
 #flag windows -DWEBVIEW_EDGE -static -ladvapi32 -lole32 -lshell32 -lshlwapi -luser32 -lversion -lstdc++
-#flag @VMODROOT/webview/webview.o
-#flag @VMODROOT/webview/window_helper_linux.o
+#flag darwin @VMODROOT/webview/webview_darwin.o
+#flag darwin @VMODROOT/webview/window_helper_darwin.o
+#flag linux @VMODROOT/webview/webview_linux.o
+#flag linux @VMODROOT/webview/window_helper_linux.o
 #include "@VMODROOT/webview/webview.h"
 #include "@VMODROOT/webview/window_helper.h"
 
