@@ -51,7 +51,7 @@ button:hover { background: #334155; border-color: #38bdf8; transform: translateY
 </head>
 <body>
 <h2>🖼️ Native Window Placement & Pinning Manager</h2>
-<p>Click a placement button to leave fullscreen and move the application window across the screen:</p>
+<p>Click a placement button to position and move the application window across the screen:</p>
 
 <div class="grid">
 	<button onclick="setPos(\'upper_left\')">↖ Upper Left</button>
@@ -129,6 +129,6 @@ fn main() {
 	wv.set_size(820, 540, .@none)
 	wv.attach_window_management_bindings()
 	wv.set_html(html_content)
-	wv.set_fullscreen(true)
+	wv.set_fullscreen(false)
 	wv.run()
 }

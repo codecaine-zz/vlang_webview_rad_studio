@@ -34,7 +34,7 @@ void rad_window_toggle_fullscreen(void* window_handle) {
 
 void rad_window_set_fullscreen(void* window_handle, int fullscreen) {
     if (!window_handle) return;
-    dispatch_async(dispatch_get_main_queue(), ^{
+    void (^apply_fullscreen)(void) = ^{
         NSWindow* window = (NSWindow*)window_handle;
         BOOL is_fs = (([window styleMask] & NSWindowStyleMaskFullScreen) != 0);
         if ((fullscreen && !is_fs) || (!fullscreen && is_fs)) {
@@ -46,9 +46,20 @@ void rad_window_set_fullscreen(void* window_handle, int fullscreen) {
             if (!(cb & NSWindowCollectionBehaviorFullScreenPrimary)) {
                 [window setCollectionBehavior:(cb | NSWindowCollectionBehaviorFullScreenPrimary)];
             }
+            [window makeKeyAndOrderFront:nil];
             [window toggleFullScreen:nil];
         }
-    });
+    };
+
+    dispatch_async(dispatch_get_main_queue(), apply_fullscreen);
+
+    if (fullscreen) {
+        // macOS AppKit drops toggleFullScreen: if invoked before the window is visible
+        // and attached to the display server. Retrying with a short delay ensures
+        // the transition reliably occurs when the application finishes launching.
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(150 * NSEC_PER_MSEC)), dispatch_get_main_queue(), apply_fullscreen);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(350 * NSEC_PER_MSEC)), dispatch_get_main_queue(), apply_fullscreen);
+    }
 }
 
 void rad_window_minimize(void* window_handle) {
