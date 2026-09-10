@@ -2010,23 +2010,181 @@ pub fn (win &SimpleWindow) modal_alert(title string, message string) &SimpleWind
 }
 
 pub fn (win &SimpleWindow) clear_form() &SimpleWindow {
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		for k in mut_win.values.keys() {
+			mut_win.values[k] = ''
+		}
+	}
 	if !isnil(win.wv) {
 		win.wv.eval('
 			(function() {
 				document.querySelectorAll("input:not([type=button]):not([type=submit]), textarea").forEach(el => {
 					if (el.type === "checkbox" || el.type === "radio") {
 						el.checked = false;
+						el.dispatchEvent(new Event("change", { bubbles: true }));
 					} else if (el.type === "range") {
 						el.value = el.min || "0";
+						el.dispatchEvent(new Event("input", { bubbles: true }));
 					} else {
 						el.value = "";
+						el.dispatchEvent(new Event("input", { bubbles: true }));
 					}
-					el.dispatchEvent(new Event("input", { bubbles: true }));
 				});
 				document.querySelectorAll("select").forEach(el => {
 					el.selectedIndex = 0;
 					el.dispatchEvent(new Event("change", { bubbles: true }));
 				});
+			})();
+		')
+	}
+	return win
+}
+
+pub fn (win &SimpleWindow) simulate_form_submit(success_title string) &SimpleWindow {
+	if !isnil(win.wv) {
+		esc_title := system.json_escape(success_title)
+		win.wv.eval('
+			(function() {
+				const fieldSummaries = [];
+				let hasNonEmpty = false;
+
+				const textInputs = document.querySelectorAll("input[type=text], input[type=search], input[type=password], input:not([type])");
+				textInputs.forEach(input => {
+					const label = input.placeholder || input.name || input.id || "Field";
+					const val = input.value.trim();
+					if (input.type === "password") {
+						if (val.length > 0) {
+							hasNonEmpty = true;
+							fieldSummaries.push("• " + label + ": •••••••• (" + val.length + " chars)");
+						} else {
+							fieldSummaries.push("• " + label + ": (blank)");
+						}
+					} else {
+						if (val.length > 0) {
+							hasNonEmpty = true;
+							fieldSummaries.push("• " + label + ": " + val);
+						} else {
+							fieldSummaries.push("• " + label + ": (blank)");
+						}
+					}
+				});
+
+				const selects = document.querySelectorAll("select");
+				selects.forEach(sel => {
+					const val = sel.value;
+					if (val) {
+						fieldSummaries.push("• Account Tier / Option: " + val);
+					}
+				});
+
+				const textareas = document.querySelectorAll("textarea");
+				textareas.forEach(ta => {
+					const label = ta.placeholder || "Developer Bio";
+					const val = ta.value.trim();
+					if (val.length > 0) {
+						hasNonEmpty = true;
+						fieldSummaries.push("• " + label + ": " + (val.length > 40 ? val.substring(0, 37) + "..." : val));
+					} else {
+						fieldSummaries.push("• " + label + ": (blank)");
+					}
+				});
+
+				const checkboxes = document.querySelectorAll("input[type=checkbox]");
+				checkboxes.forEach(cb => {
+					let label = "Preference";
+					const parentLabel = cb.closest("label");
+					if (parentLabel) {
+						const span = parentLabel.querySelector("span:not(.sg-toggle-slider)");
+						if (span) label = span.textContent.trim();
+					}
+					if (cb.checked) {
+						hasNonEmpty = true;
+						fieldSummaries.push("• " + label + ": Yes (Enabled)");
+					} else {
+						fieldSummaries.push("• " + label + ": No (Disabled / Unchecked)");
+					}
+				});
+
+				const sliders = document.querySelectorAll("input[type=range]");
+				sliders.forEach(sl => {
+					fieldSummaries.push("• Experience Level: " + sl.value + " Years");
+				});
+
+				const modalTitle = hasNonEmpty ? ${esc_title} : "⚠️ Form Submitted (Blank / Cleared State)";
+				const summaryBody = hasNonEmpty
+					? "Simulated Record processed from current GUI inputs:\\n\\n" + fieldSummaries.join("\\n") + "\\n\\nStatus: ✅ Active record stored in memory."
+					: "The form was submitted with text fields blank/cleared:\\n\\n" + fieldSummaries.join("\\n") + "\\n\\nStatus: ⚠️ Blank form state processed.";
+
+				// Display in-window modal
+				const old = document.getElementById("sgModalAlert");
+				if (old) old.remove();
+				const overlay = document.createElement("div");
+				overlay.id = "sgModalAlert";
+				overlay.style.position = "fixed";
+				overlay.style.inset = "0";
+				overlay.style.backgroundColor = "rgba(0,0,0,0.65)";
+				overlay.style.display = "flex";
+				overlay.style.alignItems = "center";
+				overlay.style.justifyContent = "center";
+				overlay.style.zIndex = "99999999";
+				overlay.style.backdropFilter = "blur(4px)";
+
+				const box = document.createElement("div");
+				box.style.background = "var(--bg-card, #1e293b)";
+				box.style.border = hasNonEmpty ? "1px solid var(--accent, #38bdf8)" : "1px solid #f59e0b";
+				box.style.borderRadius = "12px";
+				box.style.padding = "24px 28px";
+				box.style.maxWidth = "480px";
+				box.style.width = "90%";
+				box.style.boxShadow = "0 16px 48px rgba(0,0,0,0.7)";
+				box.style.color = "var(--text-main, #f8fafc)";
+				box.style.fontFamily = "system-ui,-apple-system,sans-serif";
+
+				const h = document.createElement("h3");
+				h.style.marginTop = "0";
+				h.style.marginBottom = "12px";
+				h.style.fontSize = "17px";
+				h.style.color = hasNonEmpty ? "var(--accent, #38bdf8)" : "#f59e0b";
+				h.textContent = modalTitle;
+				box.appendChild(h);
+
+				const p = document.createElement("div");
+				p.style.fontSize = "13px";
+				p.style.lineHeight = "1.6";
+				p.style.opacity = "0.92";
+				p.style.marginBottom = "20px";
+				p.style.whiteSpace = "pre-wrap";
+				p.textContent = summaryBody;
+				box.appendChild(p);
+
+				const btnRow = document.createElement("div");
+				btnRow.style.display = "flex";
+				btnRow.style.justifyContent = "flex-end";
+
+				const okBtn = document.createElement("button");
+				okBtn.textContent = "OK";
+				okBtn.style.padding = "8px 22px";
+				okBtn.style.background = hasNonEmpty ? "var(--accent, #38bdf8)" : "#f59e0b";
+				okBtn.style.color = "#000";
+				okBtn.style.fontWeight = "700";
+				okBtn.style.border = "none";
+				okBtn.style.borderRadius = "6px";
+				okBtn.style.cursor = "pointer";
+				okBtn.style.fontSize = "13px";
+				okBtn.onclick = function() { overlay.remove(); };
+				btnRow.appendChild(okBtn);
+				box.appendChild(btnRow);
+
+				overlay.appendChild(box);
+				document.body.appendChild(overlay);
+				okBtn.focus();
+
+				// Status & Toast
+				const sb = document.querySelector(".sg-statusbar");
+				if (sb) {
+					sb.textContent = hasNonEmpty ? "✅ Form submitted from current GUI inputs" : "⚠️ Form submitted in blank state";
+				}
 			})();
 		')
 	}

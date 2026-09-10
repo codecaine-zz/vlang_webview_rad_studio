@@ -67,20 +67,12 @@ fn main() {
 	win.row_start()
 	win.button('🚀 Submit Profile', fn (w &simplegui.SimpleWindow, _ string) {
 		println('Form submitted!')
-		w.modal_alert('🎉 Profile Submitted Successfully!',
-			'Simulated Registration Record Created:\n\n' +
-			'• Name: Alex Mercer\n' +
-			'• Email: alex@example.com\n' +
-			'• Tier: Pro ($19/mo)\n' +
-			'• Status: Active & Verified\n\n' +
-			'All form values were processed by the RAD Studio V backend.')
-		w.toast_success('Profile submitted and saved to database!')
-		w.set_status('✅ Form submitted successfully — Profile saved.')
+		w.simulate_form_submit('🎉 Profile Submitted Successfully!')
 	})
 	win.button('↺ Clear Form', fn (w &simplegui.SimpleWindow, _ string) {
 		println('Form cleared!')
 		w.clear_form()
-		w.toast_warning('↺ Form inputs cleared and reset to empty state.')
+		w.toast_warning('↺ Form inputs cleared and reset to blank state.')
 		w.set_status('↺ All form fields have been cleared.')
 	})
 	win.row_end()
