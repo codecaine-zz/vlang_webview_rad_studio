@@ -31,3 +31,8 @@ modules/
 # V compiler temporary files & caches
 .*.v3cc*
 *.tmp.c
+
+# Demo output directories
+.*_demo/
+demos/run_all_demos
+
