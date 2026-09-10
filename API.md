@@ -8,6 +8,8 @@ Welcome to the comprehensive API manual for **V Webview RAD Studio**. This guide
 
 1. [Architectural Philosophy: How Desktop Apps Are Built](#1-architectural-philosophy-how-desktop-apps-are-built)
 2. [Quickstart: Your First Application in 60 Seconds](#2-quickstart-your-first-application-in-60-seconds)
+   - [Installing Webview (`v install ttytm.webview`)](#installing-webview-v-install-ttytmwebview)
+   - [Creating Your First SimpleGUI Window](#creating-your-first-simplegui-window)
 3. [SimpleGUI: Declarative Window & UI Controls](#3-simplegui-declarative-window--ui-controls)
    - [Window Setup & Configuration](#window-setup--configuration)
    - [Containers & Layouts (Boxes, Rows, Cards, Columns)](#containers--layouts)
@@ -113,6 +115,44 @@ Traditional GUI development is often fragmented:
 ---
 
 ## 2. Quickstart: Your First Application in 60 Seconds
+
+### Installing Webview (`v install ttytm.webview`)
+
+If you do not already have the V `webview` module installed on your machine, install it globally using V's package manager:
+
+```bash
+# 1. Install official V webview module globally via vpm
+v install ttytm.webview
+
+# Or install directly from GitHub if preferred:
+v install --git https://github.com/vlang/webview
+
+# Or install all dependencies defined in v.mod:
+v install
+
+# 2. Verify installation
+v list
+```
+
+#### OS System Dependencies
+Webview links to your operating system's native rendering engine:
+- **macOS**: Built-in Apple WebKit (requires Xcode Command Line Tools: `xcode-select --install`).
+- **Linux (Ubuntu / Debian)**:
+  ```bash
+  sudo apt-get update && sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+  # For Ubuntu 24.04+ / Debian 13+:
+  # sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev
+  ```
+- **Linux (Fedora / RHEL)**: `sudo dnf install -y gtk3-devel webkit2gtk4.0-devel`
+- **Linux (Arch Linux)**: `sudo pacman -S gtk3 webkit2gtk`
+- **Windows**: Microsoft Edge WebView2 (pre-installed on Windows 10 & 11).
+
+> 💡 **Self-Contained in this Repository**:
+> The `vlang_webview_rad_studio` repository already vendors a complete, hardware-accelerated Webview backend with Cocoa Objective-C window management (`window_helper.m`) in `webview/`, allowing you to run all applications and demos out-of-the-box without manual setup!
+
+---
+
+### Creating Your First SimpleGUI Window
 
 Create a file named `hello_world.v`:
 

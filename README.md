@@ -62,6 +62,48 @@ fn main() {
 
 ---
 
+## 📦 Installation & Webview Setup (`v install ttytm.webview`)
+
+If you don't already have the V `webview` module installed on your machine, you can install it in seconds using V's built-in package manager:
+
+```bash
+# 1. Install official V webview module globally via vpm
+v install ttytm.webview
+
+# Or install directly from GitHub if preferred:
+v install --git https://github.com/vlang/webview
+
+# Or install all dependencies defined in v.mod:
+v install
+
+# 2. Verify installation
+v list
+```
+
+### System Prerequisites
+Webview connects directly to your operating system's native browser engine:
+- **macOS**: Built-in Apple WebKit (requires Xcode Command Line Tools: `xcode-select --install`).
+- **Linux (Ubuntu / Debian)**:
+  ```bash
+  sudo apt-get update && sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+  # For Ubuntu 24.04+ / Debian 13+:
+  # sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev
+  ```
+- **Linux (Fedora / RHEL)**:
+  ```bash
+  sudo dnf install -y gtk3-devel webkit2gtk4.0-devel
+  ```
+- **Linux (Arch Linux)**:
+  ```bash
+  sudo pacman -S gtk3 webkit2gtk
+  ```
+- **Windows**: Microsoft Edge WebView2 (included with Windows 10 & 11, or install Evergreen WebView2 Runtime).
+
+> 💡 **Self-Contained in this Repository**:
+> Note that this repository already vendors a complete, hardware-accelerated Webview backend with Cocoa Objective-C window management (`window_helper.m`) in `webview/`, so you can clone and run all applications and demos immediately without manual setup.
+
+---
+
 ## ⚖️ Architectural Comparison: Developer Pros by Project Type
 
 Choosing the right architectural model for cross-platform desktop development depends on your team's performance, memory, distribution, and iteration requirements. Here is a breakdown of the developer advantages across each architectural paradigm:
