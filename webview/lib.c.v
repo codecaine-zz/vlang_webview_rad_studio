@@ -1,21 +1,22 @@
 module webview
 
-#flag linux -DWEBVIEW_GTK -lstdc++
+#flag linux -DWEBVIEW_GTK
 #flag darwin -DWEBVIEW_COCOA -framework WebKit -framework Cocoa -framework AppKit -stdlib=libc++ -lstdc++
 #flag windows -DWEBVIEW_EDGE -static -ladvapi32 -lole32 -lshell32 -lshlwapi -luser32 -lversion -lstdc++
-
 #flag @VMODROOT/webview/webview.o
-#flag @VMODROOT/webview/window_helper.o
+#flag @VMODROOT/webview/window_helper_linux.o
 #include "@VMODROOT/webview/webview.h"
 #include "@VMODROOT/webview/window_helper.h"
 
 $if linux {
 	#pkgconfig gtk+-3.0
+	#pkgconfig fontconfig
 	$if $pkgconfig('webkit2gtk-4.1') {
 		#pkgconfig webkit2gtk-4.1
 	} $else {
 		#pkgconfig webkit2gtk-4.0
 	}
+	#flag linux -lstdc++
 }
 
 @[typedef]

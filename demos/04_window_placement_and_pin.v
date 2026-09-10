@@ -51,7 +51,7 @@ button:hover { background: #334155; border-color: #38bdf8; transform: translateY
 </head>
 <body>
 <h2>🖼️ Native Window Placement & Pinning Manager</h2>
-<p>Click any placement button below to instantly move the application window across the screen:</p>
+<p>Click a placement button to leave fullscreen and move the application window across the screen:</p>
 
 <div class="grid">
 	<button onclick="setPos(\'upper_left\')">↖ Upper Left</button>
@@ -69,8 +69,8 @@ button:hover { background: #334155; border-color: #38bdf8; transform: translateY
 
 <div class="actions">
 	<button class="btn-pin" onclick="togglePin()">📌 Toggle Stay On Top</button>
-	<button class="btn-fs" onclick="toggleFs()">⛶ Fullscreen (Cmd+F)</button>
-	<button class="btn-quit" onclick="handleQuit()">❌ Quit App (Cmd+Q)</button>
+	<button class="btn-fs" onclick="toggleFs()">⛶ Fullscreen (Ctrl+F / F11)</button>
+	<button class="btn-quit" onclick="handleQuit()">❌ Quit App (Ctrl+Q)</button>
 </div>
 
 <div class="log-box" id="logBox">Window initialized. Current position: Center Screen.</div>
@@ -119,11 +119,16 @@ fn main() {
 		os.write_file(export_path, html_content) or {}
 		return
 	}
+	$if linux {
+		if os.getenv('GDK_BACKEND') == '' {
+			os.setenv('GDK_BACKEND', 'x11', true)
+		}
+	}
 	mut wv := webview.create(debug: true)
 	wv.set_title('Demo 4 - Native Window Placement & Pin API')
 	wv.set_size(820, 540, .@none)
 	wv.attach_window_management_bindings()
 	wv.set_html(html_content)
-	wv.set_fullscreen(false)
+	wv.set_fullscreen(true)
 	wv.run()
 }

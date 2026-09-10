@@ -187,25 +187,19 @@ pub fn get_screen_size() (int, int) {
 pub fn (mut w Webview) attach_window_management_bindings() {
 	C.rad_window_init_shortcuts()
 
-	w.bind('quitApp', fn [w] (e &Event) string {
+	w.bind('quitApp', fn (e &Event) string {
 		C.rad_window_quit()
-		w.terminate()
-		exit(0)
-		return ''
+		return 'ok'
 	})
 
-	w.bind('closeWindow', fn [w] (e &Event) string {
+	w.bind('closeWindow', fn (e &Event) string {
 		C.rad_window_quit()
-		w.terminate()
-		exit(0)
-		return ''
+		return 'ok'
 	})
 
-	w.bind('exitApp', fn [w] (e &Event) string {
+	w.bind('exitApp', fn (e &Event) string {
 		C.rad_window_quit()
-		w.terminate()
-		exit(0)
-		return ''
+		return 'ok'
 	})
 
 	w.bind('minimizeWindow', fn [w] (e &Event) string {

@@ -1050,6 +1050,113 @@ pub fn (win &SimpleWindow) set_value(id string, val string) {
 	}
 }
 
+fn table_rows_json(rows [][]string) string {
+	mut encoded_rows := []string{}
+	for row in rows {
+		mut encoded_cells := []string{}
+		for cell in row {
+			encoded_cells << system.json_escape(cell)
+		}
+		encoded_rows << '[' + encoded_cells.join(',') + ']'
+	}
+	return '[' + encoded_rows.join(',') + ']'
+}
+
+pub fn (win &SimpleWindow) set_table_rows(name string, rows [][]string) &SimpleWindow {
+	mut click_id := ''
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		if idx := mut_win.name_to_ctrl[name] {
+			if mut_win.controls[idx].typ != .table {
+				return win
+			}
+			mut_win.controls[idx].rows = rows.clone()
+			click_id = mut_win.controls[idx].click_id
+		} else {
+			return win
+		}
+	}
+	if !isnil(win.wv) {
+		table_id := system.json_escape(name)
+		click_handler_id := system.json_escape(click_id)
+		rows_data := table_rows_json(rows)
+		win.wv.eval('(function() {
+			const table = document.getElementById(${table_id});
+			if (!table) return;
+			const body = table.querySelector("tbody");
+			if (!body) return;
+			const rows = ${rows_data};
+			body.replaceChildren();
+			rows.forEach((row, rowIndex) => {
+				const tr = document.createElement("tr");
+				tr.dataset.sgRowIndex = String(rowIndex);
+				tr.addEventListener("click", () => window.vlangTriggerClick(${click_handler_id}, String(rowIndex)));
+				row.forEach((cell) => {
+					const td = document.createElement("td");
+					td.textContent = cell;
+					tr.appendChild(td);
+				});
+				body.appendChild(tr);
+			});
+		})();')
+	}
+	return win
+}
+
+pub fn (win &SimpleWindow) add_table_row(name string, row []string) &SimpleWindow {
+	mut rows := [][]string{}
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		if idx := mut_win.name_to_ctrl[name] {
+			if mut_win.controls[idx].typ != .table {
+				return win
+			}
+			rows = mut_win.controls[idx].rows.clone()
+		} else {
+			return win
+		}
+	}
+	rows << row.clone()
+	return win.set_table_rows(name, rows)
+}
+
+pub fn (win &SimpleWindow) remove_table_row(name string, row_index int) &SimpleWindow {
+	mut rows := [][]string{}
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		if idx := mut_win.name_to_ctrl[name] {
+			if mut_win.controls[idx].typ != .table {
+				return win
+			}
+			rows = mut_win.controls[idx].rows.clone()
+		} else {
+			return win
+		}
+	}
+	if row_index < 0 || row_index >= rows.len {
+		return win
+	}
+	rows.delete(row_index)
+	return win.set_table_rows(name, rows)
+}
+
+pub fn (win &SimpleWindow) table_row_count(name string) int {
+	if idx := win.name_to_ctrl[name] {
+		if win.controls[idx].typ == .table {
+			return win.controls[idx].rows.len
+		}
+	}
+	return 0
+}
+
+pub fn (win &SimpleWindow) select_table_row(name string, row_index int) &SimpleWindow {
+	if !isnil(win.wv) {
+		table_id := system.json_escape(name)
+		win.wv.eval('const table = document.getElementById(${table_id}); if (table) { table.querySelectorAll("tbody tr").forEach((row, index) => row.classList.toggle("sg-table-selected", index === ${row_index})); }')
+	}
+	return win
+}
+
 pub fn (win &SimpleWindow) get_text(name string) string {
 	return win.get_value(name)
 }
@@ -1139,6 +1246,7 @@ pub fn (win &SimpleWindow) set_theme(theme_name string) &SimpleWindow {
 				r.style.setProperty("--bg-card", "${theme.card_background}");
 				r.style.setProperty("--border-card", "${theme.card_border}");
 				r.style.setProperty("--btn-text", "${btn_txt}");
+				r.style.setProperty("--color-scheme", "${if theme.is_dark { 'dark' } else { 'light' }}");
 				document.body.style.backgroundColor = "${theme.background_color}";
 				document.body.style.color = "${theme.font_color}";
 			})();
@@ -1995,6 +2103,7 @@ pub fn (win &SimpleWindow) generate_html() string {
 	--bg-card: ${theme.card_background};
 	--border-card: ${theme.card_border};
 	--btn-text: ${hex_to_contrast_color(theme.accent_color)};
+	--color-scheme: ${if theme.is_dark { 'dark' } else { 'light' }};
 }
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 body {
@@ -2039,6 +2148,7 @@ body {
 	background-color: var(--bg-card);
 	border: 1px solid var(--border-card);
 	color: var(--text-main);
+	color-scheme: var(--color-scheme);
 	padding: 10px 14px;
 	border-radius: 6px;
 	font-size: 14px;
@@ -2046,6 +2156,8 @@ body {
 	transition: border-color 0.15s ease, background-color 0.25s ease;
 	width: 100%;
 }
+.sg-input::placeholder, .sg-textarea::placeholder { color: var(--text-main); opacity: 0.58; }
+.sg-select option { background-color: var(--bg-card); color: var(--text-main); }
 .sg-row > .sg-select {
 	flex: 1 1 220px;
 	min-width: 180px;
@@ -2186,6 +2298,7 @@ body {
 .sg-table th { background: rgba(128,128,128,0.12); padding: 10px 14px; font-weight: 600; border-bottom: 1px solid var(--border-card); color: var(--text-main); }
 .sg-table td { padding: 9px 14px; border-bottom: 1px solid var(--border-card); color: var(--text-main); }
 .sg-table tr:hover td { background-color: rgba(128,128,128,0.12); cursor: pointer; }
+.sg-table tr.sg-table-selected td { background-color: var(--accent); color: var(--btn-text); }
 .sg-progress-bar { width: 100%; height: 8px; background-color: var(--border-card); border-radius: 4px; overflow: hidden; }
 .sg-progress-fill { height: 100%; background-color: var(--accent); transition: width 0.3s ease; }
 .sg-kpi-card {
@@ -2375,6 +2488,7 @@ window.applyTheme = function(themeName) {
 		r.style.setProperty("--bg-card", t.card_background);
 		r.style.setProperty("--border-card", t.card_border);
 		r.style.setProperty("--btn-text", t.btn_text || "#ffffff");
+		r.style.setProperty("--color-scheme", t.is_dark ? "dark" : "light");
 		document.body.style.backgroundColor = t.background_color;
 		document.body.style.color = t.font_color;
 	}

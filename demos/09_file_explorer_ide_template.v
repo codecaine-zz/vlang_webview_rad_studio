@@ -42,6 +42,7 @@ fn main() {
 	win.box_start('Editor Code Buffer')
 	sample_code := 'module main\n\nimport webview\n\nfn main() {\n\tmut w := webview.create(debug: true)\n\tw.set_title(\'Hello from Vlang Webview!\')\n\tw.set_size(800, 600, .@none)\n\tw.set_html(\'<h1>Fast, Simple, Native</h1>\')\n\tw.run()\n}'
 	win.textarea('Source Code Buffer', sample_code, fn (w &simplegui.SimpleWindow, _ string) {})
+	win.height(520)
 	win.box_end()
 
 	win.status_bar('Workspace: /Users/codecaine/vlang_webview_rad_studio | UTF-8 | LF | Vlang')

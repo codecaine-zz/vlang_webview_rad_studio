@@ -56,35 +56,38 @@ Welcome to the comprehensive API manual for **V Webview RAD Studio**. This guide
 8. [End-to-End Tutorial: Building a Production DevOps Workstation](#8-end-to-end-tutorial-building-a-production-devops-workstation)
 9. [Packaging & Distribution Guide (`build.vsh`)](#9-packaging--distribution-guide-buildvsh)
 10. [Companion CLI Suite & Automation API (16 Complete Tools)](#10-companion-cli-suite--automation-api-16-complete-tools)
-   - [CLI Architecture & Performance Advantages](#cli-architecture--performance-advantages)
-   - [CLI Suite Quick Reference](#cli-suite-quick-reference)
-   - [System & Hardware Workstation (`system_cli`)](#system--hardware-workstation-system_cli)
-   - [Cryptographic Hashing & Encoders (`crypto_cli`)](#cryptographic-hashing--encoders-crypto_cli)
-   - [JSON Inspector, Validator & Formatter (`json_cli`)](#json-inspector-validator--formatter-json_cli)
-   - [Developer Omnitool & Math Statistics (`devtools_cli`)](#developer-omnitool--math-statistics-devtools_cli)
-   - [Process & Task Manager (`process_cli`)](#process--task-manager-process_cli)
-   - [SQLite Database Console (`database_cli`)](#sqlite-database-console-database_cli)
-   - [HTTP & REST API Client (`api_cli`)](#http--rest-api-client-api_cli)
-   - [Data Format Converter (`dataconvert_cli`)](#data-format-converter-dataconvert_cli)
-   - [File System Watcher & Trigger (`watcher_cli`)](#file-system-watcher--trigger-watcher_cli)
-   - [Regular Expression Tester (`regex_cli`)](#regular-expression-tester-regex_cli)
-   - [Desktop App Packager & Bundler (`app_bundler_cli`)](#desktop-app-packager--bundler-app_bundler_cli)
-   - [Network Diagnostics & Ping Telemetry (`network_cli`)](#network-diagnostics--ping-telemetry-network_cli)
-   - [Visual Git Workstation (`git_cli`)](#visual-git-workstation-git_cli)
-   - [Markdown to HTML Compiler (`markdown_cli`)](#markdown-to-html-compiler-markdown_cli)
-   - [Color & WCAG Contrast Inspector (`color_cli`)](#color--wcag-contrast-inspector-color_cli)
-   - [Environment Variables Manager (`env_cli`)](#environment-variables-manager-env_cli)
-   - [Writing Custom CLI Tools with `flag.FlagParser`](#writing-custom-cli-tools-with-flagflagparser)
+
+- [CLI Architecture & Performance Advantages](#cli-architecture--performance-advantages)
+- [CLI Suite Quick Reference](#cli-suite-quick-reference)
+- [System & Hardware Workstation (`system_cli`)](#system--hardware-workstation-system_cli)
+- [Cryptographic Hashing & Encoders (`crypto_cli`)](#cryptographic-hashing--encoders-crypto_cli)
+- [JSON Inspector, Validator & Formatter (`json_cli`)](#json-inspector-validator--formatter-json_cli)
+- [Developer Omnitool & Math Statistics (`devtools_cli`)](#developer-omnitool--math-statistics-devtools_cli)
+- [Process & Task Manager (`process_cli`)](#process--task-manager-process_cli)
+- [SQLite Database Console (`database_cli`)](#sqlite-database-console-database_cli)
+- [HTTP & REST API Client (`api_cli`)](#http--rest-api-client-api_cli)
+- [Data Format Converter (`dataconvert_cli`)](#data-format-converter-dataconvert_cli)
+- [File System Watcher & Trigger (`watcher_cli`)](#file-system-watcher--trigger-watcher_cli)
+- [Regular Expression Tester (`regex_cli`)](#regular-expression-tester-regex_cli)
+- [Desktop App Packager & Bundler (`app_bundler_cli`)](#desktop-app-packager--bundler-app_bundler_cli)
+- [Network Diagnostics & Ping Telemetry (`network_cli`)](#network-diagnostics--ping-telemetry-network_cli)
+- [Visual Git Workstation (`git_cli`)](#visual-git-workstation-git_cli)
+- [Markdown to HTML Compiler (`markdown_cli`)](#markdown-to-html-compiler-markdown_cli)
+- [Color & WCAG Contrast Inspector (`color_cli`)](#color--wcag-contrast-inspector-color_cli)
+- [Environment Variables Manager (`env_cli`)](#environment-variables-manager-env_cli)
+- [Writing Custom CLI Tools with `flag.FlagParser`](#writing-custom-cli-tools-with-flagflagparser)
 
 ---
 
 ## 1. Architectural Philosophy: How Desktop Apps Are Built
 
 Traditional GUI development is often fragmented:
+
 - Web technologies (Electron, Chromium) are bloated and consume hundreds of megabytes of RAM.
 - Low-level native APIs (Cocoa, Win32, GTK) are complex, verbose, and difficult to cross-compile.
 
 **V Webview RAD Studio** bridges this gap:
+
 1. **Lightweight Native Core**: Written in **V (vlang)**, producing tiny standalone native binaries (~2.8 MB) with zero runtime dependencies.
 2. **OS Webview Engine**: Uses the operating system's built-in browser engine (WebKit on macOS/Linux, WebView2 on Windows) via direct C/Objective-C/C++ bindings.
 3. **Declarative SimpleGUI**: A fluent builder API where UI controls, layout rows, event handlers, and themes are declared in simple, readable code.
@@ -135,18 +138,55 @@ v list
 ```
 
 #### OS System Dependencies
+
 Webview links to your operating system's native rendering engine:
+
 - **macOS**: Built-in Apple WebKit (requires Xcode Command Line Tools: `xcode-select --install`).
-- **Linux (Ubuntu / Debian)**:
+- **Linux (Ubuntu / Debian)**: This project was **tested and verified on Ubuntu 24.04 LTS** using the native system packages below.
+
   ```bash
-  sudo apt-get update && sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev
-  # For Ubuntu 24.04+ / Debian 13+:
-  # sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev
+  sudo apt-get update
+  sudo apt-get install -y build-essential pkg-config libgtk-3-dev libwebkit2gtk-4.1-dev libfontconfig1-dev
   ```
+
+  On Ubuntu 22.04 or a distribution that ships WebKitGTK 4.0, install `libwebkit2gtk-4.0-dev` instead of `libwebkit2gtk-4.1-dev`.
+
+  **Homebrew Linux compatibility:** use the Ubuntu GTK/WebKit packages for this project, not Homebrew `webkitgtk`. A global Homebrew `PKG_CONFIG_PATH`, `LD_LIBRARY_PATH`, or Homebrew linker can mix incompatible GLib libraries with the Ubuntu WebKit stack and fail with an error such as `undefined reference to g_variant_builder_init_static`.
+
+  Use this isolated command for builds and runs:
+
+  ```bash
+  V_BIN="$(command -v v)"
+  env -u PKG_CONFIG_PATH -u PKG_CONFIG_LIBDIR -u PKG_CONFIG_SYSROOT_DIR -u LD_LIBRARY_PATH \
+  	PATH="$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+  	"$V_BIN" run demos/01_standard_controls.v
+  ```
+
+  An optional helper keeps Homebrew available for other repositories while isolating this project's command:
+
+  ```bash
+  v_webview() {
+  	env -u PKG_CONFIG_PATH -u PKG_CONFIG_LIBDIR -u PKG_CONFIG_SYSROOT_DIR -u LD_LIBRARY_PATH \
+  		PATH="$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+  		"$(command -v v)" "$@"
+  }
+  v_webview run demos/01_standard_controls.v
+  ```
+
+  Confirm that `pkg-config` resolves Ubuntu's WebKitGTK package before reporting a source issue:
+
+  ```bash
+  env -u PKG_CONFIG_PATH -u PKG_CONFIG_LIBDIR -u PKG_CONFIG_SYSROOT_DIR \
+  	pkg-config --variable=prefix webkit2gtk-4.1
+  # Expected on Ubuntu 24.04: /usr
+  ```
+
 - **Linux (Fedora / RHEL)**: `sudo dnf install -y gtk3-devel webkit2gtk4.0-devel`
 - **Linux (Arch Linux)**: `sudo pacman -S gtk3 webkit2gtk`
 - **Windows**: Microsoft Edge WebView2 (pre-installed on Windows 10 & 11).
 
+> ✅ **Verified Ubuntu build**: All 24 demos and all 16 desktop applications compile against the Ubuntu 24.04 system GTK3/WebKitGTK 4.1 packages. Demo 01 was launched and visually checked through the WebView event loop. Regenerate the Linux screenshot suite with `bash scratch/capture_linux_screenshots.sh` after installing `gnome-screenshot`.
+>
 > 💡 **Self-Contained in this Repository**:
 > The `vlang_webview_rad_studio` repository already vendors a complete, hardware-accelerated Webview backend with Cocoa Objective-C window management (`window_helper.m`) in `webview/`, allowing you to run all applications and demos out-of-the-box without manual setup!
 
@@ -192,6 +232,7 @@ fn main() {
 ```
 
 Run it directly from your terminal:
+
 ```bash
 v run hello_world.v
 ```
@@ -219,7 +260,9 @@ mut win := simplegui.new_window(
 ### Containers & Layouts
 
 #### Box (Card / Section Container)
+
 Groups controls inside an outlined card with a bold header:
+
 ```v
 win.box_start('Server Settings')
 win.label('Configure your cloud deployment target.')
@@ -228,7 +271,9 @@ win.box_end()
 ```
 
 #### Row (Horizontal Flex Container)
+
 Lays out multiple buttons, inputs, or badges side-by-side:
+
 ```v
 win.row_start()
 win.button('Save', fn (w &simplegui.SimpleWindow, _ string) { /* ... */ })
@@ -238,7 +283,9 @@ win.row_end()
 ```
 
 #### Card (KPI & Metric Card)
+
 Creates a highlighted statistic container:
+
 ```v
 win.card_start('CPU Load', '38.4%', 'green')
 win.label('8 Cores Active')
@@ -246,7 +293,9 @@ win.card_end()
 ```
 
 #### Columns (Multi-Column Layout)
+
 Splits content into balanced vertical columns:
+
 ```v
 win.columns_start(2) // 2 equal columns
 
@@ -268,13 +317,17 @@ win.columns_end()
 ### Standard Controls
 
 #### Label
+
 Displays static or formatted text:
+
 ```v
 win.label('This is a primary text label.')
 ```
 
 #### Button
+
 A clickable action trigger:
+
 ```v
 win.button('Submit Form', fn (w &simplegui.SimpleWindow, _ string) {
 	w.notification('Submitted', 'Your data was saved.')
@@ -282,7 +335,9 @@ win.button('Submit Form', fn (w &simplegui.SimpleWindow, _ string) {
 ```
 
 #### Text Input
+
 Single-line text input field with placeholder and `on_change` callback:
+
 ```v
 win.input('Username', 'Enter your handle...', fn (w &simplegui.SimpleWindow, val string) {
 	println('Current username: ${val}')
@@ -290,7 +345,9 @@ win.input('Username', 'Enter your handle...', fn (w &simplegui.SimpleWindow, val
 ```
 
 #### Textarea
+
 Multi-line text editor:
+
 ```v
 win.textarea('Log Output', 'System initialized.\nReady for commands.', fn (w &simplegui.SimpleWindow, val string) {
 	println('Log updated')
@@ -298,7 +355,9 @@ win.textarea('Log Output', 'System initialized.\nReady for commands.', fn (w &si
 ```
 
 #### Link
+
 Clickable hyper-link opening a URL or triggering a callback:
+
 ```v
 win.link('Visit GitHub Project', 'https://github.com/codecaine-zz/vlang_webview_rad_studio')
 ```
@@ -308,7 +367,9 @@ win.link('Visit GitHub Project', 'https://github.com/codecaine-zz/vlang_webview_
 ### Selection Controls
 
 #### Checkbox
+
 Toggleable boolean checkbox:
+
 ```v
 win.checkbox('Enable Telemetry', true, fn (w &simplegui.SimpleWindow, val string) {
 	// val is 'true' or 'false'
@@ -318,7 +379,9 @@ win.checkbox('Enable Telemetry', true, fn (w &simplegui.SimpleWindow, val string
 ```
 
 #### Radio Buttons
+
 Exclusive single-choice selection within a group:
+
 ```v
 win.row_start()
 win.radio('environment', 'Development', true, fn (w &simplegui.SimpleWindow, val string) {
@@ -334,7 +397,9 @@ win.row_end()
 ```
 
 #### Dropdown (Select)
+
 Popup list of options:
+
 ```v
 options := ['Fast (128-bit)', 'Standard (256-bit)', 'Maximum (512-bit)']
 win.select_dropdown('Encryption Level', options, 'Standard (256-bit)', fn (w &simplegui.SimpleWindow, val string) {
@@ -343,7 +408,9 @@ win.select_dropdown('Encryption Level', options, 'Standard (256-bit)', fn (w &si
 ```
 
 #### Toggle Switch
+
 Modern iOS/macOS-style sliding toggle switch:
+
 ```v
 win.toggle('Dark Mode', true, fn (w &simplegui.SimpleWindow, val string) {
 	is_on := val == 'true'
@@ -352,7 +419,9 @@ win.toggle('Dark Mode', true, fn (w &simplegui.SimpleWindow, val string) {
 ```
 
 #### Slider
+
 Numeric range slider:
+
 ```v
 win.slider('Volume', 0, 100, 75, fn (w &simplegui.SimpleWindow, val string) {
 	level := val.int()
@@ -365,7 +434,9 @@ win.slider('Volume', 0, 100, 75, fn (w &simplegui.SimpleWindow, val string) {
 ### Desktop Menubar & Custom Context Menus
 
 #### Top Menubar
+
 Creates a desktop dropdown menubar across the top of your window:
+
 ```v
 categories := [
 	simplegui.MenuCategory{
@@ -397,7 +468,9 @@ win.set_menubar(categories, fn (w &simplegui.SimpleWindow, action string) {
 ```
 
 #### Custom Right-Click Context Menu
+
 Suppresses the browser's default reload menu and opens a custom desktop menu:
+
 ```v
 context_items := [
 	simplegui.MenuItem{ text: '✂️ Cut', action: 'edit_cut', shortcut: 'Cmd+X' },
@@ -417,7 +490,9 @@ win.set_context_menu(context_items, fn (w &simplegui.SimpleWindow, action string
 ### Data Displays
 
 #### Data Table
+
 Renders a structured grid of rows and columns:
+
 ```v
 headers := ['ID', 'Process Name', 'Memory', 'Status']
 rows := [
@@ -429,7 +504,9 @@ win.table(headers, rows)
 ```
 
 #### Key-Value List
+
 Two-column property inspector list:
+
 ```v
 items := {
 	'OS Version': 'macOS 15.1'
@@ -441,14 +518,18 @@ win.key_value_list(items)
 ```
 
 #### Progress Bar & Spinner
+
 Visual loading and completion indicators:
+
 ```v
 win.progress_bar(65, 'Deploying cluster: 65%')
 win.spinner('Compiling native executable...')
 ```
 
 #### Status Bar
+
 Docked bottom status message:
+
 ```v
 win.status_bar('Ready | 3 Services Connected | Port: 8080')
 ```
@@ -458,7 +539,9 @@ win.status_bar('Ready | 3 Services Connected | Port: 8080')
 ### Desktop Triggers
 
 #### Interval Timer
+
 Executes a background callback repeatedly at a given millisecond interval:
+
 ```v
 win.timer(1000, fn (w &simplegui.SimpleWindow, _ string) {
 	println('1 second tick')
@@ -466,13 +549,17 @@ win.timer(1000, fn (w &simplegui.SimpleWindow, _ string) {
 ```
 
 #### Native Notification
+
 Displays an OS toast or banner:
+
 ```v
 win.notification('Backup Completed', 'All 4 databases saved successfully.')
 ```
 
 #### Native File Picker Dialogs
+
 Invokes the operating system's native Cocoa/Win32/GTK file dialog:
+
 ```v
 win.button('Select File', fn (w &simplegui.SimpleWindow, _ string) {
 	path := system.open_file_dialog('Select Configuration File', '')
@@ -528,13 +615,16 @@ win.select_dropdown('Theme Palette', themes, 'tokyo_night', fn (w &simplegui.Sim
 RAD Studio provides complete 1:1 API parity with [`vlang_simplegui`](https://github.com/codecaine-zz/vlang_simplegui), supporting explicit control ID registration, fluent chaining modifiers, event binding, layout containers, and live state access.
 
 #### 1. Constructor Parity
+
 ```v
 // Create a new window with title, width, and height:
 mut win := simplegui.new_simple_window('DevOps Workstation', 1024, 768)
 ```
 
 #### 2. Named Control Builders
+
 Add controls by unique ID with default values and configure them fluently:
+
 ```v
 // Text & Headers
 win.add_heading('lbl_title', 'System Dashboard')
@@ -598,7 +688,9 @@ win.add_spacer(16)
 ```
 
 #### 3. Layout Containers
+
 Structure your controls with clean nested closures or begin/end blocks:
+
 ```v
 // Row container:
 win.begin_row()
@@ -636,7 +728,9 @@ win.add_scroll_view('scroll_logs', 250)
 ```
 
 #### 4. Event Wiring & Callbacks
+
 Wire clicks, value changes, and Enter key presses by control ID:
+
 ```v
 // Button Click:
 win.on_click('btn_deploy', fn (w &simplegui.SimpleWindow, _ string) {
@@ -660,7 +754,9 @@ win.on_select_item('dd_region', fn (w &simplegui.SimpleWindow, selected string) 
 ```
 
 #### 5. Fluent Modifiers
+
 Chain visual styling directly when adding controls:
+
 ```v
 win.add_button('btn_action', 'Execute')
     .width(200)
@@ -674,7 +770,9 @@ win.add_button('btn_action', 'Execute')
 ```
 
 #### 6. Live Value Inspection & Mutation
+
 Query or update controls programmatically at runtime:
+
 ```v
 // Reading values:
 name := win.get_text('txt_search')
@@ -695,7 +793,9 @@ if win.has_control('btn_deploy') {
 ```
 
 #### 7. Window Manipulation, Effects & Toasts
+
 Easily control native desktop window placement and show polished toasts:
+
 ```v
 // Toasts:
 w.toast('Operation submitted.')
@@ -725,6 +825,7 @@ w.quit()                   // Terminate application
 ## 4. System Module: `system/sys.v`
 
 Import with:
+
 ```v
 import system
 ```
@@ -921,6 +1022,7 @@ req_res := system.http_request('GET', 'https://api.example.com/data', '', opt)
 ### Cryptography
 
 #### AES CBC Encryption (with PKCS#7 Padding)
+
 ```v
 key_hex := '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f' // 32-byte (256-bit)
 plaintext := 'Secret database credentials'
@@ -934,6 +1036,7 @@ assert decrypted == plaintext
 ```
 
 #### Ed25519 Digital Signatures
+
 ```v
 // Generate keypair
 kp := system.crypto_ed25519_keypair()
@@ -947,6 +1050,7 @@ println('Signature authentic: ${is_valid}')
 ```
 
 #### Password Hashing (Bcrypt & PBKDF2)
+
 ```v
 // Bcrypt
 hash := system.crypto_bcrypt_hash('UserMasterPassword', 10)!
@@ -957,6 +1061,7 @@ derived := system.crypto_pbkdf2_sha256('password', 'salt1234', 10000, 32)!
 ```
 
 #### Hashing & UUID
+
 ```v
 uuid := system.crypto_uuid_v4()          // e.g. "c9a646d3-9c61-4cc9-bc01-90be5cbe9847"
 sha := system.hash_sha256('Hello World') // Standard SHA-256 hex
@@ -1112,6 +1217,7 @@ result := sb.str()
 ### URL Object Model & HTML Scraper
 
 #### URL Parsing & Building
+
 ```v
 url_obj := system.url_parse('https://example.com:8080/search?q=vlang&lang=en#top')
 println('Host: ${url_obj.host}') // example.com
@@ -1121,6 +1227,7 @@ built := system.url_build('https', 'api.dev', '/v1/users', {'active': 'true'})
 ```
 
 #### HTML Scraping
+
 ```v
 html_str := '<html><body><h1>Title</h1><div class="content"><a href="https://vlang.io">V Website</a></div></body></html>'
 doc := system.html_parse(html_str)
@@ -1135,6 +1242,7 @@ plain := doc.strip_tags()          // "Title V Website"
 ### CSV Matrices & Generic Data Structures
 
 #### CSV
+
 ```v
 rows := [
 	['Name', 'Role', 'Department'],
@@ -1150,6 +1258,7 @@ devops_team := system.csv_filter_rows(rows, 2, 'DevOps')
 ```
 
 #### Generic Data Structures
+
 ```v
 // 1. Stack
 mut stack := system.new_stack[string]()
@@ -1176,6 +1285,7 @@ assert set.size() == 2
 ### Time, Calendar & JSON
 
 #### Date & Time Utilities
+
 ```v
 // Current timestamp string: "YYYY-MM-DD HH:mm:ss"
 now := system.time_now()
@@ -1196,6 +1306,7 @@ valid_time := system.is_valid_time_str('14:30')      // true
 ```
 
 #### JSON Validation & Prettification
+
 ```v
 raw_json := '{"name":"RAD Studio","version":"1.0"}'
 
@@ -1213,11 +1324,13 @@ pretty := system.json_pretty_print(raw_json)
 ## 6. Security Module: `system/security.v`
 
 Import with:
+
 ```v
 import system
 ```
 
 ### Shell Injection Prevention
+
 Never concatenate raw user strings into shell commands. Use these utilities:
 
 ```v
@@ -1281,6 +1394,7 @@ token := system.generate_secure_token(32) // 64-char hex cryptographically rando
 ## 7. State Module: `system/state.v`
 
 Import with:
+
 ```v
 import system
 ```
@@ -1442,6 +1556,7 @@ v build.vsh demos/22_context_menu_and_menu_demo.v
 ```
 
 ### What `build.vsh` does automatically:
+
 - **macOS (`.app` Bundle)**:
   - Generates `dist/AppName.app/Contents/MacOS` and embeds the native binary.
   - Generates multi-resolution Retina icons (`AppIcon.icns`) from `resources/icon.png` using Apple's `sips` and `iconutil`.
@@ -1459,6 +1574,7 @@ v build.vsh demos/22_context_menu_and_menu_demo.v
 In addition to visual GUI applications, **V Webview RAD Studio** includes **16 companion CLI tools** located in `cli_apps/`. Every single application in the Enterprise Studio suite has a matching command-line interface.
 
 ### CLI Architecture & Performance Advantages
+
 1. **Ultra-Fast Startup**: Compiled with native V into self-contained single binaries (< 1 MB) that launch in **< 2 milliseconds**—over 100x faster than Electron or Python scripts.
 2. **Dual Output Modes**:
    - **Interactive Developer Mode**: Beautifully formatted terminal typography, ANSI colors, icons, and structured banners.
@@ -1467,24 +1583,24 @@ In addition to visual GUI applications, **V Webview RAD Studio** includes **16 c
 
 ### CLI Suite Quick Reference
 
-| CLI Utility | Source File | Primary Purpose | Key Flags |
-|---|---|---|---|
-| [**`system_cli`**](#system--hardware-workstation-system_cli) | [`cli_apps/system_cli.v`](cli_apps/system_cli.v) | Hardware telemetry, CPU, RAM, battery & OS inspection | `-t, --telemetry`, `-j, --json`, `-a, --audit` |
-| [**`crypto_cli`**](#cryptographic-hashing--encoders-crypto_cli) | [`cli_apps/crypto_cli.v`](cli_apps/crypto_cli.v) | Cryptographic digests, HMAC-SHA256, Base64 & Hex | `-a, --algo`, `-k, --key`, `-A, --all`, `-e, --b64-encode` |
-| [**`json_cli`**](#json-inspector-validator--formatter-json_cli) | [`cli_apps/json_cli.v`](cli_apps/json_cli.v) | JSON formatting, validation & minification | `-f, --file`, `-m, --minify`, `-v, --validate` |
-| [**`devtools_cli`**](#developer-omnitool--math-statistics-devtools_cli) | [`cli_apps/devtools_cli.v`](cli_apps/devtools_cli.v) | UUIDs, epoch timestamps, string metrics & math stats | `-u, --uuid`, `-t, --timestamp`, `-s, --slug`, `-S, --stats` |
-| [**`process_cli`**](#process--task-manager-process_cli) | [`cli_apps/process_cli.v`](cli_apps/process_cli.v) | Process listing, name filtering & process termination | `-f, --filter`, `-k, --kill`, `-t, --top` |
-| [**`database_cli`**](#sqlite-database-console-database_cli) | [`cli_apps/database_cli.v`](cli_apps/database_cli.v) | SQLite database inspector, schema viewer & SQL query runner | `-d, --database`, `-t, --tables`, `-s, --schema`, `-q, --query` |
-| [**`api_cli`**](#http--rest-api-client-api_cli) | [`cli_apps/api_cli.v`](cli_apps/api_cli.v) | REST client supporting GET, POST, PUT, DELETE, and body data | `-X, --method`, `-d, --data`, `-c, --content-type`, `-i, --headers` |
-| [**`dataconvert_cli`**](#data-format-converter-dataconvert_cli) | [`cli_apps/dataconvert_cli.v`](cli_apps/dataconvert_cli.v) | Matrix conversion between CSV and JSON | `-f, --from`, `-t, --to`, `-i, --file` |
-| [**`watcher_cli`**](#file-system-watcher--trigger-watcher_cli) | [`cli_apps/watcher_cli.v`](cli_apps/watcher_cli.v) | Filesystem directory watcher with automated command triggers | `-p, --path`, `-e, --exec`, `-i, --interval` |
-| [**`regex_cli`**](#regular-expression-tester-regex_cli) | [`cli_apps/regex_cli.v`](cli_apps/regex_cli.v) | Regular expression testing, matching & string replacement | `-p, --pattern`, `-r, --replace` |
-| [**`app_bundler_cli`**](#desktop-app-packager--bundler-app_bundler_cli) | [`cli_apps/app_bundler_cli.v`](cli_apps/app_bundler_cli.v) | Standalone distribution packager for macOS, Linux & Windows | `-n, --name`, `-e, --entry`, `-o, --out`, `-t, --target` |
-| [**`network_cli`**](#network-diagnostics--ping-telemetry-network_cli) | [`cli_apps/network_cli.v`](cli_apps/network_cli.v) | ICMP ping latency, DNS lookup, open ports & IP discovery | `-p, --ping`, `-i, --ip`, `-d, --dns`, `-l, --ports` |
-| [**`git_cli`**](#visual-git-workstation-git_cli) | [`cli_apps/git_cli.v`](cli_apps/git_cli.v) | Git working tree inspector, branch manager & commit log | `-s, --status`, `-b, --branch`, `-l, --log`, `-d, --diff` |
-| [**`markdown_cli`**](#markdown-to-html-compiler-markdown_cli) | [`cli_apps/markdown_cli.v`](cli_apps/markdown_cli.v) | Markdown to HTML compiler and document converter | `-f, --file`, `-o, --out` |
-| [**`color_cli`**](#color--wcag-contrast-inspector-color_cli) | [`cli_apps/color_cli.v`](cli_apps/color_cli.v) | HEX/RGB converter, WCAG contrast ratio & accessibility | `-x, --hex`, `-b, --bg` |
-| [**`env_cli`**](#environment-variables-manager-env_cli) | [`cli_apps/env_cli.v`](cli_apps/env_cli.v) | Environment variable auditor, search filter & JSON exporter | `-g, --get`, `-f, --filter`, `-j, --json` |
+| CLI Utility                                                             | Source File                                                | Primary Purpose                                              | Key Flags                                                           |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------- |
+| [**`system_cli`**](#system--hardware-workstation-system_cli)            | [`cli_apps/system_cli.v`](cli_apps/system_cli.v)           | Hardware telemetry, CPU, RAM, battery & OS inspection        | `-t, --telemetry`, `-j, --json`, `-a, --audit`                      |
+| [**`crypto_cli`**](#cryptographic-hashing--encoders-crypto_cli)         | [`cli_apps/crypto_cli.v`](cli_apps/crypto_cli.v)           | Cryptographic digests, HMAC-SHA256, Base64 & Hex             | `-a, --algo`, `-k, --key`, `-A, --all`, `-e, --b64-encode`          |
+| [**`json_cli`**](#json-inspector-validator--formatter-json_cli)         | [`cli_apps/json_cli.v`](cli_apps/json_cli.v)               | JSON formatting, validation & minification                   | `-f, --file`, `-m, --minify`, `-v, --validate`                      |
+| [**`devtools_cli`**](#developer-omnitool--math-statistics-devtools_cli) | [`cli_apps/devtools_cli.v`](cli_apps/devtools_cli.v)       | UUIDs, epoch timestamps, string metrics & math stats         | `-u, --uuid`, `-t, --timestamp`, `-s, --slug`, `-S, --stats`        |
+| [**`process_cli`**](#process--task-manager-process_cli)                 | [`cli_apps/process_cli.v`](cli_apps/process_cli.v)         | Process listing, name filtering & process termination        | `-f, --filter`, `-k, --kill`, `-t, --top`                           |
+| [**`database_cli`**](#sqlite-database-console-database_cli)             | [`cli_apps/database_cli.v`](cli_apps/database_cli.v)       | SQLite database inspector, schema viewer & SQL query runner  | `-d, --database`, `-t, --tables`, `-s, --schema`, `-q, --query`     |
+| [**`api_cli`**](#http--rest-api-client-api_cli)                         | [`cli_apps/api_cli.v`](cli_apps/api_cli.v)                 | REST client supporting GET, POST, PUT, DELETE, and body data | `-X, --method`, `-d, --data`, `-c, --content-type`, `-i, --headers` |
+| [**`dataconvert_cli`**](#data-format-converter-dataconvert_cli)         | [`cli_apps/dataconvert_cli.v`](cli_apps/dataconvert_cli.v) | Matrix conversion between CSV and JSON                       | `-f, --from`, `-t, --to`, `-i, --file`                              |
+| [**`watcher_cli`**](#file-system-watcher--trigger-watcher_cli)          | [`cli_apps/watcher_cli.v`](cli_apps/watcher_cli.v)         | Filesystem directory watcher with automated command triggers | `-p, --path`, `-e, --exec`, `-i, --interval`                        |
+| [**`regex_cli`**](#regular-expression-tester-regex_cli)                 | [`cli_apps/regex_cli.v`](cli_apps/regex_cli.v)             | Regular expression testing, matching & string replacement    | `-p, --pattern`, `-r, --replace`                                    |
+| [**`app_bundler_cli`**](#desktop-app-packager--bundler-app_bundler_cli) | [`cli_apps/app_bundler_cli.v`](cli_apps/app_bundler_cli.v) | Standalone distribution packager for macOS, Linux & Windows  | `-n, --name`, `-e, --entry`, `-o, --out`, `-t, --target`            |
+| [**`network_cli`**](#network-diagnostics--ping-telemetry-network_cli)   | [`cli_apps/network_cli.v`](cli_apps/network_cli.v)         | ICMP ping latency, DNS lookup, open ports & IP discovery     | `-p, --ping`, `-i, --ip`, `-d, --dns`, `-l, --ports`                |
+| [**`git_cli`**](#visual-git-workstation-git_cli)                        | [`cli_apps/git_cli.v`](cli_apps/git_cli.v)                 | Git working tree inspector, branch manager & commit log      | `-s, --status`, `-b, --branch`, `-l, --log`, `-d, --diff`           |
+| [**`markdown_cli`**](#markdown-to-html-compiler-markdown_cli)           | [`cli_apps/markdown_cli.v`](cli_apps/markdown_cli.v)       | Markdown to HTML compiler and document converter             | `-f, --file`, `-o, --out`                                           |
+| [**`color_cli`**](#color--wcag-contrast-inspector-color_cli)            | [`cli_apps/color_cli.v`](cli_apps/color_cli.v)             | HEX/RGB converter, WCAG contrast ratio & accessibility       | `-x, --hex`, `-b, --bg`                                             |
+| [**`env_cli`**](#environment-variables-manager-env_cli)                 | [`cli_apps/env_cli.v`](cli_apps/env_cli.v)                 | Environment variable auditor, search filter & JSON exporter  | `-g, --get`, `-f, --filter`, `-j, --json`                           |
 
 ---
 
@@ -1493,17 +1609,19 @@ In addition to visual GUI applications, **V Webview RAD Studio** includes **16 c
 Cross-platform hardware telemetry, battery level, CPU utilization, and privacy-shielded network inspection.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--telemetry` | `-t` | `false` | Display full hardware and memory telemetry |
-| `--cpu` | `-c` | `false` | Display CPU model, core count, architecture, and current usage % |
-| `--mem` | `-m` | `false` | Display RAM allocation metrics (Total, Used, Free) |
-| `--battery` | `-b` | `false` | Display battery percentage, charging state, and AC power status |
-| `--network` | `-n` | `false` | Display network interfaces and internet ping status |
-| `--json` | `-j` | `false` | Output telemetry in machine-readable JSON format |
-| `--audit` | `-a` | `false` | Run comprehensive full-system hardware and OS audit |
+
+| Flag          | Short | Default | Description                                                      |
+| ------------- | ----- | ------- | ---------------------------------------------------------------- |
+| `--telemetry` | `-t`  | `false` | Display full hardware and memory telemetry                       |
+| `--cpu`       | `-c`  | `false` | Display CPU model, core count, architecture, and current usage % |
+| `--mem`       | `-m`  | `false` | Display RAM allocation metrics (Total, Used, Free)               |
+| `--battery`   | `-b`  | `false` | Display battery percentage, charging state, and AC power status  |
+| `--network`   | `-n`  | `false` | Display network interfaces and internet ping status              |
+| `--json`      | `-j`  | `false` | Output telemetry in machine-readable JSON format                 |
+| `--audit`     | `-a`  | `false` | Run comprehensive full-system hardware and OS audit              |
 
 #### Quick Run & Build
+
 ```bash
 # Run directly
 v run cli_apps/system_cli.v --telemetry
@@ -1516,6 +1634,7 @@ v -prod cli_apps/system_cli.v -o bin/system_cli
 ```
 
 #### Example Output (Human-Readable)
+
 ```text
 ====================================================================
 ⚡ SYSTEM & HARDWARE WORKSTATION CLI (vlang)
@@ -1539,6 +1658,7 @@ v -prod cli_apps/system_cli.v -o bin/system_cli
 ```
 
 #### Programmatic Usage in V
+
 ```v
 import system
 
@@ -1554,17 +1674,19 @@ println('RAM Free:  ${system.format_bytes(hw.ram_free_bytes)}')
 Enterprise cryptographic tool computing digests, keyed HMAC authentication codes, and Base64/Hex encoding.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--algo` | `-a` | `sha256` | Hashing algorithm: `md5`, `sha256`, `sha512`, `hmac` |
-| `--key` | `-k` | `""` | Secret key for HMAC hashing |
-| `--b64-encode` | `-e` | `false` | Base64 encode the input string |
-| `--b64-decode` | `-d` | `false` | Base64 decode the input string |
-| `--hex-encode` | `-x` | `false` | Hex encode the input string |
-| `--hex-decode` | `-y` | `false` | Hex decode the input string |
-| `--all` | `-A` | `false` | Compute all hashes simultaneously |
+
+| Flag           | Short | Default  | Description                                          |
+| -------------- | ----- | -------- | ---------------------------------------------------- |
+| `--algo`       | `-a`  | `sha256` | Hashing algorithm: `md5`, `sha256`, `sha512`, `hmac` |
+| `--key`        | `-k`  | `""`     | Secret key for HMAC hashing                          |
+| `--b64-encode` | `-e`  | `false`  | Base64 encode the input string                       |
+| `--b64-decode` | `-d`  | `false`  | Base64 decode the input string                       |
+| `--hex-encode` | `-x`  | `false`  | Hex encode the input string                          |
+| `--hex-decode` | `-y`  | `false`  | Hex decode the input string                          |
+| `--all`        | `-A`  | `false`  | Compute all hashes simultaneously                    |
 
 #### Quick Run Examples
+
 ```bash
 # Compute all cryptographic digests simultaneously
 v run cli_apps/crypto_cli.v --all "Hello, Production Desktop!"
@@ -1584,13 +1706,15 @@ v run cli_apps/crypto_cli.v --b64-decode "RW5jb2RlIHRoaXMgcGF5bG9hZA=="
 Zero-dependency JSON payload validator, syntax checker, formatter, and tree inspector.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--file` | `-f` | `""` | Input JSON file path to parse |
-| `--minify` | `-m` | `false` | Minify JSON output into a single compact line |
-| `--validate` | `-v` | `false` | Validate JSON syntax without printing the full body |
+
+| Flag         | Short | Default | Description                                         |
+| ------------ | ----- | ------- | --------------------------------------------------- |
+| `--file`     | `-f`  | `""`    | Input JSON file path to parse                       |
+| `--minify`   | `-m`  | `false` | Minify JSON output into a single compact line       |
+| `--validate` | `-v`  | `false` | Validate JSON syntax without printing the full body |
 
 #### Quick Run Examples
+
 ```bash
 # Pretty-print formatted JSON
 v run cli_apps/json_cli.v -f config.json
@@ -1609,17 +1733,19 @@ v run cli_apps/json_cli.v -v -f package.json
 Developer Swiss Army Knife utility for cryptographic UUID v4 generation, timestamps, string manipulation, and statistical distribution analysis.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--uuid` | `-u` | `false` | Generate a random UUID v4 string |
-| `--timestamp`| `-t` | `false` | Show current Unix epoch timestamp in seconds |
-| `--slug` | `-s` | `false` | Slugify input text for URLs and filenames |
-| `--title` | `-T` | `false` | Convert input text to Title Case |
-| `--reverse` | `-r` | `false` | Reverse characters of input text |
-| `--words` | `-w` | `false` | Count words in input text |
-| `--stats` | `-S` | `false` | Calculate full statistical metrics on comma-separated numbers |
+
+| Flag          | Short | Default | Description                                                   |
+| ------------- | ----- | ------- | ------------------------------------------------------------- |
+| `--uuid`      | `-u`  | `false` | Generate a random UUID v4 string                              |
+| `--timestamp` | `-t`  | `false` | Show current Unix epoch timestamp in seconds                  |
+| `--slug`      | `-s`  | `false` | Slugify input text for URLs and filenames                     |
+| `--title`     | `-T`  | `false` | Convert input text to Title Case                              |
+| `--reverse`   | `-r`  | `false` | Reverse characters of input text                              |
+| `--words`     | `-w`  | `false` | Count words in input text                                     |
+| `--stats`     | `-S`  | `false` | Calculate full statistical metrics on comma-separated numbers |
 
 #### Quick Run Examples
+
 ```bash
 # Generate UUID v4
 v run cli_apps/devtools_cli.v --uuid
@@ -1640,13 +1766,15 @@ v run cli_apps/devtools_cli.v --stats "12, 45, 67, 23, 89, 45, 91, 15"
 Cross-platform process monitor, search filter, resource inspector, and runaway process termination utility.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--filter` | `-f` | `""` | Filter processes matching name substring |
-| `--kill` | `-k` | `""` | Kill process by PID or exact executable name |
-| `--top` | `-t` | `20` | Show top N active processes (default: 20) |
+
+| Flag       | Short | Default | Description                                  |
+| ---------- | ----- | ------- | -------------------------------------------- |
+| `--filter` | `-f`  | `""`    | Filter processes matching name substring     |
+| `--kill`   | `-k`  | `""`    | Kill process by PID or exact executable name |
+| `--top`    | `-t`  | `20`    | Show top N active processes (default: 20)    |
 
 #### Quick Run Examples
+
 ```bash
 # Find all active web or node processes
 v run cli_apps/process_cli.v --filter "node"
@@ -1665,14 +1793,16 @@ v run cli_apps/process_cli.v --kill 48192
 Inspect SQLite databases, catalog tables, examine column schemas, and execute raw SQL statements directly from the command line.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--database` | `-d` | `app.db` | SQLite database file path |
-| `--tables` | `-t` | `false` | List all tables in the database |
-| `--schema` | `-s` | `""` | Display column schema and constraints of specified table |
-| `--query` | `-q` | `""` | Execute an SQL query and display results |
+
+| Flag         | Short | Default  | Description                                              |
+| ------------ | ----- | -------- | -------------------------------------------------------- |
+| `--database` | `-d`  | `app.db` | SQLite database file path                                |
+| `--tables`   | `-t`  | `false`  | List all tables in the database                          |
+| `--schema`   | `-s`  | `""`     | Display column schema and constraints of specified table |
+| `--query`    | `-q`  | `""`     | Execute an SQL query and display results                 |
 
 #### Quick Run Examples
+
 ```bash
 # List all tables in database
 v run cli_apps/database_cli.v -d storage.db --tables
@@ -1691,14 +1821,16 @@ v run cli_apps/database_cli.v -d storage.db -q "SELECT id, name, role FROM users
 Command-line REST client for making HTTP requests, testing endpoints, verifying responses, and inspecting headers.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--method` | `-X` | `GET` | HTTP Method: `GET`, `POST`, `PUT`, `DELETE`, `PATCH` |
-| `--data` | `-d` | `""` | Request body payload string |
-| `--content-type`| `-c` | `application/json` | Content-Type request header |
-| `--headers` | `-i` | `false` | Include HTTP response headers in output |
+
+| Flag             | Short | Default            | Description                                          |
+| ---------------- | ----- | ------------------ | ---------------------------------------------------- |
+| `--method`       | `-X`  | `GET`              | HTTP Method: `GET`, `POST`, `PUT`, `DELETE`, `PATCH` |
+| `--data`         | `-d`  | `""`               | Request body payload string                          |
+| `--content-type` | `-c`  | `application/json` | Content-Type request header                          |
+| `--headers`      | `-i`  | `false`            | Include HTTP response headers in output              |
 
 #### Quick Run Examples
+
 ```bash
 # Perform GET request with headers
 v run cli_apps/api_cli.v -i https://httpbin.org/get
@@ -1714,13 +1846,15 @@ v run cli_apps/api_cli.v -X POST -d '{"project":"vlang_rad_studio","status":"act
 Matrix transformation tool converting datasets bidirectionally between CSV and JSON.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--from` | `-f` | `csv` | Source format: `csv`, `json` |
-| `--to` | `-t` | `json` | Target format: `json`, `csv` |
-| `--file` | `-i` | `""` | Input data file path |
+
+| Flag     | Short | Default | Description                  |
+| -------- | ----- | ------- | ---------------------------- |
+| `--from` | `-f`  | `csv`   | Source format: `csv`, `json` |
+| `--to`   | `-t`  | `json`  | Target format: `json`, `csv` |
+| `--file` | `-i`  | `""`    | Input data file path         |
 
 #### Quick Run Examples
+
 ```bash
 # Convert CSV dataset to JSON
 v run cli_apps/dataconvert_cli.v --from csv --to json -i customers.csv > customers.json
@@ -1736,13 +1870,15 @@ v run cli_apps/dataconvert_cli.v --from json --to csv -i metrics.json > metrics.
 Monitors directories for file modifications, creations, and deletions, triggering custom shell commands on every change event.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--path` | `-p` | `.` | Directory or file path to watch |
-| `--exec` | `-e` | `""` | Shell command to execute when changes are detected |
-| `--interval` | `-i` | `1000` | Polling frequency in milliseconds |
+
+| Flag         | Short | Default | Description                                        |
+| ------------ | ----- | ------- | -------------------------------------------------- |
+| `--path`     | `-p`  | `.`     | Directory or file path to watch                    |
+| `--exec`     | `-e`  | `""`    | Shell command to execute when changes are detected |
+| `--interval` | `-i`  | `1000`  | Polling frequency in milliseconds                  |
 
 #### Quick Run Examples
+
 ```bash
 # Auto-check V code when files in simplegui/ change
 v run cli_apps/watcher_cli.v -p simplegui/ -e "v -check ."
@@ -1758,12 +1894,14 @@ v run cli_apps/watcher_cli.v -p applications/ -e "v build.vsh applications/syste
 Fast, native regular expression pattern evaluator and string substitution tool.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--pattern` | `-p` | `""` | Regular expression pattern |
-| `--replace` | `-r` | `""` | Replacement string (optional) |
+
+| Flag        | Short | Default | Description                   |
+| ----------- | ----- | ------- | ----------------------------- |
+| `--pattern` | `-p`  | `""`    | Regular expression pattern    |
+| `--replace` | `-r`  | `""`    | Replacement string (optional) |
 
 #### Quick Run Examples
+
 ```bash
 # Extract all numeric sequences
 v run cli_apps/regex_cli.v -p "\d+" "Order #9401 created for customer 8820"
@@ -1779,14 +1917,16 @@ v run cli_apps/regex_cli.v -p "([a-z]+)@([a-z.]+)" -r "[REDACTED EMAIL]" "Contac
 Command-line interface to `build.vsh` for compiling, packaging, and branding native macOS `.app` bundles, Linux ELF binaries, and Windows `.exe`.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--name` | `-n` | `MyApp` | Application Display Name |
-| `--entry` | `-e` | `main.v` | Main entry point V source file |
-| `--out` | `-o` | `dist` | Destination output directory |
-| `--target` | `-t` | `current` | Target operating system: `current`, `macos`, `linux`, `windows` |
+
+| Flag       | Short | Default   | Description                                                     |
+| ---------- | ----- | --------- | --------------------------------------------------------------- |
+| `--name`   | `-n`  | `MyApp`   | Application Display Name                                        |
+| `--entry`  | `-e`  | `main.v`  | Main entry point V source file                                  |
+| `--out`    | `-o`  | `dist`    | Destination output directory                                    |
+| `--target` | `-t`  | `current` | Target operating system: `current`, `macos`, `linux`, `windows` |
 
 #### Quick Run Examples
+
 ```bash
 # Package System Studio into native macOS .app bundle
 v run cli_apps/app_bundler_cli.v -n "System Studio" -e applications/system_studio.v -o dist/
@@ -1802,14 +1942,16 @@ v run cli_apps/app_bundler_cli.v -n "API Studio Pro" -e applications/api_studio.
 Diagnostic tool for ICMP echo ping latency, DNS name resolution, and listening port discovery.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--ping` | `-p` | `""` | Host or IP address to ping |
-| `--ip` | `-i` | `false` | Display local IPv4 address (privacy-shielded) |
-| `--dns` | `-d` | `""` | Resolve DNS records for target hostname |
-| `--ports` | `-l` | `false` | Scan for active listening TCP ports |
+
+| Flag      | Short | Default | Description                                   |
+| --------- | ----- | ------- | --------------------------------------------- |
+| `--ping`  | `-p`  | `""`    | Host or IP address to ping                    |
+| `--ip`    | `-i`  | `false` | Display local IPv4 address (privacy-shielded) |
+| `--dns`   | `-d`  | `""`    | Resolve DNS records for target hostname       |
+| `--ports` | `-l`  | `false` | Scan for active listening TCP ports           |
 
 #### Quick Run Examples
+
 ```bash
 # Test network latency
 v run cli_apps/network_cli.v --ping 1.1.1.1
@@ -1828,14 +1970,16 @@ v run cli_apps/network_cli.v --ports
 Command-line Git helper for quick status summaries, branch management, diff inspections, and commit histories.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--status` | `-s` | `false` | Show concise Git working tree status |
-| `--branch` | `-b` | `false` | List local and tracking remote branches |
-| `--log` | `-l` | `0` | Show last N commit history log entries |
-| `--diff` | `-d` | `false` | Show active working tree unstaged diffs |
+
+| Flag       | Short | Default | Description                             |
+| ---------- | ----- | ------- | --------------------------------------- |
+| `--status` | `-s`  | `false` | Show concise Git working tree status    |
+| `--branch` | `-b`  | `false` | List local and tracking remote branches |
+| `--log`    | `-l`  | `0`     | Show last N commit history log entries  |
+| `--diff`   | `-d`  | `false` | Show active working tree unstaged diffs |
 
 #### Quick Run Examples
+
 ```bash
 # View concise status and last 3 commits
 v run cli_apps/git_cli.v --status --log 3
@@ -1851,12 +1995,14 @@ v run cli_apps/git_cli.v --branch
 Converts Markdown documents into standalone HTML files with embedded styling and syntax formatting.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--file` | `-f` | `""` | Input Markdown source file |
-| `--out` | `-o` | `""` | Output HTML destination file (optional) |
+
+| Flag     | Short | Default | Description                             |
+| -------- | ----- | ------- | --------------------------------------- |
+| `--file` | `-f`  | `""`    | Input Markdown source file              |
+| `--out`  | `-o`  | `""`    | Output HTML destination file (optional) |
 
 #### Quick Run Examples
+
 ```bash
 # Convert README to HTML document
 v run cli_apps/markdown_cli.v -f README.md -o output.html
@@ -1869,12 +2015,14 @@ v run cli_apps/markdown_cli.v -f README.md -o output.html
 Color math utility converting between HEX and RGB formats, calculating WCAG AAA / AA contrast ratios, and verifying legibility across themes.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--hex` | `-x` | `""` | Foreground Hex color code (e.g. `#38bdf8`) |
-| `--bg` | `-b` | `#0f172a` | Background Hex color code for contrast calculation |
+
+| Flag    | Short | Default   | Description                                        |
+| ------- | ----- | --------- | -------------------------------------------------- |
+| `--hex` | `-x`  | `""`      | Foreground Hex color code (e.g. `#38bdf8`)         |
+| `--bg`  | `-b`  | `#0f172a` | Background Hex color code for contrast calculation |
 
 #### Quick Run Examples
+
 ```bash
 # Check WCAG compliance of cyan accent on dark slate background
 v run cli_apps/color_cli.v --hex "#38bdf8" --bg "#0f172a"
@@ -1888,13 +2036,15 @@ v run cli_apps/color_cli.v --hex "#38bdf8" --bg "#0f172a"
 Inspects active process environment variables, filters keys, extracts specific variables, and outputs structured JSON.
 
 #### Flags
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--get` | `-g` | `""` | Get value of a specific environment variable |
-| `--filter` | `-f` | `""` | Search and filter environment variable names |
-| `--json` | `-j` | `false` | Output environment variables in machine-readable JSON |
+
+| Flag       | Short | Default | Description                                           |
+| ---------- | ----- | ------- | ----------------------------------------------------- |
+| `--get`    | `-g`  | `""`    | Get value of a specific environment variable          |
+| `--filter` | `-f`  | `""`    | Search and filter environment variable names          |
+| `--json`   | `-j`  | `false` | Output environment variables in machine-readable JSON |
 
 #### Quick Run Examples
+
 ```bash
 # Retrieve PATH variable
 v run cli_apps/env_cli.v --get PATH
@@ -1949,6 +2099,7 @@ fn main() {
 ```
 
 Compile and run:
+
 ```bash
 # Run with V
 v run my_custom_tool.v --name "RAD Developer" --count 3
