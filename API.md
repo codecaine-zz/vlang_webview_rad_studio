@@ -19,7 +19,7 @@ Welcome to the comprehensive API manual for **V Webview RAD Studio**. This guide
    - [Data Displays (Tables, Key-Value Lists, Badges, Tags, Progress)](#data-displays)
    - [Desktop Triggers (Timers, File Pickers, Notifications, Dialogs)](#desktop-triggers)
    - [Window Management & Shortcuts](#window-management--shortcuts)
-   - [Dynamic Theme Switcher (42 Form Themes)](#dynamic-theme-switcher)
+   - [Dynamic Theme Switcher (76 Form Themes)](#dynamic-theme-switcher)
    - [Named Builder & Fluent Control API (`vlang_simplegui` Parity)](#named-builder--fluent-control-api-vlang_simplegui-parity)
 4. [System Module: `system/sys.v` (OS & Hardware Telemetry)](#4-system-module-systemsysv)
    - [Safe Command & Process Execution](#safe-command--process-execution)
@@ -105,7 +105,7 @@ Traditional GUI development is often fragmented:
 ┌───────────────────────────┐   ┌──────────────────────────┐
 │     simplegui Engine      │   │      system Modules      │
 │  (HTML/CSS Generation,    │   │  (Process, Hardware,     │
-│   42 Themes, Layouts)     │   │   Crypto, Files, State)  │
+│   76 Themes, Layouts)     │   │   Crypto, Files, State)  │
 └───────────────┬───────────┘   └───────────┬──────────────┘
                 │                           │
                 ▼                           ▼
@@ -250,7 +250,7 @@ mut win := simplegui.new_window(
 	title: 'Enterprise Studio'     // Window title
 	width: 1024                    // Window initial width in pixels
 	height: 720                    // Window initial height in pixels
-	theme: 'monokai_pro'           // One of 42 built-in themes
+	theme: 'monokai_pro'           // One of 76 built-in themes
 	fullscreen: true               // Start in fullscreen mode (default: true across macOS & Linux)
 	min_width: 640                 // Minimum resizable width
 	min_height: 480                // Minimum resizable height
@@ -675,7 +675,7 @@ w.quit()                      // Gracefully terminate application process
 
 ### Dynamic Theme Switcher
 
-Switch between any of the **42 built-in themes** instantly at runtime without reloading:
+Switch between any of the **76 built-in themes** instantly at runtime without reloading:
 
 ```v
 // Switch programmatically

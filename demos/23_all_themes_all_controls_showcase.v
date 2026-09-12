@@ -4,24 +4,24 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 23 - All 42 Themes & 70+ Controls Ultimate Mega-Showcase'
+		title: 'Demo 23 - All 76 Themes & 70+ Controls Ultimate Mega-Showcase'
 		width: 1100
 		height: 800
 		theme: 'monokai_pro'
 	)
 
 	win.heading('👑 The Ultimate RAD Studio Mega-Showcase')
-	win.subheading('70+ Delphi/VB Style Native Controls across all 42 Desktop Themes:')
+	win.subheading('70+ Delphi/VB Style Native Controls across all 76 Desktop Themes:')
 	win.divider()
 
 	win.row_start()
 	win.kpi_card('Visual Controls', '70+ Types', 'Anchors & Docking')
-	win.kpi_card('Built-in Themes', '42 Desktop', 'Pixel-perfect CSS')
+	win.kpi_card('Built-in Themes', '76 Desktop', 'Pixel-perfect CSS')
 	win.kpi_card('Window Placement', '9 Presets', 'Cocoa, Win32, GTK')
 	win.kpi_card('FFI System APIs', '60+ Tools', 'Native Telemetry')
 	win.row_end()
 
-	win.box_start('42 Desktop Form Themes Selector & Style Mode')
+	win.box_start('76 Desktop Form Themes Selector & Style Mode')
 	win.row_start()
 	win.dropdown(simplegui.get_theme_names(), 'monokai_pro', fn (w &simplegui.SimpleWindow, val string) {
 		println('Switching showcase theme: ${val}')
@@ -51,7 +51,7 @@ fn main() {
 	win.row_end()
 
 	win.label('Active Workspace & Runtime Telemetry Notes:')
-	win.textarea('Telemetry Logs', 'Webview FFI bridge initialized.\n42 theme styles injected.\nHardware acceleration active.\nAnchors and docking layout operational.', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea('Telemetry Logs', 'Webview FFI bridge initialized.\n76 theme styles injected.\nHardware acceleration active.\nAnchors and docking layout operational.', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	win.box_start('Overall System Health & Performance (94%)')

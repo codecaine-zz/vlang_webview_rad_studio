@@ -529,6 +529,414 @@ pub fn get_all_themes() map[string]Theme {
 			description: 'Standard clean modern light theme'
 			is_dark: false
 		}
+		'raycast_dark': Theme{
+			name: 'Raycast Dark'
+			short_name: 'Raycast'
+			background_color: '#0e0f12'
+			font_color: '#f3f4f6'
+			accent_color: '#ff6363'
+			secondary_accent: '#ff9494'
+			card_background: '#18191e'
+			card_border: '#282a32'
+			description: 'Silicon Valley developer command palette with ultra-slick charcoal surfaces and laser red'
+			is_dark: true
+		}
+		'linear_dark': Theme{
+			name: 'Linear Studio'
+			short_name: 'Linear'
+			background_color: '#0f1015'
+			font_color: '#e2e4ed'
+			accent_color: '#5e6ad2'
+			secondary_accent: '#8e9df6'
+			card_background: '#181922'
+			card_border: '#282a3a'
+			description: 'High-craft Linear project workspace with deep obsidian cards and electric indigo accents'
+			is_dark: true
+		}
+		'vercel_dark': Theme{
+			name: 'Vercel Geist'
+			short_name: 'Geist'
+			background_color: '#000000'
+			font_color: '#ededed'
+			accent_color: '#ffffff'
+			secondary_accent: '#0070f3'
+			card_background: '#0a0a0a'
+			card_border: '#242424'
+			description: 'Ultra-minimalist Next.js & Vercel design system with pure monochrome contrast and electric blue'
+			is_dark: true
+		}
+		'unreal_engine': Theme{
+			name: 'Unreal Engine 5'
+			short_name: 'UE5'
+			background_color: '#18191c'
+			font_color: '#e1e2e6'
+			accent_color: '#0e86d4'
+			secondary_accent: '#e5a93c'
+			card_background: '#222328'
+			card_border: '#33353e'
+			description: 'Epic Games Unreal Engine 5 professional workstation with dark graphite & Blueprint blue'
+			is_dark: true
+		}
+		'arc_velvet': Theme{
+			name: 'Arc Velvet'
+			short_name: 'Arc Velvet'
+			background_color: '#170f26'
+			font_color: '#f8f6fc'
+			accent_color: '#f72585'
+			secondary_accent: '#4cc9f0'
+			card_background: '#23183a'
+			card_border: '#3d2b63'
+			description: 'Arc Browser velvet aesthetic with deep plum indigo and luminous neon magenta accents'
+			is_dark: true
+		}
+		'abyss': Theme{
+			name: 'Abyss Bioluminescence'
+			short_name: 'Abyss'
+			background_color: '#030712'
+			font_color: '#f0fdfa'
+			accent_color: '#06b6d4'
+			secondary_accent: '#3b82f6'
+			card_background: '#0b1329'
+			card_border: '#16274e'
+			description: 'Deep oceanic trench dark theme with radiant bioluminescent cyan and marine slate'
+			is_dark: true
+		}
+		'night_city': Theme{
+			name: 'Cyberpunk Night City'
+			short_name: 'Night City'
+			background_color: '#0e0e13'
+			font_color: '#fcee0a'
+			accent_color: '#ff003c'
+			secondary_accent: '#00f0ff'
+			card_background: '#171720'
+			card_border: '#2e2e3f'
+			description: 'AAA Cyberpunk 2077 Night City HUD with Trauma Team red, Samurai yellow and chrome cards'
+			is_dark: true
+		}
+		'horizon': Theme{
+			name: 'Horizon Sunset'
+			short_name: 'Horizon'
+			background_color: '#1c1e26'
+			font_color: '#fdf0ed'
+			accent_color: '#e95678'
+			secondary_accent: '#fab795'
+			card_background: '#232530'
+			card_border: '#34384a'
+			description: 'Warm twilight horizon spectrum with glowing neon coral, peach and dusk plum'
+			is_dark: true
+		}
+		'tailwind_dark': Theme{
+			name: 'Tailwind Slate Emerald'
+			short_name: 'Tailwind'
+			background_color: '#0b1120'
+			font_color: '#f1f5f9'
+			accent_color: '#10b981'
+			secondary_accent: '#06b6d4'
+			card_background: '#151e32'
+			card_border: '#24324f'
+			description: 'Modern Tailwind CSS flagship developer theme with deep slate 950 and vibrant emerald'
+			is_dark: true
+		}
+		'supabase': Theme{
+			name: 'Supabase Dark'
+			short_name: 'Supabase'
+			background_color: '#121212'
+			font_color: '#f8fafc'
+			accent_color: '#3ecf8e'
+			secondary_accent: '#70e1a5'
+			card_background: '#1c1c1c'
+			card_border: '#2e2e2e'
+			description: 'Supabase cloud database dashboard with sleek dark obsidian and signature emerald'
+			is_dark: true
+		}
+		'oled_black': Theme{
+			name: 'OLED Laser Black'
+			short_name: 'OLED Laser'
+			background_color: '#000000'
+			font_color: '#ffffff'
+			accent_color: '#00e676'
+			secondary_accent: '#2979ff'
+			card_background: '#0a0a0a'
+			card_border: '#222222'
+			description: 'Zero-power pure OLED black canvas with ultra-sharp laser green and high-contrast cards'
+			is_dark: true
+		}
+		'titanium_slate': Theme{
+			name: 'Titanium Slate Pro'
+			short_name: 'Titanium'
+			background_color: '#131417'
+			font_color: '#e5e5ea'
+			accent_color: '#ff6b22'
+			secondary_accent: '#98989d'
+			card_background: '#1c1d22'
+			card_border: '#2f3038'
+			description: 'Apple Pro hardware grade aerospace titanium space black with aviation orange accents'
+			is_dark: true
+		}
+		'jetbrains_darcula': Theme{
+			name: 'JetBrains Darcula'
+			short_name: 'Darcula'
+			background_color: '#2b2b2b'
+			font_color: '#a9b7c6'
+			accent_color: '#cc7832'
+			secondary_accent: '#6897bb'
+			card_background: '#313335'
+			card_border: '#45484a'
+			description: 'Iconic JetBrains IntelliJ IDEA / PyCharm Darcula IDE workspace with warm syntax orange'
+			is_dark: true
+		}
+		'nordic_paper': Theme{
+			name: 'Nordic Paper Light'
+			short_name: 'Nordic Paper'
+			background_color: '#f7f7f5'
+			font_color: '#202124'
+			accent_color: '#2b5c8f'
+			secondary_accent: '#c2593f'
+			card_background: '#ffffff'
+			card_border: '#e0ded8'
+			description: 'Nordic editorial paper light canvas with deep fjord blue and crisp typographic elegance'
+			is_dark: false
+		}
+		'cobalt2': Theme{
+			name: 'Cobalt2'
+			short_name: 'Cobalt2'
+			background_color: '#193549'
+			font_color: '#ffffff'
+			accent_color: '#ffc600'
+			secondary_accent: '#0088ff'
+			card_background: '#15232d'
+			card_border: '#1f4662'
+			description: 'Wes Bos official Cobalt2 deep navy blue with brilliant canary yellow accents'
+			is_dark: true
+		}
+		'win11_slate': Theme{
+			name: 'Windows 11 Fluent Slate'
+			short_name: 'Win11 Slate'
+			background_color: '#202020'
+			font_color: '#ffffff'
+			accent_color: '#60cdff'
+			secondary_accent: '#0078d4'
+			card_background: '#2c2c2c'
+			card_border: '#383838'
+			description: 'Modern Windows 11 Fluent Dark Acrylic with vibrant sky blue accents'
+			is_dark: true
+		}
+		'win11_light': Theme{
+			name: 'Windows 11 Mica Light'
+			short_name: 'Mica Light'
+			background_color: '#f3f3f3'
+			font_color: '#1b1b1b'
+			accent_color: '#005fb8'
+			secondary_accent: '#0078d4'
+			card_background: '#ffffff'
+			card_border: '#e5e5e5'
+			description: 'Modern Windows 11 Mica Light desktop with crisp Fluent typography'
+			is_dark: false
+		}
+		'ubuntu_dark': Theme{
+			name: 'Ubuntu Yaru Dark'
+			short_name: 'Ubuntu Dark'
+			background_color: '#242424'
+			font_color: '#ffffff'
+			accent_color: '#e95420'
+			secondary_accent: '#77216f'
+			card_background: '#303030'
+			card_border: '#424242'
+			description: 'Official Ubuntu Yaru modern Linux dark desktop with warm aubergine charcoal surfaces and signature Ubuntu orange accents'
+			is_dark: true
+		}
+		'ubuntu_light': Theme{
+			name: 'Ubuntu Yaru Light'
+			short_name: 'Ubuntu Light'
+			background_color: '#f7f7f7'
+			font_color: '#1e1e1e'
+			accent_color: '#e95420'
+			secondary_accent: '#77216f'
+			card_background: '#ffffff'
+			card_border: '#dedede'
+			description: 'Clean Ubuntu Yaru modern Linux light desktop with crisp white surfaces, warm gray borders, and vibrant Ubuntu orange'
+			is_dark: false
+		}
+		'adwaita_dark': Theme{
+			name: 'GNOME Adwaita Dark'
+			short_name: 'Adwaita Dark'
+			background_color: '#242424'
+			font_color: '#ffffff'
+			accent_color: '#3584e4'
+			secondary_accent: '#1c71d8'
+			card_background: '#303030'
+			card_border: '#3d3d3d'
+			description: 'Modern GNOME Libadwaita desktop theme with deep slate surfaces and signature Adwaita blue accents'
+			is_dark: true
+		}
+		'adwaita_light': Theme{
+			name: 'GNOME Adwaita Light'
+			short_name: 'Adwaita Light'
+			background_color: '#fafafa'
+			font_color: '#2e3436'
+			accent_color: '#3584e4'
+			secondary_accent: '#1c71d8'
+			card_background: '#ffffff'
+			card_border: '#dcdcdc'
+			description: 'Clean GNOME Libadwaita light desktop with neutral paper surfaces and signature blue controls'
+			is_dark: false
+		}
+		'linux_mint': Theme{
+			name: 'Linux Mint Dark'
+			short_name: 'Linux Mint'
+			background_color: '#2f343f'
+			font_color: '#e0e2e4'
+			accent_color: '#87a556'
+			secondary_accent: '#2ebd59'
+			card_background: '#242831'
+			card_border: '#3e4453'
+			description: 'Modern Linux Mint Cinnamon desktop theme with slate graphite surfaces and signature mint green accents'
+			is_dark: true
+		}
+		'pop_os': Theme{
+			name: 'Pop!_OS Dark'
+			short_name: 'Pop!_OS'
+			background_color: '#202222'
+			font_color: '#f6f6f6'
+			accent_color: '#48b9c7'
+			secondary_accent: '#faa41a'
+			card_background: '#2c2e2e'
+			card_border: '#3d4040'
+			description: 'System76 Pop!_OS and COSMIC modern Linux desktop with dark charcoal surfaces and signature teal and amber accents'
+			is_dark: true
+		}
+		'fedora_dark': Theme{
+			name: 'Fedora Blue'
+			short_name: 'Fedora'
+			background_color: '#1f232a'
+			font_color: '#ffffff'
+			accent_color: '#51a2da'
+			secondary_accent: '#294172'
+			card_background: '#292e38'
+			card_border: '#3b4250'
+			description: 'Official Fedora Workstation modern Linux theme with navy graphite cards and crisp Fedora blue'
+			is_dark: true
+		}
+		'aura': Theme{
+			name: 'Aura Dark'
+			short_name: 'Aura'
+			background_color: '#15141b'
+			font_color: '#edecee'
+			accent_color: '#a277ff'
+			secondary_accent: '#61ffca'
+			card_background: '#1f1d2b'
+			card_border: '#322f44'
+			description: 'Lush mystical dark theme with ethereal neon purple and mint green accents'
+			is_dark: true
+		}
+		'apple_dark': Theme{
+			name: 'Apple Dark'
+			short_name: 'Dark'
+			background_color: '#161618'
+			font_color: '#f5f5f7'
+			accent_color: '#0a84ff'
+			secondary_accent: '#bf5af2'
+			card_background: '#242426'
+			card_border: '#38383a'
+			description: 'Vibrant Apple macOS Dark Mode surface with titanium gray cards and iOS system blue'
+			is_dark: true
+		}
+		'apple_light': Theme{
+			name: 'Apple Light'
+			short_name: 'Light'
+			background_color: '#f5f5f7'
+			font_color: '#1d1d1f'
+			accent_color: '#0071e3'
+			secondary_accent: '#5e5ce6'
+			card_background: '#ffffff'
+			card_border: '#e5e5e7'
+			description: 'Clean Apple macOS Aqua light canvas with SF Pro typography and Cupertino system blue'
+			is_dark: false
+		}
+		'ventura_amber': Theme{
+			name: 'Ventura Amber'
+			short_name: 'Ventura'
+			background_color: '#1c140e'
+			font_color: '#fffbeb'
+			accent_color: '#ff9500'
+			secondary_accent: '#f97316'
+			card_background: '#281e16'
+			card_border: '#3d2f24'
+			description: 'macOS Ventura golden sunset dark hues with warm amber and roasted espresso cards'
+			is_dark: true
+		}
+		'apple_sunset': Theme{
+			name: 'Apple Sunset'
+			short_name: 'Sunset'
+			background_color: '#221526'
+			font_color: '#fdf4f8'
+			accent_color: '#ff7733'
+			secondary_accent: '#e056fd'
+			card_background: '#2d1e33'
+			card_border: '#46314f'
+			description: 'Warm macOS Mojave twilight sunset hues with rich plum surfaces and neon amber accents'
+			is_dark: true
+		}
+		'soft_pastel': Theme{
+			name: 'Soft Pastel'
+			short_name: 'Pastel'
+			background_color: '#f9f6f0'
+			font_color: '#1c1917'
+			accent_color: '#c05638'
+			secondary_accent: '#3d405b'
+			card_background: '#ffffff'
+			card_border: '#e7dfd5'
+			description: 'Apple Studio warm soft linen light theme with terracotta coral and artisan cards'
+			is_dark: false
+		}
+		'nextstep': Theme{
+			name: 'NeXTSTEP 1989'
+			short_name: 'NeXTSTEP'
+			background_color: '#262626'
+			font_color: '#dedede'
+			accent_color: '#4a90e2'
+			secondary_accent: '#707070'
+			card_background: '#333333'
+			card_border: '#4d4d4d'
+			description: 'Steve Jobs 1989 NeXTSTEP UNIX workstation dark minimalist elegance'
+			is_dark: true
+		}
+		'mac_os_aqua': Theme{
+			name: 'Mac OS X Aqua'
+			short_name: 'OS X Aqua'
+			background_color: '#e6ebed'
+			font_color: '#0f172a'
+			accent_color: '#0066cc'
+			secondary_accent: '#ff9500'
+			card_background: '#ffffff'
+			card_border: '#bac7cd'
+			description: 'Early 2001 OS X Cheetah glossy gel buttons and brushed pinstripes'
+			is_dark: false
+		}
+		'hotdog_stand': Theme{
+			name: 'Hot Dog Stand'
+			short_name: 'Hot Dog'
+			background_color: '#000000'
+			font_color: '#ffffff'
+			accent_color: '#ff0000'
+			secondary_accent: '#ffff00'
+			card_background: '#1c0000'
+			card_border: '#ffff00'
+			description: 'Unforgettable Windows 3.1 1992 Hot Dog Stand high-contrast yellow & red'
+			is_dark: true
+		}
+		'playstation': Theme{
+			name: 'PlayStation 1994'
+			short_name: 'PlayStation'
+			background_color: '#1e1e24'
+			font_color: '#e4e5eb'
+			accent_color: '#00d2c4'
+			secondary_accent: '#f44336'
+			card_background: '#2a2b34'
+			card_border: '#3f414f'
+			description: '1994 PSX console grey with iconic geometric controller accents'
+			is_dark: true
+		}
 	}
 }
 
@@ -561,6 +969,48 @@ pub fn get_theme(name string) Theme {
 		'vscode_dark': 'one_dark_pro'
 		'sublime_text': 'monokai_pro'
 		'material_dark': 'one_dark_pro'
+		'raycast': 'raycast_dark'
+		'linear': 'linear_dark'
+		'vercel': 'vercel_dark'
+		'geist': 'vercel_dark'
+		'ue5': 'unreal_engine'
+		'arc_browser': 'arc_velvet'
+		'abyss_bio': 'abyss'
+		'deep_ocean': 'abyss'
+		'cyberpunk_2077': 'night_city'
+		'solar_dusk': 'horizon'
+		'tailwind': 'tailwind_dark'
+		'tailwind_emerald': 'tailwind_dark'
+		'supabase_dark': 'supabase'
+		'oled_laser': 'oled_black'
+		'pure_black': 'oled_black'
+		'titanium': 'titanium_slate'
+		'darcula_ide': 'jetbrains_darcula'
+		'jetbrains': 'jetbrains_darcula'
+		'nordic': 'nordic_paper'
+		'paper_light': 'nordic_paper'
+		'cobalt': 'cobalt2'
+		'fluent_slate': 'win11_slate'
+		'mica_light': 'win11_light'
+		'ubuntu': 'ubuntu_dark'
+		'ubuntu_yaru': 'ubuntu_dark'
+		'yaru_dark': 'ubuntu_dark'
+		'yaru_light': 'ubuntu_light'
+		'adwaita': 'adwaita_dark'
+		'gnome_dark': 'adwaita_dark'
+		'libadwaita': 'adwaita_dark'
+		'gnome_light': 'adwaita_light'
+		'mint_dark': 'linux_mint'
+		'mint': 'linux_mint'
+		'cosmic_dark': 'pop_os'
+		'pop_dark': 'pop_os'
+		'fedora': 'fedora_dark'
+		'aura_dark': 'aura'
+		'aqua_os_x': 'mac_os_aqua'
+		'psx': 'playstation'
+		'c64': 'commodore64'
+		'mac_classic': 'macintosh_system7'
+		'synthwave': 'synthwave84'
 	}
 	if resolved := alias_map[clean] {
 		if t := themes[resolved] {
@@ -619,17 +1069,86 @@ pub fn get_themes_json() string {
 }
 
 pub fn get_theme_names() []string {
-	return [
-		'monokai_pro', 'tokyo_night', 'one_dark_pro', 'gruvbox_dark', 'gruvbox_light',
-		'rose_pine', 'everforest', 'kanagawa', 'dracula', 'nord',
-		'catppuccin', 'solarized_dark', 'solarized_light', 'github_dark', 'github_light',
-		'sonoma_dark', 'sonoma_light', 'sonoma_emerald', 'codefreelance',
-		'fluent_dark', 'fluent_light', 'win95', 'commodore64', 'amiga',
-		'macintosh_system7', 'gameboy', 'matrix_phosphor', 'amber_crt',
-		'synthwave84', 'cyberpunk', 'navy_blue', 'forest_green',
-		'sunset_orange', 'crimson', 'emerald', 'sapphire',
-		'amethyst', 'midnight', 'charcoal', 'slate', 'dark', 'light'
+	mut names := [
+		'abyss',
+		'adwaita_dark',
+		'adwaita_light',
+		'amber_crt',
+		'amethyst',
+		'amiga',
+		'apple_dark',
+		'apple_light',
+		'apple_sunset',
+		'arc_velvet',
+		'aura',
+		'catppuccin',
+		'charcoal',
+		'cobalt2',
+		'codefreelance',
+		'commodore64',
+		'crimson',
+		'cyberpunk',
+		'dark',
+		'dracula',
+		'emerald',
+		'everforest',
+		'fedora_dark',
+		'fluent_dark',
+		'fluent_light',
+		'forest_green',
+		'gameboy',
+		'github_dark',
+		'github_light',
+		'gruvbox_dark',
+		'gruvbox_light',
+		'horizon',
+		'hotdog_stand',
+		'jetbrains_darcula',
+		'kanagawa',
+		'light',
+		'linear_dark',
+		'linux_mint',
+		'mac_os_aqua',
+		'macintosh_system7',
+		'matrix_phosphor',
+		'midnight',
+		'monokai_pro',
+		'navy_blue',
+		'nextstep',
+		'night_city',
+		'nord',
+		'nordic_paper',
+		'oled_black',
+		'one_dark_pro',
+		'playstation',
+		'pop_os',
+		'raycast_dark',
+		'rose_pine',
+		'sapphire',
+		'slate',
+		'soft_pastel',
+		'solarized_dark',
+		'solarized_light',
+		'sonoma_dark',
+		'sonoma_emerald',
+		'sonoma_light',
+		'sunset_orange',
+		'supabase',
+		'synthwave84',
+		'tailwind_dark',
+		'titanium_slate',
+		'tokyo_night',
+		'ubuntu_dark',
+		'ubuntu_light',
+		'unreal_engine',
+		'ventura_amber',
+		'vercel_dark',
+		'win11_light',
+		'win11_slate',
+		'win95',
 	]
+	names.sort()
+	return names
 }
 
 pub fn list_themes() []string {
