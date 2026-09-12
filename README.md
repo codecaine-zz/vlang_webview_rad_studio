@@ -88,12 +88,19 @@ v list
 Webview connects directly to your operating system's native browser engine:
 
 - **macOS**: Built-in Apple WebKit (requires Xcode Command Line Tools: `xcode-select --install`).
-- **Linux (Ubuntu / Debian)**: This project was tested on **Ubuntu 24.04 LTS** and works with the native system packages below.
+- **Linux (Ubuntu / Debian / Kali)**: Tested on **Ubuntu** and **Kali Linux** (tested in Parallels Desktop). Works with the native system packages below:
 
   ```bash
   sudo apt-get update
   sudo apt-get install -y build-essential pkg-config libgtk-3-dev libwebkit2gtk-4.1-dev libfontconfig1-dev
   ```
+
+  For Webview to work, `libwebkitgtk-6.0-4` needs to be installed:
+  ```bash
+  sudo apt install libwebkitgtk-6.0-4
+  ```
+
+  > 💡 **Pre-compiled Binaries**: If the code is already compiled, the binary will just work without the need of the WebKit library being installed.
 
   On Ubuntu 22.04 or a distro release that provides WebKitGTK 4.0 instead, install `libwebkit2gtk-4.0-dev` in place of `libwebkit2gtk-4.1-dev`.
 
@@ -151,7 +158,7 @@ Webview connects directly to your operating system's native browser engine:
   ```
 - **Windows**: Microsoft Edge WebView2 (included with Windows 10 & 11, or install Evergreen WebView2 Runtime).
 
-> ✅ **Ubuntu-tested**: All 24 demos and all 16 desktop applications compile against Ubuntu 24.04's system GTK3/WebKitGTK 4.1 packages. Demo 01 was also launched and visually checked with the native WebView event loop. Linux screenshots can be regenerated with `bash scratch/capture_linux_screenshots.sh` after installing `gnome-screenshot`.
+> ✅ **Ubuntu & Kali-tested**: All 24 demos and all 16 desktop applications compile against system GTK3/WebKitGTK packages (tested on Ubuntu and Kali Linux in Parallels Desktop). When running pre-compiled binaries, the binary will just work without needing the WebKit library installed. Linux screenshots can be regenerated with `bash scratch/capture_linux_screenshots.sh` after installing `gnome-screenshot`.
 >
 > 💡 **Self-Contained in this Repository**:
 > Note that this repository already vendors a complete, hardware-accelerated Webview backend with Cocoa Objective-C window management (`window_helper.m`) in `webview/`, so you can clone and run all applications and demos immediately without manual setup.
@@ -390,7 +397,7 @@ vlang_webview_rad_studio/
 
 - [V compiler](https://vlang.io) (v0.4.x or later)
 - macOS: Xcode command line tools (`xcode-select --install`)
-- Linux: `gtk3`, `webkit2gtk-4.1` (or `webkit2gtk-4.0`)
+- Linux: `gtk3`, `webkit2gtk-4.1` (or `webkit2gtk-4.0`), `libwebkitgtk-6.0-4` (needed for source builds/runs; pre-compiled binaries run directly)
 - Windows: Microsoft Edge WebView2 runtime
 
 ### 1. Launch Visual RAD Studio IDE
