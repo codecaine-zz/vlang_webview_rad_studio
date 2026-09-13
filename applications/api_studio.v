@@ -28,19 +28,35 @@ fn main() {
 	win.subheading('Actions')
 
 	win.button('🚀 Send HTTP GET Request', fn (w &simplegui.SimpleWindow, _ string) {
-		url := w.get_value('inp_1')
+		url := w.get_value('inp_1').trim_space()
+		if !system.is_safe_url(url) {
+			w.alert('Invalid URL', 'Enter an HTTP or HTTPS URL.')
+			return
+		}
 		w.notification('Sending Request', 'GET: ' + url)
 		resp := system.http_get(url)
+		if resp.status_code == 0 {
+			w.alert('Request Failed', resp.body)
+			return
+		}
 		result_str := 'Status: ${resp.status_code}\n\nHeaders:\n${resp.headers}\n\nBody:\n${resp.body}'
 		w.set_value('txt_2', result_str)
 		w.alert('HTTP Response', 'Received status: ${resp.status_code}')
 	})
 
 	win.button('📤 Send HTTP POST Request', fn (w &simplegui.SimpleWindow, _ string) {
-		url := w.get_value('inp_1')
+		url := w.get_value('inp_1').trim_space()
+		if !system.is_safe_url(url) {
+			w.alert('Invalid URL', 'Enter an HTTP or HTTPS URL.')
+			return
+		}
 		body := w.get_value('txt_1')
 		w.notification('Sending Request', 'POST: ' + url)
 		resp := system.http_post(url, body, 'application/json')
+		if resp.status_code == 0 {
+			w.alert('Request Failed', resp.body)
+			return
+		}
 		result_str := 'Status: ${resp.status_code}\n\nResponse Body:\n${resp.body}'
 		w.set_value('txt_2', result_str)
 		w.alert('HTTP Response', 'Received status: ${resp.status_code}')

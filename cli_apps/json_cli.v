@@ -16,9 +16,13 @@ fn main() {
 	validate_only := fp.bool('validate', `v`, false, 'Validate JSON without printing body')
 
 	additional_args := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
+	}
+	if file_path != '' && additional_args.len > 0 {
+		eprintln('Error: Specify JSON with --file or as arguments, not both')
+		exit(2)
 	}
 
 	mut json_str := ''

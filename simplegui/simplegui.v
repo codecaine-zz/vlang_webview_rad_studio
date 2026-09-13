@@ -3,6 +3,7 @@ module simplegui
 import webview
 import system
 import os
+import sync
 
 pub type EventCallback = fn (win &SimpleWindow, val string)
 
@@ -10,13 +11,13 @@ pub type EventCallback = fn (win &SimpleWindow, val string)
 pub struct SimpleWindowOptions {
 pub:
 	title         string = 'SimpleGUI Desktop Application'
-	width         int    = 1000
-	height        int    = 700
+	width         int = 1000
+	height        int = 700
 	theme         string = 'monokai_pro'
-	fullscreen    bool   = true
+	fullscreen    bool = true
 	always_on_top bool
-	padding       int    = 24
-	spacing       int    = 16
+	padding       int = 24
+	spacing       int = 16
 }
 
 @[heap]
@@ -56,6 +57,9 @@ pub mut:
 	status_text             string
 	x_pos                   int = 100
 	y_pos                   int = 100
+	action_lock             sync.Mutex
+	action_active           bool
+	state_lock              sync.Mutex
 }
 
 pub fn new_window(opts SimpleWindowOptions) &SimpleWindow {
@@ -93,7 +97,26 @@ pub fn new_window(opts SimpleWindowOptions) &SimpleWindow {
 		status_text: ''
 		x_pos: 100
 		y_pos: 100
+		action_active: false
 	}
+}
+
+fn (mut win SimpleWindow) try_begin_action() bool {
+	win.action_lock.lock()
+	defer {
+		win.action_lock.unlock()
+	}
+	if win.action_active {
+		return false
+	}
+	win.action_active = true
+	return true
+}
+
+fn (mut win SimpleWindow) end_action() {
+	win.action_lock.lock()
+	win.action_active = false
+	win.action_lock.unlock()
 }
 
 pub fn new_simple_window(title string, width int, height int) &SimpleWindow {
@@ -581,17 +604,31 @@ pub fn (mut win SimpleWindow) begin_flex_box(name string, direction string, just
 	dir := if direction == 'column' { 'column' } else { 'row' }
 	mut j_val := 'flex-start'
 	match justify {
-		'center' { j_val = 'center' }
-		'end' { j_val = 'flex-end' }
-		'space_between' { j_val = 'space-between' }
-		'space_around' { j_val = 'space-around' }
+		'center' {
+			j_val = 'center'
+		}
+		'end' {
+			j_val = 'flex-end'
+		}
+		'space_between' {
+			j_val = 'space-between'
+		}
+		'space_around' {
+			j_val = 'space-around'
+		}
 		else {}
 	}
 	mut a_val := 'center'
 	match align {
-		'start' { a_val = 'flex-start' }
-		'end' { a_val = 'flex-end' }
-		'stretch' { a_val = 'stretch' }
+		'start' {
+			a_val = 'flex-start'
+		}
+		'end' {
+			a_val = 'flex-end'
+		}
+		'stretch' {
+			a_val = 'stretch'
+		}
 		else {}
 	}
 	return win.raw_html('<div id="${name}" style="display: flex; flex-direction: ${dir}; justify-content: ${j_val}; align-items: ${a_val}; gap: 12px; width: 100%;">')
@@ -758,11 +795,67 @@ pub fn (mut win SimpleWindow) expand_fill() &SimpleWindow {
 }
 
 pub fn (win &SimpleWindow) set_control_enabled(name string, enabled bool) &SimpleWindow {
+	mut actual_id := name
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
+		if idx := mut_win.name_to_ctrl[name] {
+			actual_id = mut_win.controls[idx].id
+			mut_win.controls[idx].enabled = enabled
+		}
+	}
 	if !isnil(win.wv) {
-		dis := if !enabled { 'true' } else { 'false' }
-		win.wv.eval('if (document.getElementById("${name}")) { document.getElementById("${name}").disabled = ${dis}; }')
+		control_id := system.json_escape(actual_id)
+		disabled := if !enabled { 'true' } else { 'false' }
+		win.wv.eval('
+			const control = document.getElementById(${control_id});
+			if (control) {
+				if (control.dataset.sgPreviousDisabled !== undefined) {
+					control.dataset.sgPreviousDisabled = "${disabled}";
+				} else {
+					control.disabled = ${disabled};
+				}
+			}
+		')
 	}
 	return win
+}
+
+fn (win &SimpleWindow) set_action_controls_enabled(enabled bool) {
+	if !isnil(win.wv) {
+		if enabled {
+			win.wv.eval('
+				document.querySelectorAll("button, input, textarea, select").forEach((control) => {
+					if (control.dataset.sgPreviousDisabled !== undefined) {
+						control.disabled = control.dataset.sgPreviousDisabled === "true";
+						delete control.dataset.sgPreviousDisabled;
+					}
+				});
+				document.querySelectorAll(".sg-table tbody, .sg-menu-item, .sg-context-item").forEach((control) => {
+					control.style.pointerEvents = control.dataset.sgPreviousPointerEvents || "";
+					delete control.dataset.sgPreviousPointerEvents;
+				});
+			')
+		} else {
+			win.wv.eval('
+				document.querySelectorAll("button, input, textarea, select").forEach((control) => {
+					if (control.dataset.sgPreviousDisabled === undefined) {
+						control.dataset.sgPreviousDisabled = String(control.disabled);
+						control.disabled = true;
+					}
+				});
+				document.querySelectorAll(".sg-table tbody, .sg-menu-item, .sg-context-item").forEach((control) => {
+					if (control.dataset.sgPreviousPointerEvents === undefined) {
+						control.dataset.sgPreviousPointerEvents = control.style.pointerEvents;
+						control.style.pointerEvents = "none";
+					}
+				});
+			')
+		}
+	}
 }
 
 pub fn (win &SimpleWindow) set_control_visible(name string, visible bool) &SimpleWindow {
@@ -1075,15 +1168,22 @@ pub fn (mut win SimpleWindow) box_end() &SimpleWindow {
 // ---------------------------------------------------------
 
 pub fn (win &SimpleWindow) get_value(id string) string {
-	if val := win.values[id] {
-		return val
-	}
-	if idx := win.name_to_ctrl[id] {
-		actual_id := win.controls[idx].id
-		if val := win.values[actual_id] {
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
+		if val := mut_win.values[id] {
 			return val
 		}
-		return win.controls[idx].value
+		if idx := mut_win.name_to_ctrl[id] {
+			actual_id := mut_win.controls[idx].id
+			if val := mut_win.values[actual_id] {
+				return val
+			}
+			return mut_win.controls[idx].value
+		}
 	}
 	return ''
 }
@@ -1092,6 +1192,10 @@ pub fn (win &SimpleWindow) set_value(id string, val string) {
 	mut actual_id := id
 	unsafe {
 		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
 		mut_win.values[id] = val
 		if idx := mut_win.name_to_ctrl[id] {
 			actual_id = mut_win.controls[idx].id
@@ -1122,11 +1226,84 @@ fn table_rows_json(rows [][]string) string {
 	return '[' + encoded_rows.join(',') + ']'
 }
 
+fn (win &SimpleWindow) render_table_rows(name string, click_id string, rows [][]string) {
+	if isnil(win.wv) {
+		return
+	}
+	table_id := system.json_escape(name)
+	click_handler_id := system.json_escape(click_id)
+	rows_data := table_rows_json(rows)
+	win.wv.eval('(function() {
+		const table = document.getElementById(${table_id});
+		if (!table) return;
+		const body = table.querySelector("tbody");
+		if (!body) return;
+		const rows = ${rows_data};
+		body.replaceChildren();
+		rows.forEach((row, rowIndex) => {
+			const tr = document.createElement("tr");
+			tr.dataset.sgRowIndex = String(rowIndex);
+			tr.addEventListener("click", () => window.vlangTriggerClick(${click_handler_id}, String(rowIndex)));
+			row.forEach((cell, cellIndex) => {
+				const td = document.createElement("td");
+				td.textContent = cell;
+				if (cellIndex === 1) {
+					td.style.fontFamily = "monospace";
+					td.style.wordBreak = "break-all";
+				}
+				tr.appendChild(td);
+			});
+			body.appendChild(tr);
+		});
+	})();')
+}
+
+pub fn (win &SimpleWindow) set_table_headers(name string, headers []string) &SimpleWindow {
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
+		if idx := mut_win.name_to_ctrl[name] {
+			if mut_win.controls[idx].typ != .table {
+				return win
+			}
+			mut_win.controls[idx].headers = headers.clone()
+		} else {
+			return win
+		}
+	}
+	if !isnil(win.wv) {
+		table_id := system.json_escape(name)
+		headers_data := table_rows_json([headers])
+		win.wv.eval('(function() {
+			const table = document.getElementById(${table_id});
+			if (!table) return;
+			const head = table.querySelector("thead");
+			if (!head) return;
+			const headers = ${headers_data}[0];
+			const row = document.createElement("tr");
+			headers.forEach((header) => {
+				const th = document.createElement("th");
+				th.textContent = header;
+				row.appendChild(th);
+			});
+			head.replaceChildren(row);
+		})();')
+	}
+	return win
+}
+
 pub fn (win &SimpleWindow) set_table_rows(name string, rows [][]string) &SimpleWindow {
 	mut target_name := name
 	mut click_id := ''
 	unsafe {
 		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
 		if target_name == '' {
 			for ctrl in mut_win.controls {
 				if ctrl.typ == .table {
@@ -1145,78 +1322,72 @@ pub fn (win &SimpleWindow) set_table_rows(name string, rows [][]string) &SimpleW
 			return win
 		}
 	}
-	if !isnil(win.wv) {
-		table_id := system.json_escape(target_name)
-		click_handler_id := system.json_escape(click_id)
-		rows_data := table_rows_json(rows)
-		win.wv.eval('(function() {
-			const table = document.getElementById(${table_id});
-			if (!table) return;
-			const body = table.querySelector("tbody");
-			if (!body) return;
-			const rows = ${rows_data};
-			body.replaceChildren();
-			rows.forEach((row, rowIndex) => {
-				const tr = document.createElement("tr");
-				tr.dataset.sgRowIndex = String(rowIndex);
-				tr.addEventListener("click", () => window.vlangTriggerClick(${click_handler_id}, String(rowIndex)));
-				row.forEach((cell, cellIndex) => {
-					const td = document.createElement("td");
-					td.textContent = cell;
-					if (cellIndex === 1) {
-						td.style.fontFamily = "monospace";
-						td.style.wordBreak = "break-all";
-					}
-					tr.appendChild(td);
-				});
-				body.appendChild(tr);
-			});
-		})();')
-	}
+	win.render_table_rows(target_name, click_id, rows)
 	return win
 }
 
 pub fn (win &SimpleWindow) add_table_row(name string, row []string) &SimpleWindow {
 	mut rows := [][]string{}
+	mut click_id := ''
 	unsafe {
 		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
 		if idx := mut_win.name_to_ctrl[name] {
 			if mut_win.controls[idx].typ != .table {
 				return win
 			}
+			mut_win.controls[idx].rows << row.clone()
 			rows = mut_win.controls[idx].rows.clone()
+			click_id = mut_win.controls[idx].click_id
 		} else {
 			return win
 		}
 	}
-	rows << row.clone()
-	return win.set_table_rows(name, rows)
+	win.render_table_rows(name, click_id, rows)
+	return win
 }
 
 pub fn (win &SimpleWindow) remove_table_row(name string, row_index int) &SimpleWindow {
 	mut rows := [][]string{}
+	mut click_id := ''
 	unsafe {
 		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
 		if idx := mut_win.name_to_ctrl[name] {
 			if mut_win.controls[idx].typ != .table {
 				return win
 			}
+			if row_index < 0 || row_index >= mut_win.controls[idx].rows.len {
+				return win
+			}
+			mut_win.controls[idx].rows.delete(row_index)
 			rows = mut_win.controls[idx].rows.clone()
+			click_id = mut_win.controls[idx].click_id
 		} else {
 			return win
 		}
 	}
-	if row_index < 0 || row_index >= rows.len {
-		return win
-	}
-	rows.delete(row_index)
-	return win.set_table_rows(name, rows)
+	win.render_table_rows(name, click_id, rows)
+	return win
 }
 
 pub fn (win &SimpleWindow) table_row_count(name string) int {
-	if idx := win.name_to_ctrl[name] {
-		if win.controls[idx].typ == .table {
-			return win.controls[idx].rows.len
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
+		if idx := mut_win.name_to_ctrl[name] {
+			if mut_win.controls[idx].typ == .table {
+				return mut_win.controls[idx].rows.len
+			}
 		}
 	}
 	return 0
@@ -1489,18 +1660,42 @@ pub fn (win &SimpleWindow) set_fixed_size(w int, h int) &SimpleWindow {
 
 pub fn (win &SimpleWindow) set_size_preset(preset string) &SimpleWindow {
 	match preset.to_lower() {
-		'small', 'compact' { return win.set_size(400, 300) }
-		'medium', 'standard' { return win.set_size(640, 480) }
-		'large' { return win.set_size(800, 600) }
-		'xlarge', 'xl' { return win.set_size(1024, 768) }
-		'hd', '720p' { return win.set_size(1280, 720) }
-		'full_hd', '1080p' { return win.set_size(1920, 1080) }
-		'dialog', 'alert' { return win.set_size(420, 220) }
-		'login', 'auth' { return win.set_size(380, 450) }
-		'settings', 'preferences' { return win.set_size(550, 400) }
-		'sidebar', 'panel' { return win.set_size(300, 600) }
-		'splash', 'square' { return win.set_size(500, 500) }
-		else { return win.set_size(800, 600) }
+		'small', 'compact' {
+			return win.set_size(400, 300)
+		}
+		'medium', 'standard' {
+			return win.set_size(640, 480)
+		}
+		'large' {
+			return win.set_size(800, 600)
+		}
+		'xlarge', 'xl' {
+			return win.set_size(1024, 768)
+		}
+		'hd', '720p' {
+			return win.set_size(1280, 720)
+		}
+		'full_hd', '1080p' {
+			return win.set_size(1920, 1080)
+		}
+		'dialog', 'alert' {
+			return win.set_size(420, 220)
+		}
+		'login', 'auth' {
+			return win.set_size(380, 450)
+		}
+		'settings', 'preferences' {
+			return win.set_size(550, 400)
+		}
+		'sidebar', 'panel' {
+			return win.set_size(300, 600)
+		}
+		'splash', 'square' {
+			return win.set_size(500, 500)
+		}
+		else {
+			return win.set_size(800, 600)
+		}
 	}
 }
 
@@ -2304,15 +2499,31 @@ pub fn (win &SimpleWindow) generate_html() string {
 	mut body_html := ''
 	for ctrl in win.controls {
 		mut style_str := ''
-		if ctrl.width > 0 { style_str += 'width:${ctrl.width}px; max-width:${ctrl.width}px; ' }
-		if ctrl.height > 0 { style_str += 'height:${ctrl.height}px; ' }
-		if ctrl.font_size > 0 { style_str += 'font-size:${ctrl.font_size}px; ' }
-		if ctrl.is_bold { style_str += 'font-weight:700; ' }
-		if ctrl.font_color != '' { style_str += 'color:${ctrl.font_color}; ' }
-		if ctrl.background_color != '' { style_str += 'background-color:${ctrl.background_color}; ' }
-		if !ctrl.visible { style_str += 'display:none; ' }
-		if ctrl.expand_fill { style_str += 'flex:1 1 auto; width:100%; ' }
-		
+		if ctrl.width > 0 {
+			style_str += 'width:${ctrl.width}px; max-width:${ctrl.width}px; '
+		}
+		if ctrl.height > 0 {
+			style_str += 'height:${ctrl.height}px; '
+		}
+		if ctrl.font_size > 0 {
+			style_str += 'font-size:${ctrl.font_size}px; '
+		}
+		if ctrl.is_bold {
+			style_str += 'font-weight:700; '
+		}
+		if ctrl.font_color != '' {
+			style_str += 'color:${ctrl.font_color}; '
+		}
+		if ctrl.background_color != '' {
+			style_str += 'background-color:${ctrl.background_color}; '
+		}
+		if !ctrl.visible {
+			style_str += 'display:none; '
+		}
+		if ctrl.expand_fill {
+			style_str += 'flex:1 1 auto; width:100%; '
+		}
+
 		tip_attr := if ctrl.tooltip != '' { 'title="${ctrl.tooltip}"' } else { '' }
 		dis_attr := if !ctrl.enabled { 'disabled' } else { '' }
 
@@ -2398,7 +2609,11 @@ pub fn (win &SimpleWindow) generate_html() string {
 				for row_idx, r in ctrl.rows {
 					tbody += '<tr onclick="window.vlangTriggerClick(\'${ctrl.click_id}\', \'${row_idx}\')">'
 					for col_idx, col in r {
-						mono_style := if col_idx == 1 { ' style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;font-size:12px;word-break:break-all;overflow-wrap:anywhere;"' } else { ' style="word-break:break-all;overflow-wrap:anywhere;"' }
+						mono_style := if col_idx == 1 {
+							' style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;font-size:12px;word-break:break-all;overflow-wrap:anywhere;"'
+						} else {
+							' style="word-break:break-all;overflow-wrap:anywhere;"'
+						}
 						tbody += '<td${mono_style}>${col}</td>'
 					}
 					tbody += '</tr>'
@@ -2437,7 +2652,11 @@ pub fn (win &SimpleWindow) generate_html() string {
 				if item.is_divider {
 					menubar_html += '<div class="sg-menu-divider"></div>'
 				} else {
-					shortcut_html := if item.shortcut != '' { '<span class="sg-menu-shortcut">${item.shortcut}</span>' } else { '' }
+					shortcut_html := if item.shortcut != '' {
+						'<span class="sg-menu-shortcut">${item.shortcut}</span>'
+					} else {
+						''
+					}
 					menubar_html += '<div class="sg-dropdown-item" onclick="selectMenuItem(event, \'${win.menubar_handler_id}\', \'${item.action}\')">'
 					menubar_html += '<span class="sg-menu-text">${item.text}</span>${shortcut_html}'
 					menubar_html += '</div>'
@@ -2456,7 +2675,11 @@ pub fn (win &SimpleWindow) generate_html() string {
 			if item.is_divider {
 				context_menu_html += '<div class="sg-menu-divider"></div>'
 			} else {
-				shortcut_html := if item.shortcut != '' { '<span class="sg-menu-shortcut">${item.shortcut}</span>' } else { '' }
+				shortcut_html := if item.shortcut != '' {
+					'<span class="sg-menu-shortcut">${item.shortcut}</span>'
+				} else {
+					''
+				}
 				context_menu_html += '<div class="sg-context-item" onclick="selectContextMenuItem(event, \'${win.context_menu_handler_id}\', \'${item.action}\')">'
 				context_menu_html += '<span class="sg-menu-text">${item.text}</span>${shortcut_html}'
 				context_menu_html += '</div>'
@@ -2489,6 +2712,7 @@ body {
 	background-color: var(--bg-main);
 	color: var(--text-main);
 	padding: ${win.padding}px;
+	padding-bottom: calc(${win.padding}px + 32px);
 	${padding_top_style}
 	display: flex;
 	flex-direction: column;
@@ -2523,6 +2747,7 @@ body {
 }
 .sg-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 .sg-btn:active { transform: translateY(0); filter: brightness(0.9); }
+.sg-btn:disabled { cursor: wait; filter: grayscale(0.35); opacity: 0.65; transform: none; }
 .sg-input, .sg-textarea, .sg-select {
 	background-color: var(--bg-card);
 	border: 1px solid var(--border-card);
@@ -2845,6 +3070,26 @@ body {
 	cursor: pointer;
 	background: transparent;
 }
+@media (max-width: 600px) {
+	body {
+		padding-left: 12px;
+		padding-right: 12px;
+		gap: 12px;
+	}
+	.sg-heading { font-size: 20px; }
+	.sg-row { align-items: stretch; }
+	.sg-row > .sg-input, .sg-row > .sg-select, .sg-btn {
+		width: 100% !important;
+		max-width: none !important;
+	}
+	.sg-checkbox-label, .sg-toggle-label, .sg-radio-label { white-space: normal; }
+	.sg-table { min-width: 640px; table-layout: auto; }
+	.sg-statusbar {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}
 .sg-link {
 	background: transparent !important;
 	color: var(--accent) !important;
@@ -2992,16 +3237,38 @@ pub fn (mut win SimpleWindow) run() {
 	w.bind('vlangEventHandler', fn [mut win] (e &webview.Event) string {
 		handler_id := e.get_arg[string](0) or { '' }
 		val := e.get_arg[string](1) or { '' }
+		control_id := if handler_id.starts_with('click_') { handler_id[6..] } else { '' }
+		is_button_action := if idx := win.name_to_ctrl[control_id] {
+			win.controls[idx].typ == .button
+		} else {
+			false
+		}
+		if is_button_action {
+			if !win.try_begin_action() {
+				return 'busy'
+			}
+			win.set_action_controls_enabled(false)
+			defer {
+				win.set_action_controls_enabled(true)
+				win.end_action()
+			}
+		}
 		if handler_id.starts_with('change_') {
 			ctrl_id := handler_id[7..]
-			win.values[ctrl_id] = val
-			if idx := win.name_to_ctrl[ctrl_id] {
-				win.controls[idx].value = val
-				actual_id := win.controls[idx].id
-				win.values[actual_id] = val
-				for k, v in win.name_to_ctrl {
-					if v == idx {
-						win.values[k] = val
+			win.state_lock.lock()
+			{
+				defer {
+					win.state_lock.unlock()
+				}
+				win.values[ctrl_id] = val
+				if idx := win.name_to_ctrl[ctrl_id] {
+					win.controls[idx].value = val
+					actual_id := win.controls[idx].id
+					win.values[actual_id] = val
+					for k, v in win.name_to_ctrl {
+						if v == idx {
+							win.values[k] = val
+						}
 					}
 				}
 			}
@@ -3015,14 +3282,20 @@ pub fn (mut win SimpleWindow) run() {
 	w.bind('vlangSyncValue', fn [mut win] (e &webview.Event) string {
 		id := e.get_arg[string](0) or { '' }
 		val := e.get_arg[string](1) or { '' }
-		win.values[id] = val
-		if idx := win.name_to_ctrl[id] {
-			win.controls[idx].value = val
-			actual_id := win.controls[idx].id
-			win.values[actual_id] = val
-			for k, v in win.name_to_ctrl {
-				if v == idx {
-					win.values[k] = val
+		win.state_lock.lock()
+		{
+			defer {
+				win.state_lock.unlock()
+			}
+			win.values[id] = val
+			if idx := win.name_to_ctrl[id] {
+				win.controls[idx].value = val
+				actual_id := win.controls[idx].id
+				win.values[actual_id] = val
+				for k, v in win.name_to_ctrl {
+					if v == idx {
+						win.values[k] = val
+					}
 				}
 			}
 		}

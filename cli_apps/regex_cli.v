@@ -15,22 +15,26 @@ fn main() {
 	replace_str := fp.string('replace', `r`, '', 'Replacement text (optional)')
 
 	additional_args := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
 	}
 
 	if pattern == '' {
 		eprintln('Error: --pattern (-p) is required')
-		println(fp.usage())
-		exit(1)
+		eprintln(fp.usage())
+		exit(2)
 	}
 
-	text := if additional_args.len > 0 { additional_args.join(' ') } else { 'The quick brown fox jumps over 42 lazy dogs' }
+	text := if additional_args.len > 0 {
+		additional_args.join(' ')
+	} else {
+		'The quick brown fox jumps over 42 lazy dogs'
+	}
 
 	mut re := regex.regex_opt(pattern) or {
 		eprintln('Invalid regex: ${err}')
-		exit(1)
+		exit(2)
 	}
 
 	println('====================================================================')

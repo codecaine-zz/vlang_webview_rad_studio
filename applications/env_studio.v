@@ -15,6 +15,8 @@ fn main() {
 	win.label('System Environment Variables Explorer, Process Context Auditor & Path Inspector')
 
 	env_vars := system.get_all_env()
+	path := system.get_env('PATH')
+	path_preview := if path.len > 35 { path[..35] + '...' } else { path }
 	win.kpi_card('Total Active Variables', '${env_vars.len}', 'Process Environment Context')
 
 	win.subheading('Variable Lookup / Search')
@@ -29,7 +31,7 @@ fn main() {
 		['HOME', system.get_user_home_dir(), 'Defined'],
 		['SHELL', system.get_env('SHELL'), 'Defined'],
 		['TERM', system.get_env('TERM'), 'Defined'],
-		['PATH', system.get_env('PATH')[..35] + '...', 'Multi-entry']
+		['PATH', path_preview, if path == '' { 'Not defined' } else { 'Multi-entry' }],
 	]
 	win.table(headers, rows, fn (w &simplegui.SimpleWindow, idx string) {
 		w.notification('Variable Selected', 'Viewing row #${idx}')

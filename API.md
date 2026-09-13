@@ -88,11 +88,19 @@ Traditional GUI development is often fragmented:
 
 **V Webview RAD Studio** bridges this gap:
 
-1. **Lightweight Native Core**: Written in **V (vlang)**, producing tiny standalone native binaries (~2.8 MB) with zero runtime dependencies.
+1. **Lightweight Native Core**: Written in **V (vlang)**, producing small native binaries without bundling a browser runtime. Source builds still require the platform webview development libraries listed in the installation guide.
 2. **OS Webview Engine**: Uses the operating system's built-in browser engine (WebKit on macOS/Linux, WebView2 on Windows) via direct C/Objective-C/C++ bindings.
 3. **Declarative SimpleGUI**: A fluent builder API where UI controls, layout rows, event handlers, and themes are declared in simple, readable code.
 4. **Hardware Telemetry & System Tools**: Built-in modules for processes, CPU, RAM, battery, network, crypto, files, and audio without external libraries.
 5. **No Reloads / Native Feel**: Default browser right-click menus and accidental page reloads (`Cmd+R` / `F5`) are suppressed. Desktop shortcuts (`Cmd+F`, `Cmd+M`, `Cmd+Shift+T`) control the native window directly.
+
+### Event Execution and UI-Thread Safety
+
+SimpleGUI native event callbacks run on worker threads so filesystem, subprocess, HTTP, DNS, database, and computation work does not block the webview event loop. Calls that evaluate JavaScript or update generated controls are dispatched back to the native webview thread.
+
+Button actions are serialized: all action buttons are temporarily disabled while a callback is running and are restored when it returns. This prevents duplicate clicks and older overlapping button operations from overwriting newer results. Input change handlers remain available for normal state synchronization.
+
+The generated CSS includes narrow-window behavior at 600 pixels: action buttons and row inputs expand to the available width, labels wrap, tables scroll horizontally, and the fixed status bar truncates safely instead of covering or widening the content.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -1653,15 +1661,15 @@ The included `build.vsh` script compiles, brands, and packages standalone distri
 
 ```bash
 # Build the Visual RAD Studio IDE
-v build.vsh
+v run build.vsh
 
 # Build any specific application:
-v build.vsh applications/system_studio.v
-v build.vsh applications/crypto_studio.v
-v build.vsh applications/database_studio.v
+v run build.vsh applications/system_studio.v
+v run build.vsh applications/crypto_studio.v
+v run build.vsh applications/database_studio.v
 
 # Build any interactive demo:
-v build.vsh demos/22_context_menu_and_menu_demo.v
+v run build.vsh demos/22_context_menu_and_menu_demo.v
 ```
 
 ### What `build.vsh` does automatically:
@@ -1684,11 +1692,10 @@ In addition to visual GUI applications, **V Webview RAD Studio** includes **16 c
 
 ### CLI Architecture & Performance Advantages
 
-1. **Ultra-Fast Startup**: Compiled with native V into self-contained single binaries (< 1 MB) that launch in **< 2 milliseconds**—over 100x faster than Electron or Python scripts.
-2. **Dual Output Modes**:
-   - **Interactive Developer Mode**: Beautifully formatted terminal typography, ANSI colors, icons, and structured banners.
-   - **Machine-Readable JSON Mode (`--json`)**: Pristine JSON for direct piping into `jq`, automated CI/CD pipelines, DevOps cron tasks, and shell automation.
-3. **Zero External Dependencies**: Built entirely with V standard modules (`flag`, `os`, `math`) and the workspace `system` module.
+1. **Native Startup**: Each tool compiles to a standalone V executable; binary size and launch time depend on imported modules and the target platform.
+2. **Predictable CLI Contract**: Every tool supports `--help` and `--version`, rejects unknown or conflicting arguments, writes usage errors to stderr with exit code `2`, and reports terminal operational failures with exit code `1`.
+3. **Output Modes**: Human-readable terminal output is the default. Tools that expose `--json`, such as `system_cli` and `env_cli`, provide machine-readable output for automation.
+4. **External Tool Requirements**: Some commands intentionally invoke platform tools, including Git, SQLite, ping/DNS utilities, process tools, the V compiler, and platform packaging/signing tools. Missing tools are reported as failures rather than treated as success.
 
 ### CLI Suite Quick Reference
 
@@ -1699,7 +1706,7 @@ In addition to visual GUI applications, **V Webview RAD Studio** includes **16 c
 | [**`json_cli`**](#json-inspector-validator--formatter-json_cli)         | [`cli_apps/json_cli.v`](cli_apps/json_cli.v)               | JSON formatting, validation & minification                   | `-f, --file`, `-m, --minify`, `-v, --validate`                      |
 | [**`devtools_cli`**](#developer-omnitool--math-statistics-devtools_cli) | [`cli_apps/devtools_cli.v`](cli_apps/devtools_cli.v)       | UUIDs, epoch timestamps, string metrics & math stats         | `-u, --uuid`, `-t, --timestamp`, `-s, --slug`, `-S, --stats`        |
 | [**`process_cli`**](#process--task-manager-process_cli)                 | [`cli_apps/process_cli.v`](cli_apps/process_cli.v)         | Process listing, name filtering & process termination        | `-f, --filter`, `-k, --kill`, `-t, --top`                           |
-| [**`database_cli`**](#sqlite-database-console-database_cli)             | [`cli_apps/database_cli.v`](cli_apps/database_cli.v)       | SQLite database inspector, schema viewer & SQL query runner  | `-d, --database`, `-t, --tables`, `-s, --schema`, `-q, --query`     |
+| [**`database_cli`**](#sqlite-database-console-database_cli)             | [`cli_apps/database_cli.v`](cli_apps/database_cli.v)       | SQLite database inspector, schema viewer & SQL query runner  | `-d, --database`, `-t, --tables`, `-s, --schema`, `-q, --query`, `-w, --allow-write` |
 | [**`api_cli`**](#http--rest-api-client-api_cli)                         | [`cli_apps/api_cli.v`](cli_apps/api_cli.v)                 | REST client supporting GET, POST, PUT, DELETE, and body data | `-X, --method`, `-d, --data`, `-c, --content-type`, `-i, --headers` |
 | [**`dataconvert_cli`**](#data-format-converter-dataconvert_cli)         | [`cli_apps/dataconvert_cli.v`](cli_apps/dataconvert_cli.v) | Matrix conversion between CSV and JSON                       | `-f, --from`, `-t, --to`, `-i, --file`                              |
 | [**`watcher_cli`**](#file-system-watcher--trigger-watcher_cli)          | [`cli_apps/watcher_cli.v`](cli_apps/watcher_cli.v)         | Filesystem directory watcher with automated command triggers | `-p, --path`, `-e, --exec`, `-i, --interval`                        |
@@ -1909,6 +1916,9 @@ Inspect SQLite databases, catalog tables, examine column schemas, and execute ra
 | `--tables`   | `-t`  | `false`  | List all tables in the database                          |
 | `--schema`   | `-s`  | `""`     | Display column schema and constraints of specified table |
 | `--query`    | `-q`  | `""`     | Execute an SQL query and display results                 |
+| `--allow-write` | `-w` | `false` | Permit a query that may modify the database              |
+
+Without `--allow-write`, the SQLite process is opened with `-readonly` and only read-oriented statement prefixes (`SELECT`, `WITH`, `EXPLAIN`, and `PRAGMA`) are accepted. The database path must already exist. Supplying more than one of `--tables`, `--schema`, and query mode is a usage error.
 
 #### Quick Run Examples
 
@@ -1921,6 +1931,9 @@ v run cli_apps/database_cli.v -d storage.db --schema users
 
 # Execute SQL query
 v run cli_apps/database_cli.v -d storage.db -q "SELECT id, name, role FROM users LIMIT 5;"
+
+# Explicitly opt in to a write
+v run cli_apps/database_cli.v -d storage.db --allow-write -q "UPDATE users SET role = 'admin' WHERE id = 1;"
 ```
 
 ---
@@ -1978,6 +1991,8 @@ v run cli_apps/dataconvert_cli.v --from json --to csv -i metrics.json > metrics.
 
 Monitors directories for file modifications, creations, and deletions, triggering custom shell commands on every change event.
 
+The watcher validates that the target exists and that the polling interval is positive. It sleeps between snapshots to avoid a busy loop, exits with an error if the path disappears, logs trigger-command failures while continuing to monitor, and can be cancelled with `Ctrl+C`/SIGTERM.
+
 #### Flags
 
 | Flag         | Short | Default | Description                                        |
@@ -1993,7 +2008,7 @@ Monitors directories for file modifications, creations, and deletions, triggerin
 v run cli_apps/watcher_cli.v -p simplegui/ -e "v -check ."
 
 # Auto-rebuild distribution bundle on source edit
-v run cli_apps/watcher_cli.v -p applications/ -e "v build.vsh applications/system_studio.v"
+v run cli_apps/watcher_cli.v -p applications/ -e "v run build.vsh applications/system_studio.v"
 ```
 
 ---

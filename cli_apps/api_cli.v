@@ -17,15 +17,23 @@ fn main() {
 	show_headers := fp.bool('headers', `i`, false, 'Include response headers in output')
 
 	additional_args := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
 	}
 
 	if additional_args.len == 0 {
 		eprintln('Error: Target URL required')
-		println(fp.usage())
-		exit(1)
+		eprintln(fp.usage())
+		exit(2)
+	}
+	if additional_args.len > 1 {
+		eprintln('Error: Expected one target URL')
+		exit(2)
+	}
+	if method.to_upper() !in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'] {
+		eprintln('Error: Unsupported HTTP method "${method}"')
+		exit(2)
 	}
 
 	url := additional_args[0]
@@ -33,6 +41,10 @@ fn main() {
 	headers_map['Content-Type'] = content_type
 
 	resp := system.http_request(method, url, body, headers_map)
+	if resp.status_code == 0 {
+		eprintln(resp.body)
+		exit(1)
+	}
 
 	if show_headers {
 		println('HTTP Status: ${resp.status_code}')

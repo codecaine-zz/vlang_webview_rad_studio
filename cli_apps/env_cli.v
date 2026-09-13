@@ -3,6 +3,7 @@ module main
 import flag
 import os
 import system
+import x.json2
 
 fn main() {
 	mut fp := flag.new_flag_parser(os.args)
@@ -15,10 +16,14 @@ fn main() {
 	filter := fp.string('filter', `f`, '', 'Filter environment variables by name')
 	json_out := fp.bool('json', `j`, false, 'Output environment variables in JSON format')
 
-	_ := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+	additional_args := fp.finalize() or {
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
+	}
+	if additional_args.len > 0 {
+		eprintln('Error: Unexpected arguments: ${additional_args.join(' ')}')
+		exit(2)
 	}
 
 	if get_key != '' {
@@ -32,17 +37,13 @@ fn main() {
 	keys.sort()
 
 	if json_out {
-		println('{')
-		mut first := true
+		mut filtered := map[string]string{}
 		for k in keys {
 			if filter == '' || k.to_lower().contains(filter.to_lower()) {
-				if !first { println(',') }
-				v := all_vars[k].replace('"', '\\"').replace('\n', '\\n')
-				print('  "${k}": "${v}"')
-				first = false
+				filtered[k] = all_vars[k]
 			}
 		}
-		println('\n}')
+		println(json2.encode[map[string]string](filtered, prettify: true))
 		return
 	}
 
@@ -53,8 +54,10 @@ fn main() {
 	for k in keys {
 		if filter == '' || k.to_lower().contains(filter.to_lower()) {
 			val := all_vars[k]
-			display_val := if val.len > 60 { val[..57] + '...' } else { val }
-			println('${k:<30} = ${display_val}')
+			runes := val.runes()
+			display_val := if runes.len > 60 { runes[..57].string() + '...' } else { val }
+			padded_key := k + ' '.repeat(if k.len < 30 { 30 - k.len } else { 1 })
+			println('${padded_key} = ${display_val}')
 			count++
 		}
 	}

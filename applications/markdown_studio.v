@@ -2,6 +2,7 @@ module main
 
 import simplegui
 import system
+import os
 
 fn main() {
 	mut win := simplegui.new_window(
@@ -55,7 +56,10 @@ fn main() {
 	win.button('📂 Open Markdown File...', fn (w &simplegui.SimpleWindow, _ string) {
 		path := w.open_file_dialog('Select Markdown File', 'md,markdown,txt')
 		if path != '' {
-			content := system.exec_or('cat "${path}"', '')
+			content := os.read_file(path) or {
+				w.alert('Open Failed', 'Could not read "${path}":\n${err}')
+				return
+			}
 			w.set_value('txt_1', content)
 			w.notification('Loaded', 'Opened: ' + path)
 		}
@@ -65,7 +69,10 @@ fn main() {
 		path := w.save_file_dialog('Save Markdown File', 'document.md')
 		if path != '' {
 			md := w.get_value('txt_1')
-			system.exec("printf '%s' \"${md}\" > \"${path}\"")
+			os.write_file(path, md) or {
+				w.alert('Save Failed', 'Could not write "${path}":\n${err}')
+				return
+			}
 			w.alert('File Saved', 'Saved markdown document to: ' + path)
 		}
 	})

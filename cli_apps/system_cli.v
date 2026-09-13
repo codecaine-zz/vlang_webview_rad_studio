@@ -19,10 +19,14 @@ fn main() {
 	show_json := fp.bool('json', `j`, false, 'Output telemetry in JSON format')
 	run_audit := fp.bool('audit', `a`, false, 'Run comprehensive full-system hardware and OS audit')
 
-	_ := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+	additional_args := fp.finalize() or {
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
+	}
+	if additional_args.len > 0 {
+		eprintln('Error: Unexpected arguments: ${additional_args.join(' ')}')
+		exit(2)
 	}
 
 	hw := system.get_hardware_telemetry()
@@ -80,7 +84,7 @@ fn main() {
 		can_ping := system.ping_host('8.8.8.8')
 		println('\n[Network Telemetry]')
 		println('  Local IP:      ${local_ip}')
-		println('  Internet Ping: ${if can_ping { "Connected (8.8.8.8 OK)" } else { "Disconnected" }}')
+		println('  Internet Ping: ${if can_ping { 'Connected (8.8.8.8 OK)' } else { 'Disconnected' }}')
 	}
 
 	println('====================================================================')

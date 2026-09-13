@@ -40,9 +40,13 @@ fn main() {
 	out_file := fp.string('out', `o`, '', 'Output HTML file (optional)')
 
 	additional_args := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
+	}
+	if file_path != '' && additional_args.len > 0 {
+		eprintln('Error: Specify Markdown with --file or as arguments, not both')
+		exit(2)
 	}
 
 	mut input := ''

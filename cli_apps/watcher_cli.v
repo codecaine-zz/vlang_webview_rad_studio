@@ -5,17 +5,21 @@ import os
 import time
 import system
 
-fn get_last_mtime(path string) u64 {
-	if !os.exists(path) { return 0 }
+fn get_last_mtime(path string) !u64 {
+	if !os.exists(path) {
+		return error('watch path no longer exists')
+	}
 	if os.is_file(path) {
 		return u64(os.file_last_mod_unix(path))
 	}
 	mut max_t := u64(0)
-	files := os.ls(path) or { return 0 }
+	files := os.ls(path)!
 	for f in files {
 		sub := os.join_path(path, f)
 		t := u64(os.file_last_mod_unix(sub))
-		if t > max_t { max_t = t }
+		if t > max_t {
+			max_t = t
+		}
 	}
 	return max_t
 }
@@ -31,10 +35,22 @@ fn main() {
 	exec_cmd := fp.string('exec', `e`, '', 'Command to execute on change')
 	interval_ms := fp.int('interval', `i`, 1000, 'Poll interval in ms')
 
-	_ := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+	additional_args := fp.finalize() or {
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
+	}
+	if additional_args.len > 0 {
+		eprintln('Error: Unexpected arguments: ${additional_args.join(' ')}')
+		exit(2)
+	}
+	if !os.exists(path) {
+		eprintln('Error: Watch path "${path}" does not exist')
+		exit(1)
+	}
+	if interval_ms <= 0 {
+		eprintln('Error: --interval must be greater than zero')
+		exit(2)
 	}
 
 	println('====================================================================')
@@ -48,11 +64,17 @@ fn main() {
 	println('Press Ctrl+C to terminate.')
 	println('--------------------------------------------------------------------')
 
-	mut last_t := get_last_mtime(path)
+	mut last_t := get_last_mtime(path) or {
+		eprintln('Error: Unable to inspect watch path "${path}": ${err}')
+		exit(1)
+	}
 
 	for {
 		time.sleep(interval_ms * time.millisecond)
-		curr_t := get_last_mtime(path)
+		curr_t := get_last_mtime(path) or {
+			eprintln('Error: Unable to inspect watch path "${path}": ${err}')
+			exit(1)
+		}
 		if curr_t > last_t && last_t != 0 {
 			now_str := time.now().custom_format('HH:mm:ss')
 			println('[${now_str}] ⚡ Change detected in ${path}!')

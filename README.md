@@ -19,7 +19,7 @@ This project is directly based upon and unifies several foundational open-source
 | **vlang_macos_webview_app_template** | [codecaine-zz/vlang_macos_webview_app_template](https://github.com/codecaine-zz/vlang_macos_webview_app_template) | **Native Window Management & Webview Foundation**: The core template and architectural foundation used to manage windows in Webview in V. Provided the native C/C++ Webview binding patterns in V, Cocoa Objective-C window helper integration (`window_helper.m`), 9 placement presets (`center`, `upper_left`, `top_center`, etc.), stay-on-top window pinning (`set_always_on_top`), fullscreen toggling, and native desktop IPC event loop. |
 | **bun_rad_studio**                   | [codecaine-zz/bun_rad_studio](https://github.com/codecaine-zz/bun_rad_studio)                                     | **Primary IDE & RAD Blueprint**: Ported from Bun/TypeScript to native V. Provided the Borland Delphi & Visual Basic visual form designer architecture, 70+ drag-and-drop components, anchor & docking layout engines, property grid, 10 application templates, non-visual component tray, and complete 42-theme design system.                                                                                                                  |
 | **simple_gg**                        | [codecaine-zz/simple_gg](https://github.com/codecaine-zz/simple_gg)                                               | **RAD Development System Tools**: Ported native system and runtime toolkits (`system/sys.v` & `system/stdlib.v`): process execution (`exec`, `exec_or`, `exec_bg`), real-time hardware telemetry (CPU cores/model/usage, RAM, battery, network ping), native dialogs (`osascript`, PowerShell, `zenity`), clipboard manipulation, cryptography (SHA256, HMAC), encoders, and math statistics.                                                   |
-| **vlang_simplegui**                  | [codecaine-zz/vlang_simplegui](https://github.com/codecaine-zz/vlang_simplegui)                                   | **Declarative High-Level GUI & Themes**: Provided the fluent declarative GUI builder syntax (`win.button()`, `win.input()`, `win.radio()`, `win.toggle()`), reactive two-way value synchronization, KPI dashboards, table components, and dynamic live theme switching across all 42 desktop form themes.                                                                                                                                       |
+| **vlang_simplegui**                  | [codecaine-zz/vlang_simplegui](https://github.com/codecaine-zz/vlang_simplegui)                                   | **Declarative High-Level GUI & Themes**: Provided the fluent declarative GUI builder syntax (`win.button()`, `win.input()`, `win.radio()`, `win.toggle()`), reactive two-way value synchronization, KPI dashboards, table components, and dynamic live theme switching across all 76 desktop form themes.                                                                                                                                       |
 | **vlang_utils**                      | [codecaine-zz/vlang_utils](https://github.com/codecaine-zz/vlang_utils)                                           | **Comprehensive Developer Utility Suite**: 30 modular packages providing in-memory caching (LRU/TTL), synthetic mock data, color space engine, semantic versioning, string casing, SQLite helpers, streaming compression, TAR/ZIP archives, concurrency, and validation.                                                                                                            |
 
 ### 🪟 Window Management Foundation: `vlang_macos_webview_app_template`
@@ -216,7 +216,7 @@ Choosing the right architectural model for cross-platform desktop development de
   - Always-On-Top / Pinning (Cmd+Shift+T)
   - 9 Placement Presets (Center, Upper Left, Upper Right, Top Center, Bottom Left, Bottom Right, Bottom Center, Center Left, Center Right)
   - Native Minimize, Hide, and Clean Process Exit
-- **42 Pixel-Perfect Desktop Themes**: Monokai Pro, Tokyo Night, Dracula, Nord, Gruvbox, One Dark Pro, macOS Sonoma, Windows 11 Fluent, Retro 90s (Win95, Commodore 64, Amiga, Mac System 7), Hacker (Cyberpunk 2077, Synthwave 84, Matrix Phosphor).
+- **76 Pixel-Perfect Desktop Themes**: Monokai Pro, Tokyo Night, Dracula, Nord, Gruvbox, One Dark Pro, macOS Sonoma, Windows 11 Fluent, Retro 90s (Win95, Commodore 64, Amiga, Mac System 7), Hacker (Cyberpunk 2077, Synthwave 84, Matrix Phosphor), and more.
 - **Comprehensive API System Tools**: Ported directly from `simple_gg` and `vlang_simplegui`:
   - Process execution (`exec`, `exec_or`, `exec_bg`)
   - Subsystem hardware telemetry (CPU usage/cores/model, RAM total/used/free, battery state, uptime, disk stats, network ping)
@@ -246,26 +246,26 @@ Choosing the right architectural model for cross-platform desktop development de
 
 | Application Studio       | Screenshot                                                                                          | Description & Quick Run                                                                                                                                                                            |
 | ------------------------ | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **API Studio Pro**       | <img src="resources/screenshots/app_api_studio.png" width="300" alt="API Studio Pro" />             | **Native REST Client Workstation**: Complete endpoint tester with GET, POST, PUT, DELETE, custom request headers, body payloads, and JSON syntax inspection.<br>`v run applications/api_studio.v`  |
+| **API Studio Pro**       | <img src="resources/screenshots/app_api_studio.png" width="300" alt="API Studio Pro" />             | **Native REST Client Workstation**: Send HTTP GET and JSON POST requests, inspect status, headers, and response bodies, and receive explicit transport errors.<br>`v run applications/api_studio.v` |
 | **System Studio Pro**    | <img src="resources/screenshots/app_system_studio.png" width="300" alt="System Studio Pro" />       | **Hardware Telemetry Workstation**: Real-time CPU model, cores, RAM allocation, disk capacity, battery telemetry, and privacy-protected IP monitoring.<br>`v run applications/system_studio.v`     |
-| **Database Studio Pro**  | <img src="resources/screenshots/app_database_studio.png" width="300" alt="Database Studio Pro" />   | **SQL Workbench & Table Inspector**: Interactive SQL executor, table catalog viewer, schema explorer, and automated test-record seed generation.<br>`v run applications/database_studio.v`         |
-| **Git Workbench Studio** | <img src="resources/screenshots/app_git_studio.png" width="300" alt="Git Workbench Studio" />       | **Visual Git Manager**: Real-time branch switcher, commit status monitor, working tree inspector, log analyzer, and staging workbench.<br>`v run applications/git_studio.v`                        |
-| **DevTools Studio Pro**  | <img src="resources/screenshots/app_devtools_studio.png" width="300" alt="DevTools Studio Pro" />   | **Developer Math & Stats Workstation**: Statistical variance, standard deviation, percentile calculator, UUID generator, and performance timers.<br>`v run applications/devtools_studio.v`         |
-| **Crypto Studio Pro**    | <img src="resources/screenshots/app_crypto_studio.png" width="300" alt="Crypto Studio Pro" />       | **Security & Hash Cryptography**: Generate SHA-256, SHA-512, MD5, HMAC, secure random tokens, and cryptographic verification digests.<br>`v run applications/crypto_studio.v`                      |
+| **Database Studio Pro**  | <img src="resources/screenshots/app_database_studio.png" width="300" alt="Database Studio Pro" />   | **SQL Workbench & Result Inspector**: Execute SQLite statements against an in-memory or selected database and inspect up to four result columns with explicit failure reporting.<br>`v run applications/database_studio.v` |
+| **Git Workbench Studio** | <img src="resources/screenshots/app_git_studio.png" width="300" alt="Git Workbench Studio" />       | **Visual Git Inspector**: View the current branch, working-tree status, recent commits, diff statistics, and local/remote branches.<br>`v run applications/git_studio.v` |
+| **DevTools Studio Pro**  | <img src="resources/screenshots/app_devtools_studio.png" width="300" alt="DevTools Studio Pro" />   | **Developer Text Workstation**: Inspect slug, reverse, title-case, word-count, checksum, Base64, and timestamp representations.<br>`v run applications/devtools_studio.v` |
+| **Crypto Studio Pro**    | <img src="resources/screenshots/app_crypto_studio.png" width="300" alt="Crypto Studio Pro" />       | **Security & Hash Cryptography**: Generate SHA-256, SHA-512, MD5, SHA-1, HMAC, and Base64 values with live table updates and clipboard actions.<br>`v run applications/crypto_studio.v` |
 | **Network Studio Pro**   | <img src="resources/screenshots/app_network_studio.png" width="300" alt="Network Studio Pro" />     | **Network Diagnostics & Telemetry**: ICMP ping latency tester, DNS resolver (`nslookup`), traceroute probe, and privacy-shielded interface telemetry.<br>`v run applications/network_studio.v`     |
-| **Markdown Studio Pro**  | <img src="resources/screenshots/app_markdown_studio.png" width="300" alt="Markdown Studio Pro" />   | **Live Markdown Authoring Suite**: Dual-pane editor with live HTML rendering, heading structure, table generation, and export utilities.<br>`v run applications/markdown_studio.v`                 |
-| **JSON Studio Pro**      | <img src="resources/screenshots/app_json_studio.png" width="300" alt="JSON Studio Pro" />           | **JSON Formatter & Schema Validator**: Parse, reformat, minify, inspect tree hierarchies, and validate JSON payloads with zero dependencies.<br>`v run applications/json_studio.v`                 |
-| **Process Studio Pro**   | <img src="resources/screenshots/app_process_studio.png" width="300" alt="Process Studio Pro" />     | **Process Manager & Task Monitor**: Inspect system processes, PIDs, memory usage, command-line arguments, and gracefully terminate runaway tasks.<br>`v run applications/process_studio.v`         |
-| **Color Studio Pro**     | <img src="resources/screenshots/app_color_studio.png" width="300" alt="Color Studio Pro" />         | **Color Palette & WCAG Inspector**: Convert between HEX, RGB, HSL, test accessibility contrast ratios, and inspect design token compatibility.<br>`v run applications/color_studio.v`              |
-| **DataConvert Studio**   | <img src="resources/screenshots/app_dataconvert_studio.png" width="300" alt="DataConvert Studio" /> | **Data Transform Matrix**: Transform datasets between CSV, TSV, JSON, and raw key-value representations with delimiter detection.<br>`v run applications/dataconvert_studio.v`                     |
-| **Regex Studio Pro**     | <img src="resources/screenshots/app_regex_studio.png" width="300" alt="Regex Studio Pro" />         | **Pattern Matcher & Regex Tester**: Real-time expression testing, capturing group extraction, and string replacement validator.<br>`v run applications/regex_studio.v`                             |
-| **App Bundler Studio**   | <img src="resources/screenshots/app_app_bundler_studio.png" width="300" alt="App Bundler Studio" /> | **Desktop Distribution Workstation**: Visual packaging interface for `build.vsh` to produce macOS `.app` bundles, Windows `.exe`, and Linux binaries.<br>`v run applications/app_bundler_studio.v` |
-| **Environment Studio**   | <img src="resources/screenshots/app_env_studio.png" width="300" alt="Environment Studio" />         | **Environment Variables Workbench**: Audit active process environment variables, search keys, export `.env` files, and test path configurations.<br>`v run applications/env_studio.v`              |
-| **Watcher Studio Pro**   | <img src="resources/screenshots/app_watcher_studio.png" width="300" alt="Watcher Studio Pro" />     | **Filesystem Event Monitor**: Live directory watcher monitoring file changes, creations, deletions, and logging telemetry events in real time.<br>`v run applications/watcher_studio.v`            |
+| **Markdown Studio Pro**  | <img src="resources/screenshots/app_markdown_studio.png" width="300" alt="Markdown Studio Pro" />   | **Markdown Authoring Suite**: Edit Markdown, render basic headings/lists/paragraphs to HTML text, copy output, and open/save documents with filesystem error reporting.<br>`v run applications/markdown_studio.v` |
+| **JSON Studio Pro**      | <img src="resources/screenshots/app_json_studio.png" width="300" alt="JSON Studio Pro" />           | **JSON Formatter & Validator**: Parse, prettify, minify, copy, and load JSON with syntax and file-read errors surfaced to the user.<br>`v run applications/json_studio.v` |
+| **Process Studio Pro**   | <img src="resources/screenshots/app_process_studio.png" width="300" alt="Process Studio Pro" />     | **Process Inspector**: Refresh the active process table and inspect numeric PIDs, CPU, memory, user, and command information without sending signals.<br>`v run applications/process_studio.v` |
+| **Color Studio Pro**     | <img src="resources/screenshots/app_color_studio.png" width="300" alt="Color Studio Pro" />         | **Color Token Workbench**: Inspect predefined swatches, copy CSS variables for an entered color, and display contrast guidance.<br>`v run applications/color_studio.v` |
+| **DataConvert Studio**   | <img src="resources/screenshots/app_dataconvert_studio.png" width="300" alt="DataConvert Studio" /> | **JSON/CSV Converter**: Convert JSON arrays of objects to CSV and CSV rows to correctly escaped JSON objects.<br>`v run applications/dataconvert_studio.v` |
+| **Regex Studio Pro**     | <img src="resources/screenshots/app_regex_studio.png" width="300" alt="Regex Studio Pro" />         | **Pattern Tester**: Compile and test a regular expression against text, with shortcuts for loading sample email and URL patterns.<br>`v run applications/regex_studio.v` |
+| **App Bundler Studio**   | <img src="resources/screenshots/app_app_bundler_studio.png" width="300" alt="App Bundler Studio" /> | **Application Compiler Workbench**: Validate a V entry file, compile an optimized local-platform executable, and select a PNG icon for a future package configuration.<br>`v run applications/app_bundler_studio.v` |
+| **Environment Studio**   | <img src="resources/screenshots/app_env_studio.png" width="300" alt="Environment Studio" />         | **Environment Variables Workbench**: Inspect common process variables, look up a named variable, and copy the current `PATH` value.<br>`v run applications/env_studio.v` |
+| **Watcher Studio Pro**   | <img src="resources/screenshots/app_watcher_studio.png" width="300" alt="Watcher Studio Pro" />     | **Watcher Configuration Workbench**: Validate a watch directory and trigger command, browse for a directory, and test the command manually. Use `watcher_cli` for continuous monitoring and cancellation.<br>`v run applications/watcher_studio.v` |
 
 ---
 
-## 🎮 Interactive Demos & Showcases (24 Demos)
+## 🎮 Interactive Demos & Showcases (25 Demos)
 
 | Demo                                  | Screenshot                                                                                                              | Highlights & Source                                                                                                               |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -321,7 +321,7 @@ vlang_webview_rad_studio/
 ├── simplegui/                     # High-Level Declarative GUI Framework
 │   ├── simplegui.v                # Window builder, reactive bindings, HTML/CSS generation
 │   ├── controls.v                 # 70+ Control specifications & references
-│   └── theme.v                    # Catalog of 42 desktop form themes
+│   └── theme.v                    # Catalog of 76 desktop form themes
 │
 ├── applications/                  # 16 Enterprise RAD System Studio Desktop Applications
 │   ├── system_studio.v            # System Information & Hardware Telemetry Studio
@@ -359,7 +359,7 @@ vlang_webview_rad_studio/
 │   ├── color_cli.v                # Color converter & WCAG contrast CLI
 │   └── env_cli.v                  # Environment variables CLI
 │
-├── demos/                         # 23 Interactive Feature Demos
+├── demos/                         # 25 Interactive Feature Demos
 │   ├── 01_standard_controls.v
 │   ├── 02_advanced_modern_controls.v
 │   ├── 03_data_and_non_visual.v
@@ -382,7 +382,9 @@ vlang_webview_rad_studio/
 │   ├── 20_codefreelance_theme_demo.v
 │   ├── 21_vlang_parity_controls_showcase.v
 │   ├── 22_context_menu_and_menu_demo.v
-│   └── 23_all_themes_all_controls_showcase.v
+│   ├── 23_all_themes_all_controls_showcase.v
+│   ├── 24_devops_sentinel_guide.v
+│   └── 25_developer_utilities_suite_demo.v
 │
 └── resources/
     ├── ide.html                   # Delphi/VB Visual RAD IDE Design Canvas
@@ -439,11 +441,34 @@ v run cli_apps/devtools_cli.v -S "10, 20, 30, 45, 90"
 # Window placement presets & stay-on-top pinning
 v run demos/04_window_placement_and_pin.v
 
-# The ultimate 42-theme showcase
+# The 76-theme showcase
 v run demos/23_all_themes_all_controls_showcase.v
 
 # 30-Module Developer Utility Suite showcase
 v run demos/25_developer_utilities_suite_demo.v
+```
+
+---
+
+## Reliability, Concurrency, and CLI Contracts
+
+- SimpleGUI event callbacks run away from the native webview event loop. JavaScript/DOM updates are dispatched back to the webview thread.
+- While a button action is running, action buttons are disabled and restored when the callback returns. This prevents duplicate execution and stale overlapping button results.
+- The generated layout adds narrow-window fallbacks for buttons, form controls, tables, labels, and the fixed status bar.
+- GUI file operations use V filesystem APIs; subprocess arguments are passed through `system.exec_safe` where shell interpretation is not explicitly part of the feature.
+- Every CLI supports `--help` and `--version`. Usage errors return exit code `2`; terminal runtime, filesystem, network, database, and subprocess failures return exit code `1`.
+- `database_cli` opens databases read-only unless `--allow-write` is supplied. `watcher_cli` validates its interval/path, sleeps between polls, exits if the watched path disappears, logs trigger-command failures while continuing to monitor, and can be stopped with `Ctrl+C`.
+
+Safe automated checks:
+
+```bash
+v test .
+v fmt -verify $(git ls-files '*.v' '*.vsh')
+
+# Compile each entry point without launching GUI windows
+for source in applications/*.v cli_apps/*.v; do
+	v -o "/tmp/$(basename "${source%.v}")" "$source"
+done
 ```
 
 ---

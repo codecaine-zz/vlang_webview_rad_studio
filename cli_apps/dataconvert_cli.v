@@ -6,7 +6,9 @@ import x.json2
 
 fn csv_to_json(csv string) string {
 	lines := csv.split_into_lines().filter(it.trim_space() != '')
-	if lines.len < 2 { return '[]' }
+	if lines.len < 2 {
+		return '[]'
+	}
 	headers := lines[0].split(',').map(it.trim_space().trim('"'))
 	mut list := []map[string]string{}
 	for i in 1 .. lines.len {
@@ -21,13 +23,19 @@ fn csv_to_json(csv string) string {
 	return json2.encode[[]map[string]string](list, prettify: true)
 }
 
-fn json_to_csv(json_str string) string {
-	raw := json2.decode[json2.Any](json_str) or { return '' }
-	if raw !is []json2.Any { return '' }
+fn json_to_csv(json_str string) !string {
+	raw := json2.decode[json2.Any](json_str)!
+	if raw !is []json2.Any {
+		return error('JSON input must be an array of objects')
+	}
 	arr := raw as []json2.Any
-	if arr.len == 0 { return '' }
+	if arr.len == 0 {
+		return ''
+	}
 	first := arr[0]
-	if first !is map[string]json2.Any { return '' }
+	if first !is map[string]json2.Any {
+		return error('JSON input must be an array of objects')
+	}
 	headers := (first as map[string]json2.Any).keys()
 	mut out := headers.join(',') + '\n'
 	for item in arr {
@@ -39,6 +47,8 @@ fn json_to_csv(json_str string) string {
 				row << val.str().replace(',', ' ')
 			}
 			out += row.join(',') + '\n'
+		} else {
+			return error('JSON input must be an array of objects')
 		}
 	}
 	return out
@@ -56,9 +66,13 @@ fn main() {
 	file_path := fp.string('file', `i`, '', 'Input file path')
 
 	additional_args := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
+	}
+	if file_path != '' && additional_args.len > 0 {
+		eprintln('Error: Specify input with --file or as arguments, not both')
+		exit(2)
 	}
 
 	mut input := ''
@@ -73,11 +87,15 @@ fn main() {
 		input = 'name,role,level\nAlice,Lead,5\nBob,Engineer,3'
 	}
 
-	if from_fmt == 'csv' && to_fmt == 'json' {
+	if from_fmt.to_lower() == 'csv' && to_fmt.to_lower() == 'json' {
 		println(csv_to_json(input))
-	} else if from_fmt == 'json' && to_fmt == 'csv' {
-		println(json_to_csv(input))
+	} else if from_fmt.to_lower() == 'json' && to_fmt.to_lower() == 'csv' {
+		println(json_to_csv(input) or {
+			eprintln('Error: Invalid JSON input: ${err}')
+			exit(2)
+		})
 	} else {
 		eprintln('Unsupported conversion: ${from_fmt} to ${to_fmt}')
+		exit(2)
 	}
 }

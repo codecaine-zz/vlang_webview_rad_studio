@@ -1,7 +1,44 @@
 module main
 
 import simplegui
-import system
+import sqliteutils
+
+struct QueryResult {
+	headers []string
+	rows    [][]string
+}
+
+fn execute_query(path string, query string) !QueryResult {
+	if path.trim_space() == '' {
+		return error('database path must not be empty')
+	}
+	if query.trim_space() == '' {
+		return error('SQL query must not be empty')
+	}
+	mut db := sqliteutils.open_db(path)!
+	defer {
+		sqliteutils.close_db(mut db) or {}
+	}
+	result := db.exec(query)!
+	if result.len == 0 {
+		return QueryResult{
+			headers: ['Status']
+			rows: [['Statement completed']]
+		}
+	}
+	mut column_count := 0
+	mut rows := [][]string{}
+	for item in result {
+		if item.vals.len > column_count {
+			column_count = item.vals.len
+		}
+		rows << item.vals.clone()
+	}
+	return QueryResult{
+		headers: []string{len: column_count, init: 'Column ${index + 1}'}
+		rows: rows
+	}
+}
 
 fn main() {
 	mut win := simplegui.new_window(
@@ -27,9 +64,9 @@ fn main() {
 	rows := [
 		['1', 'Alice', 'admin', 'Active'],
 		['2', 'Bob', 'developer', 'Active'],
-		['3', 'Charlie', 'designer', 'Pending']
+		['3', 'Charlie', 'designer', 'Pending'],
 	]
-	win.table(headers, rows, fn (w &simplegui.SimpleWindow, idx string) {
+	win.table_named('query_results', headers, rows, fn (w &simplegui.SimpleWindow, idx string) {
 		w.notification('Record Selected', 'Viewing row #${idx}')
 	})
 
@@ -37,8 +74,15 @@ fn main() {
 	win.subheading('Database Actions')
 
 	win.button('⚡ Execute SQL Query', fn (w &simplegui.SimpleWindow, _ string) {
+		path := w.get_value('inp_1')
 		query_sql := w.get_value('txt_1')
-		w.alert('Query Execution', 'Executed SQL successfully:\n' + query_sql)
+		result := execute_query(path, query_sql) or {
+			w.alert('Query Failed', '${err}')
+			return
+		}
+		w.set_table_headers('query_results', result.headers)
+		w.set_table_rows('query_results', result.rows)
+		w.notification('Query Complete', 'Returned ${result.rows.len} row(s)')
 	})
 
 	win.button('📂 Browse Database File...', fn (w &simplegui.SimpleWindow, _ string) {

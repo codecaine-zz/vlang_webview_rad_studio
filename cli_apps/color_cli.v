@@ -1,8 +1,8 @@
 module main
 
 import flag
-import os
 import math
+import os
 
 struct ColorRGB {
 	r int
@@ -12,11 +12,13 @@ struct ColorRGB {
 
 fn hex_to_rgb(hex_str string) ?ColorRGB {
 	clean := hex_str.trim_left('#')
-	if clean.len != 6 { return none }
+	if clean.len != 6 || clean.bytes().any(!it.is_hex_digit()) {
+		return none
+	}
 	r := ('0x' + clean[0..2]).int()
 	g := ('0x' + clean[2..4]).int()
 	b := ('0x' + clean[4..6]).int()
-	return ColorRGB{r: r, g: g, b: b}
+	return ColorRGB{ r: r, g: g, b: b }
 }
 
 fn rgb_to_hex(rgb ColorRGB) string {
@@ -24,9 +26,11 @@ fn rgb_to_hex(rgb ColorRGB) string {
 }
 
 fn luminance(rgb ColorRGB) f64 {
-	a := [f64(rgb.r) / 255.0, f64(rgb.g) / 255.0, f64(rgb.b) / 255.0].map(
-		if it <= 0.03928 { it / 12.92 } else { math.pow((it + 0.055) / 1.055, 2.4) }
-	)
+	a := [f64(rgb.r) / 255.0, f64(rgb.g) / 255.0, f64(rgb.b) / 255.0].map(if it <= 0.03928 {
+		it / 12.92
+	} else {
+		math.pow((it + 0.055) / 1.055, 2.4)
+	})
 	return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722
 }
 
@@ -49,9 +53,17 @@ fn main() {
 	bg_hex := fp.string('bg', `b`, '#0f172a', 'Background Hex for contrast calculation')
 
 	additional_args := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
+	}
+	if additional_args.len > 1 {
+		eprintln('Error: Expected at most one foreground color')
+		exit(2)
+	}
+	if hex_val != '' && additional_args.len > 0 {
+		eprintln('Error: Specify the foreground color with --hex or as an argument, not both')
+		exit(2)
 	}
 
 	target_hex := if hex_val != '' {
@@ -64,12 +76,12 @@ fn main() {
 
 	fg := hex_to_rgb(target_hex) or {
 		eprintln('Invalid Hex color: ${target_hex}')
-		exit(1)
+		exit(2)
 	}
 
 	bg := hex_to_rgb(bg_hex) or {
 		eprintln('Invalid background Hex: ${bg_hex}')
-		exit(1)
+		exit(2)
 	}
 
 	cr := contrast_ratio(fg, bg)
@@ -81,7 +93,7 @@ fn main() {
 	println('Foreground RGB:  rgb(${fg.r}, ${fg.g}, ${fg.b})')
 	println('Background Hex:  ${rgb_to_hex(bg)}')
 	println('Contrast Ratio:  ${cr:.2f}:1')
-	println('WCAG AA (4.5:1): ${if cr >= 4.5 { "PASS ✅" } else { "FAIL ❌" }}')
-	println('WCAG AAA (7:1):  ${if cr >= 7.0 { "PASS ✅" } else { "FAIL ❌" }}')
+	println('WCAG AA (4.5:1): ${if cr >= 4.5 { 'PASS ✅' } else { 'FAIL ❌' }}')
+	println('WCAG AAA (7:1):  ${if cr >= 7.0 { 'PASS ✅' } else { 'FAIL ❌' }}')
 	println('====================================================================')
 }

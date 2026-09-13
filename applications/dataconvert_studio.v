@@ -38,7 +38,9 @@ fn main() {
 			if parsed.len > 0 {
 				first := parsed[0]
 				if first is map[string]json2.Any {
-					for k, _ in first { headers << k }
+					for k, _ in first {
+						headers << k
+					}
 					csv_lines << headers.join(',')
 				}
 			}
@@ -66,14 +68,17 @@ fn main() {
 			w.alert('Notice', 'CSV must have at least header and one row')
 			return
 		}
-		headers := lines[0].split(',')
+		headers := lines[0].split(',').map(it.trim_space().trim('"'))
 		mut result := []string{}
 		for i in 1 .. lines.len {
+			if lines[i].trim_space() == '' {
+				continue
+			}
 			cols := lines[i].split(',')
 			mut obj_parts := []string{}
 			for j in 0 .. headers.len {
-				val := if j < cols.len { cols[j].trim_space() } else { '' }
-				obj_parts << '"${headers[j].trim_space()}": "${val}"'
+				val := if j < cols.len { cols[j].trim_space().trim('"') } else { '' }
+				obj_parts << '${json2.encode(headers[j])}: ${json2.encode(val)}'
 			}
 			result << '{ ${obj_parts.join(', ')} }'
 		}

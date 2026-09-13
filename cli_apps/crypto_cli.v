@@ -20,18 +20,32 @@ fn main() {
 	show_all := fp.bool('all', `A`, false, 'Compute all hashes simultaneously')
 
 	additional_args := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
 	}
 
 	input := if additional_args.len > 0 { additional_args.join(' ') } else { 'Hello, RAD Studio!' }
+	mode_count := int(is_b64_enc) + int(is_b64_dec) + int(is_hex_enc) + int(is_hex_dec) + int(show_all)
+	if mode_count > 1 {
+		eprintln('Error: Encoding, decoding, and --all modes are mutually exclusive')
+		exit(2)
+	}
 
 	if is_b64_enc {
 		println(system.encode_base64(input))
 		return
 	}
 	if is_b64_dec {
+		clean := input.trim_space().replace('\r', '').replace('\n', '').replace(' ', '')
+		padding := clean.count('=')
+		if clean == '' || clean.len % 4 == 1 || padding > 2
+			|| (padding > 0 && !clean.ends_with('='.repeat(padding)))
+			|| clean[..clean.len - padding].contains('=')
+			|| clean.bytes().any(!(it.is_alnum() || it in [`+`, `/`, `-`, `_`, `=`])) {
+			eprintln('Error: Invalid Base64 input')
+			exit(2)
+		}
 		println(system.decode_base64(input))
 		return
 	}
@@ -40,6 +54,10 @@ fn main() {
 		return
 	}
 	if is_hex_dec {
+		if input == '' || input.len % 2 != 0 || input.bytes().any(!it.is_hex_digit()) {
+			eprintln('Error: Invalid hexadecimal input')
+			exit(2)
+		}
 		println(system.decode_hex(input))
 		return
 	}
@@ -71,12 +89,16 @@ fn main() {
 		'hmac' {
 			if key == '' {
 				eprintln('Error: --key required for HMAC')
-				exit(1)
+				exit(2)
 			}
 			println(system.hmac_sha256(key, input))
 		}
-		else {
+		'sha256' {
 			println(system.hash_sha256(input))
+		}
+		else {
+			eprintln('Error: Unsupported hashing algorithm "${algo}"')
+			exit(2)
 		}
 	}
 }

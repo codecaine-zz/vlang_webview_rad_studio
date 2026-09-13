@@ -33,8 +33,7 @@ fn main() {
 		['Memory Allocation', system.format_bytes(tot_ram), 'Healthy'],
 		['Operating System', '${telemetry.os_name} ${telemetry.os_version}', 'Verified'],
 		['Local IP Address', system.get_masked_ip(), 'Protected'],
-		['Network Ping Test (8.8.8.8)', if system.ping_host('8.8.8.8') { 'Online (0% packet loss)' } else { 'Offline' }, 'Online'],
-		['Host Uptime', '${telemetry.uptime_seconds} seconds', 'Stable']
+		['Host Uptime', '${telemetry.uptime_seconds} seconds', 'Stable'],
 	]
 	win.table(headers, rows, fn (w &simplegui.SimpleWindow, idx string) {
 		w.notification('Telemetry Selected', 'Inspecting telemetry row #${idx}')

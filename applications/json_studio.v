@@ -3,6 +3,7 @@ module main
 import simplegui
 import system
 import json2
+import os
 
 fn main() {
 	mut win := simplegui.new_window(
@@ -56,11 +57,12 @@ fn main() {
 	win.button('📂 Load JSON from File', fn (w &simplegui.SimpleWindow, _ string) {
 		path := w.open_file_dialog('Select JSON File', 'json,txt')
 		if path != '' {
-			content := system.exec_or('cat "${path}"', '')
-			if content != '' {
-				w.set_value('txt_1', content)
-				w.notification('Loaded', 'Loaded file: ${path}')
+			content := os.read_file(path) or {
+				w.alert('Open Failed', 'Could not read "${path}":\n${err}')
+				return
 			}
+			w.set_value('txt_1', content)
+			w.notification('Loaded', 'Loaded file: ${path}')
 		}
 	})
 

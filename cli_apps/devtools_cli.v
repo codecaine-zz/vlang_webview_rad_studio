@@ -4,6 +4,7 @@ import flag
 import os
 import time
 import rand
+import strconv
 import system
 
 fn generate_uuid() string {
@@ -32,9 +33,14 @@ fn main() {
 	do_stats := fp.bool('stats', `S`, false, 'Calculate statistics on comma-separated numbers')
 
 	additional_args := fp.finalize() or {
-		println('Error: ${err}')
-		println(fp.usage())
-		return
+		eprintln('Error: ${err}')
+		eprintln(fp.usage())
+		exit(2)
+	}
+	mode_count := int(gen_uuid) + int(show_time) + int(do_slug) + int(do_title) + int(do_reverse) + int(do_words) + int(do_stats)
+	if mode_count > 1 {
+		eprintln('Error: Developer tool operation flags are mutually exclusive')
+		exit(2)
 	}
 
 	input := if additional_args.len > 0 { additional_args.join(' ') } else { '' }
@@ -47,41 +53,59 @@ fn main() {
 	if show_time {
 		now := time.now()
 		println('Unix Timestamp: ${now.unix()}')
-		println('UTC String:     ${now.utc_string()}')
+		println('UTC String:     ${now.http_header_string()}')
 		return
 	}
 
 	if do_slug {
-		if input == '' { eprintln('Error: Input text required'); exit(1) }
+		if input == '' {
+			eprintln('Error: Input text required')
+			exit(2)
+		}
 		println(system.slugify(input))
 		return
 	}
 
 	if do_title {
-		if input == '' { eprintln('Error: Input text required'); exit(1) }
+		if input == '' {
+			eprintln('Error: Input text required')
+			exit(2)
+		}
 		println(system.title_case(input))
 		return
 	}
 
 	if do_reverse {
-		if input == '' { eprintln('Error: Input text required'); exit(1) }
+		if input == '' {
+			eprintln('Error: Input text required')
+			exit(2)
+		}
 		println(system.reverse_string(input))
 		return
 	}
 
 	if do_words {
-		if input == '' { eprintln('Error: Input text required'); exit(1) }
+		if input == '' {
+			eprintln('Error: Input text required')
+			exit(2)
+		}
 		println('Word count: ${system.word_count(input)}')
 		return
 	}
 
 	if do_stats {
-		if input == '' { eprintln('Error: Provide numbers like: devtools_cli -S 10,20,30,40'); exit(1) }
+		if input == '' {
+			eprintln('Error: Provide numbers like: devtools_cli -S 10,20,30,40')
+			exit(2)
+		}
 		mut nums := []f64{}
 		for item in input.split(',') {
 			trimmed := item.trim_space()
 			if trimmed != '' {
-				nums << trimmed.f64()
+				nums << strconv.atof64(trimmed) or {
+					eprintln('Error: Invalid number "${trimmed}"')
+					exit(2)
+				}
 			}
 		}
 		st := system.calculate_stats(nums) or {

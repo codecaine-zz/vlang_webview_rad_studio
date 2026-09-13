@@ -3,9 +3,9 @@ module webview
 @[heap]
 pub struct Webview {
 mut:
-	w               C.webview_t
-	always_on_top   bool
-	is_fullscreen   bool
+	w             C.webview_t
+	always_on_top bool
+	is_fullscreen bool
 }
 
 pub struct Event {
@@ -13,6 +13,12 @@ pub:
 	instance C.webview_t
 	event_id &char
 	args     &char
+}
+
+struct EvalContext {
+mut:
+	webview C.webview_t
+	code    &char
 }
 
 @[params]
@@ -88,7 +94,19 @@ pub fn (w &Webview) init(code string) {
 }
 
 pub fn (w &Webview) eval(code string) {
-	C.webview_eval(w.w, &char(code.str))
+	mut context := unsafe { &EvalContext(malloc(sizeof(EvalContext))) }
+	context.webview = w.w
+	context.code = C.strdup(&char(code.str))
+	C.webview_dispatch(w.w, eval_on_ui_thread, context)
+}
+
+fn eval_on_ui_thread(_ C.webview_t, raw_context voidptr) {
+	context := unsafe { &EvalContext(raw_context) }
+	C.webview_eval(context.webview, context.code)
+	C.free(context.code)
+	unsafe {
+		free(context)
+	}
 }
 
 pub fn (w &Webview) bind[T](name string, func fn (&Event) T) {
@@ -96,7 +114,7 @@ pub fn (w &Webview) bind[T](name string, func fn (&Event) T) {
 		e := unsafe { &Event{w.w, event_id, args} }.async()
 		spawn fn [func, e] [T]() {
 			result := func(e)
-			e.@return(result, .value)
+			e.return(result, .value)
 		}()
 	}, 0)
 }
@@ -106,9 +124,9 @@ pub fn (w &Webview) bind_opt[T](name string, func fn (&Event) !T) {
 		e := unsafe { &Event{w.w, event_id, args} }.async()
 		spawn fn [func, e] [T]() {
 			if result := func(e) {
-				e.@return(result, .value)
+				e.return(result, .value)
 			} else {
-				e.@return(err.str(), .error)
+				e.return(err.str(), .error)
 			}
 		}()
 	}, 0)

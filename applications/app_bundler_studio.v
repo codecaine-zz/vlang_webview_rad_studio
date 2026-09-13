@@ -2,6 +2,7 @@ module main
 
 import simplegui
 import system
+import os
 
 fn main() {
 	mut win := simplegui.new_window(
@@ -28,7 +29,7 @@ fn main() {
 	rows := [
 		['macOS Apple Silicon & Intel', '.app Bundle with ICNS Icon', 'Production (-prod)'],
 		['Linux x86_64 / arm64', 'Standalone ELF Executable', 'Stripped (-prod)'],
-		['Windows 64-bit', 'PE Executable (.exe) + Icon', 'Embedded (-prod)']
+		['Windows 64-bit', 'PE Executable (.exe) + Icon', 'Embedded (-prod)'],
 	]
 	win.table(headers, rows, fn (w &simplegui.SimpleWindow, idx string) {
 		w.notification('Target Selected', 'Target profile row #${idx}')
@@ -38,11 +39,23 @@ fn main() {
 	win.subheading('Bundler Actions')
 
 	win.button('🚀 Build macOS .app Bundle', fn (w &simplegui.SimpleWindow, _ string) {
-		name := w.get_value('inp_1')
-		entry := w.get_value('inp_3')
+		name := w.get_value('inp_1').trim_space()
+		entry := w.get_value('inp_3').trim_space()
+		if name == '' {
+			w.alert('Invalid Application Name', 'Enter an application name.')
+			return
+		}
+		if entry == '' || !entry.ends_with('.v') || !os.is_file(entry) {
+			w.alert('Invalid Entry File', 'Choose an existing V source file.')
+			return
+		}
 		w.notification('Building', 'Packaging ${name}.app from ${entry}...')
-		res := system.exec_or('v -prod -o "${name}" "${entry}"', 'Build completed')
-		w.alert('Build Result', 'Compiled standalone binary:\n' + res)
+		res := system.exec_safe('v', ['-prod', '-o', name, entry])
+		if res.exit_code != 0 {
+			w.alert('Build Failed', res.output)
+			return
+		}
+		w.alert('Build Result', 'Compiled standalone binary "${name}".\n' + res.output)
 	})
 
 	win.button('🎨 Select Custom PNG Icon...', fn (w &simplegui.SimpleWindow, _ string) {
