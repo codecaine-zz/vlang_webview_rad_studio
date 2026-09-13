@@ -55,7 +55,11 @@ Welcome to the comprehensive API manual for **V Webview RAD Studio**. This guide
    - [Application-Scoped Preferences](#application-scoped-preferences)
 8. [End-to-End Tutorial: Building a Production DevOps Workstation](#8-end-to-end-tutorial-building-a-production-devops-workstation)
 9. [Packaging & Distribution Guide (`build.vsh`)](#9-packaging--distribution-guide-buildvsh)
-10. [Companion CLI Suite & Automation API (16 Complete Tools)](#10-companion-cli-suite--automation-api-16-complete-tools)
+10. [Enterprise Desktop Application Suite (16 Complete Studios)](#10-enterprise-desktop-application-suite-16-complete-studios)
+    - [Desktop Workstations Architecture & Engineering Principles](#desktop-workstations-architecture--engineering-principles)
+    - [Studio Suite Matrix & Quick Reference](#studio-suite-matrix--quick-reference)
+    - [Deep Dive: All 16 Enterprise Applications](#deep-dive-all-16-enterprise-applications)
+11. [Companion CLI Suite & Automation API (16 Complete Tools)](#11-companion-cli-suite--automation-api-16-complete-tools)
 
 - [CLI Architecture & Performance Advantages](#cli-architecture--performance-advantages)
 - [CLI Suite Quick Reference](#cli-suite-quick-reference)
@@ -1686,7 +1690,193 @@ v run build.vsh demos/22_context_menu_and_menu_demo.v
 
 ---
 
-## 10. Companion CLI Suite & Automation API (16 Complete Tools)
+## 10. Enterprise Desktop Application Suite (16 Complete Studios)
+
+**V Webview RAD Studio** includes a complete suite of **16 production-grade desktop application workstations** located in [`applications/`](applications/). Each application is a self-contained, enterprise-ready desktop tool engineered using declarative **SimpleGUI**, native OS Webview, and real system/hardware telemetry APIs.
+
+Unlike typical Electron or browser-based developer applications that require hundreds of megabytes of RAM and heavy runtime dependencies, these applications compile to lean, ultra-fast native binaries (~30–50 MB RAM at runtime) that start up in milliseconds and interface directly with the host operating system.
+
+### Desktop Workstations Architecture & Engineering Principles
+
+All 16 application studios adhere to a set of production engineering principles:
+
+1. **Named Control Identification**: Form controls and outputs utilize explicit named identifiers (e.g. `win.input_named('target_url', ...)` or `win.textarea_named('log_console', ...)`). This enables robust programmatic queries (`win.get_value('target_url')`) and reactive state updates (`win.set_value('log_console', msg)`).
+2. **Worker-Thread Concurrency**: Asynchronous callbacks ensure that I/O-heavy operations (HTTP API requests, SQLite database queries, network port scans, filesystem crawls, shell command executions) run smoothly in the background without freezing the GUI event loop or dropping frames.
+3. **Anti-Autocorrect Form Inputs**: All input fields across the suite enforce `autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false"`. This guarantees that code snippets, URLs, file paths, regex patterns, and shell commands are never mangled by OS text correction.
+4. **Monospace Live Streaming Consoles**: Terminal streams and execution logs are formatted in dedicated high-contrast monospace containers with automatic scroll-to-bottom behavior (`el.scrollTop = el.scrollHeight`) whenever new output is appended.
+5. **Real Native Subsystems**: Zero simulated data. Applications interact directly with real operating system facilities (`vlib/os`, `vlib/net.http`, `vlib/sqlite`, `vlib/crypto`, `system.sys`, and `system.stdlib`).
+
+---
+
+### Studio Suite Matrix & Quick Reference
+
+| Application Studio | Source File | Core Capabilities & Features | Quick Run Command |
+| :--- | :--- | :--- | :--- |
+| **API Studio Pro** | [`applications/api_studio.v`](applications/api_studio.v) | Full REST client (GET/POST/PUT/DELETE/PATCH/HEAD), custom headers editor, payload editor, cURL export, stopwatch latency, request history. | `v run applications/api_studio.v` |
+| **System Studio Pro** | [`applications/system_studio.v`](applications/system_studio.v) | Real-time multi-metric KPI cards, CPU cores/load averages, RAM utilization, storage partitions, battery sensor, host uptime, specs report copy. | `v run applications/system_studio.v` |
+| **Database Studio Pro** | [`applications/database_studio.v`](applications/database_studio.v) | SQLite query workbench (`:memory:` & disk files), schema table discovery, query execution stopwatch, tabular results, CSV export. | `v run applications/database_studio.v` |
+| **Git Workbench Studio** | [`applications/git_studio.v`](applications/git_studio.v) | Visual Git staging, commit authoring, git stash, pull, push, unified monospace diff viewer, and 15-commit history log. | `v run applications/git_studio.v` |
+| **DevTools Studio Pro** | [`applications/devtools_studio.v`](applications/devtools_studio.v) | Casing transforms (camelCase, snake_case, kebab-case, Title Case), slugify, JWT header & payload decoder, Unix timestamp converter. | `v run applications/devtools_studio.v` |
+| **Crypto Studio Pro** | [`applications/crypto_studio.v`](applications/crypto_studio.v) | SHA-256/512, MD5, SHA-1, HMAC-SHA256, Base64/Hex codecs, Shannon entropy calculator, UUID v4 generator, password generator, file checksums. | `v run applications/crypto_studio.v` |
+| **Network Studio Pro** | [`applications/network_studio.v`](applications/network_studio.v) | ICMP ping probe (3 packets), DNS resolution (`nslookup`), common port scanner (80, 443, 22, 8080), HTTP health checks, streaming console. | `v run applications/network_studio.v` |
+| **Markdown Studio Pro** | [`applications/markdown_studio.v`](applications/markdown_studio.v) | Split-pane editor with live HTML generation, word/character/line counters, reading time estimation, document templates, standalone HTML export. | `v run applications/markdown_studio.v` |
+| **JSON Studio Pro** | [`applications/json_studio.v`](applications/json_studio.v) | Real-time syntax validation, key/property filtering, 2-space prettify, minify, document size & parse latency telemetry, structural key breakdown table. | `v run applications/json_studio.v` |
+| **Process Studio Pro** | [`applications/process_studio.v`](applications/process_studio.v) | Task manager listing top CPU and top Memory processes, dynamic filter by name or PID, POSIX task signaling (`SIGTERM` & `SIGKILL -9`), inspector console. | `v run applications/process_studio.v` |
+| **Color Studio Pro** | [`applications/color_studio.v`](applications/color_studio.v) | Exact relative luminance & WCAG 2.1 contrast math against white/black/dark themes (AAA/AA certified), palette generator, CSS `:root`/Tailwind export. | `v run applications/color_studio.v` |
+| **DataConvert Studio** | [`applications/dataconvert_studio.v`](applications/dataconvert_studio.v) | High-speed multi-format transformer: JSON ➔ CSV, CSV ➔ JSON Array, JSON ➔ SQL `INSERT INTO`, CSV ➔ HTML `<table>`, buffer swap, file import/export. | `v run applications/dataconvert_studio.v` |
+| **Regex Studio Pro** | [`applications/regex_studio.v`](applications/regex_studio.v) | Live regex compilation, match highlighting with character span offsets, capture group extraction table, presets library, replacement workbench. | `v run applications/regex_studio.v` |
+| **App Bundler Studio** | [`applications/app_bundler_studio.v`](applications/app_bundler_studio.v) | Desktop app packager: multi-target compiler (`-prod`, `-g`), complete macOS `.app` bundle generator with `Info.plist` generation, live compiler console. | `v run applications/app_bundler_studio.v` |
+| **Environment Studio** | [`applications/env_studio.v`](applications/env_studio.v) | Complete alphabetical environment variable table, search filter, runtime variable setter, `.env` file export/import, system `PATH` directory integrity validator. | `v run applications/env_studio.v` |
+| **Watcher Studio Pro** | [`applications/watcher_studio.v`](applications/watcher_studio.v) | Pre-indexed baseline (no false startup events), multi-metric change tracking (`mtime`, `ctime`, `size`), VCS noise exclusion, debounce intervals, dynamic placeholders (`{file}`, `{path}`, `{filename}`, `{event}`, `{dir}`, `{time}`), live console, CSV audit export. | `v run applications/watcher_studio.v` |
+
+---
+
+### Deep Dive: All 16 Enterprise Applications
+
+#### 1. API Studio Pro (`applications/api_studio.v`)
+An interactive, cross-platform HTTP client for testing and debugging RESTful APIs:
+- **Methods**: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`.
+- **Custom Headers**: Enter arbitrary key-value headers separated by newlines (e.g. `Authorization: Bearer <token>`).
+- **Body Payloads**: Formats request bodies in JSON or raw text.
+- **Stopwatch Telemetry**: Measures and displays round-trip network response latency in milliseconds.
+- **Status Pills**: Visual status indicators color-coded by HTTP response family (2xx Success, 3xx Redirect, 4xx Client Error, 5xx Server Error).
+- **cURL Exporter**: Instantly generates an equivalent `curl` command string and copies it to the system clipboard.
+- **Request History**: Interactive table displaying recent requests with timestamps, endpoints, and status codes.
+
+#### 2. Watcher Studio Pro (`applications/watcher_studio.v`)
+An enterprise-grade continuous filesystem monitor with automated command triggering:
+- **Zero False-Positives Baseline**: Pre-indexes and normalizes directory contents with real paths on launch, guaranteeing no false `[CREATED]` events appear when monitoring begins.
+- **Multi-Metric Verification**: Compares file modification times (`mtime`), metadata change times (`ctime`), and byte lengths (`size`) to capture atomic saves and file replacements.
+- **VCS Exclusion**: Automatically excludes `.git/`, `.DS_Store`, and temporary editor swap files from triggering events.
+- **Command Automation Pipeline**: Executes user-defined shell commands upon detecting any file modification.
+- **Dynamic Template Placeholders**:
+  - `{file}` / `{path}`: Full absolute path to the modified file.
+  - `{filename}`: File basename (e.g., `server.v`).
+  - `{dir}`: Parent folder of the affected file.
+  - `{event}`: Event action name (`CREATED`, `MODIFIED`, `DELETED`).
+  - `{time}`: Timestamp of the event.
+- **Debounce Selector**: Configurable intervals (500ms, 1000ms, 2000ms, 5000ms) to bundle rapid bursts of file modifications into single command runs.
+- **Compliance Audit Logging**: Full event logs can be exported directly to a standard CSV file for auditing.
+
+#### 3. Database Studio Pro (`applications/database_studio.v`)
+An integrated SQLite query and schema inspection console:
+- **Connection Flexibility**: Connect to persistent database files on disk or launch temporary in-memory (`:memory:`) databases.
+- **Schema Auto-Discovery**: Automatically enumerates all tables, columns, data types, and row counts via `sqlite_master`.
+- **Query Execution Engine**: Runs arbitrary SQL commands with sub-millisecond execution stopwatch tracking.
+- **Tabular Data Views**: Renders query results in clean data tables with column headers and row count metrics.
+- **CSV Data Exporter**: Exports any SQL query result set to CSV with a single click.
+
+#### 4. Git Workbench Studio (`applications/git_studio.v`)
+A visual desktop workbench for local Git version control:
+- **Working Tree Telemetry**: Real-time working-tree tracking (`git status --short`).
+- **Visual Staging**: One-click Stage All (`git add -A`) and Unstage All (`git reset`).
+- **Commit Authoring**: Custom commit message validation and one-click commit creation.
+- **Repository Operations**: One-click Git Stash, Stash Pop, Pull (`git pull`), and Push (`git push`).
+- **Unified Diff Viewer**: Dedicated monospace diff viewer showing file modifications (`git diff`) with line-by-line inspection.
+- **Commit History**: Renders the 15 most recent repository commits (`git log --oneline`) with commit hashes, authors, and dates.
+
+#### 5. DevTools Studio Pro (`applications/devtools_studio.v`)
+A comprehensive developer productivity omnitool:
+- **Casing Transformations**: Bi-directional conversions across `camelCase`, `snake_case`, `kebab-case`, `Title Case`, `UPPERCASE`, and `lowercase`.
+- **URL Slug Generator**: Cleans and converts arbitrary strings into URL-safe slugs.
+- **JWT Token Inspector**: Decodes and formats JSON Web Token Header and Payload segments without network transmission.
+- **Timestamp Converter**: Bi-directional conversion between Unix epoch timestamps (seconds/milliseconds) and human-readable ISO 8601 / RFC3339 strings.
+- **Math & Statistics**: Calculates mean, median, min, max, variance, and standard deviation from comma-separated number series.
+
+#### 6. Crypto Studio Pro (`applications/crypto_studio.v`)
+A high-assurance cryptography and security suite:
+- **Hashing Algorithms**: Real-time generation of SHA-256, SHA-512, MD5, and SHA-1 digests.
+- **Message Authentication**: HMAC-SHA256 signature generation with custom user-supplied secret keys.
+- **Data Encoders**: High-speed Base64 and Hexadecimal encode/decode tools.
+- **Shannon Entropy Analyzer**: Computes Shannon entropy (0.0 to 8.0 bits/byte) to evaluate token unpredictability and password strength.
+- **UUID v4 Generator**: Generates cryptographically secure RFC 4122 Version 4 UUIDs.
+- **Password Generator**: High-entropy password generator with customizable length, numbers, and special character flags.
+- **File Checksum Verifier**: Calculates SHA-256 checksums of local disk files with native file picker integration.
+
+#### 7. Network Studio Pro (`applications/network_studio.v`)
+An advanced network diagnostics and connectivity workstation:
+- **ICMP Ping Probe**: Sends 3 ping packets to remote hosts or IP addresses, reporting packet loss and round-trip latency statistics (min/avg/max).
+- **DNS Lookup Engine**: Queries authoritative name servers (`nslookup` / host lookup) to resolve A, AAAA, and CNAME records.
+- **Port Scanner**: Rapid multi-port connectivity check across standard services (HTTP 80, HTTPS 443, SSH 22, Dev 8080, or custom port ranges).
+- **HTTP Health Checks**: Validates remote URL endpoints, returning status codes, response times, and server headers.
+- **Streaming Terminal Console**: Live monospace console displaying raw network diagnostics with timestamped diagnostic history.
+
+#### 8. Markdown Studio Pro (`applications/markdown_studio.v`)
+A split-pane Markdown authoring and HTML publishing studio:
+- **Live Split-Pane Preview**: Real-time conversion of Markdown source into styled semantic HTML preview.
+- **Document Telemetry**: Word counter, character counter, line counter, and estimated reading time calculator.
+- **Templates Library**: One-click boilerplate insertion for Software READMEs, REST API Documentation, and Project Changelogs.
+- **HTML Export**: Copy raw HTML to the clipboard or export a standalone, styled HTML document to disk.
+
+#### 9. JSON Studio Pro (`applications/json_studio.v`)
+A high-performance JSON formatting, validation, and querying suite:
+- **Syntax Validator**: Real-time validation using `json2`, highlighting syntax error locations and invalid tokens.
+- **Prettify & Minify**: Formats messy JSON with 2-space indentation or compacts it into a single-line payload.
+- **Key & Property Filter**: Search and extract nested objects, keys, and values by substring or property name.
+- **Document Telemetry**: Live byte counter, character length, and parse latency stopwatch.
+- **Structural Analysis Table**: Automatically analyzes root object keys, reporting their data types and array lengths.
+
+#### 10. Process Studio Pro (`applications/process_studio.v`)
+A task manager and OS process inspection workstation:
+- **Process Listing**: Live monitoring of top processes sorted by CPU utilization and Memory footprint.
+- **Dynamic Search Filter**: Instant filtering by process name, binary path, or PID.
+- **Task Control**: Send POSIX signals directly to processes:
+  - Graceful termination (`SIGTERM`)
+  - Forced immediate termination (`SIGKILL -9`)
+- **Process Inspector**: Detailed console showing PID, PPID, owning user, memory consumption, CPU load, and full execution command line.
+
+#### 11. Color Studio Pro (`applications/color_studio.v`)
+An accessibility-certified color palette and contrast analyzer:
+- **WCAG 2.1 Contrast Math**: Calculates exact relative luminance ($L = 0.2126R + 0.7152G + 0.0722B$) and contrast ratios against Pure White (`#FFFFFF`), Pure Black (`#000000`), and Dark Theme (`#1E1E2E`).
+- **Compliance Badges**: Visual indicators for WCAG AA (Normal/Large text) and AAA (Normal/Large text) certification.
+- **Harmonious Palettes**: Generates Monochromatic, Complementary, Triadic, and Analogous color harmonies.
+- **Code Export**: Exports color tokens directly into CSS custom properties (`:root`), Tailwind CSS configuration objects, or Vlang constant structures.
+
+#### 12. DataConvert Studio (`applications/dataconvert_studio.v`)
+A high-speed multi-format data transformer:
+- **Transformation Formats**:
+  - JSON Array ➔ Standard CSV
+  - Standard CSV ➔ JSON Array of Objects
+  - JSON Array ➔ SQL `INSERT INTO` statements
+  - Standard CSV ➔ Semantic HTML `<table>` markup
+- **Buffer Swap**: One-click swap of output buffer to input buffer for multi-stage conversion pipelines.
+- **File I/O**: Direct file import and export with native file dialog integration.
+- **Data Metrics**: Live byte count and row/line telemetry cards for both input and output payloads.
+
+#### 13. Regex Studio Pro (`applications/regex_studio.v`)
+A regular expression development and testing studio:
+- **Live Engine Compilation**: Compiles and tests expressions against sample text using `vlib/regex`.
+- **Match Offsets & Highlighting**: Displays matched segments along with start and end character span offsets.
+- **Capture Groups Breakdown**: Dedicated table enumerating all indexed capture groups and their extracted substrings.
+- **Pattern Presets**: Quick-load common patterns: Email addresses, HTTP/HTTPS URLs, IPv4 addresses, ISO dates, Hex colors, and phone numbers.
+- **Substitution Workbench**: Live regex search-and-replace testing with output preview.
+
+#### 14. App Bundler Studio (`applications/app_bundler_studio.v`)
+A desktop application packager and distribution compiler:
+- **Target Architectures**: Multi-platform compiler frontend supporting macOS, Linux, and Windows targets.
+- **Compilation Modes**: Production optimized release mode (`-prod`), debug symbols (`-g`), and custom compiler flags.
+- **macOS `.app` Bundle Generator**: Generates complete application bundles with `Contents/MacOS`, `Info.plist`, and Retina icon integration.
+- **Build Console**: Monospace build console streaming compiler standard output, warnings, and error diagnostics.
+
+#### 15. Environment Studio (`applications/env_studio.v`)
+An operating system environment variables and configuration workbench:
+- **Alphabetical Variable Table**: Inspect all environment variables currently exposed to the process in an alphabetical grid.
+- **Search & Filter**: Search variables by name or value substring.
+- **Runtime Variable Setter**: Set and test environment variables for the active session.
+- **`.env` File Import/Export**: Import environment variables from `.env` files or export current configurations to disk.
+- **`PATH` Integrity Validator**: Validates each directory listed in the system `PATH` variable, flagging non-existent or broken directories.
+
+#### 16. System Studio Pro (`applications/system_studio.v`)
+A hardware intelligence and operating system telemetry workstation:
+- **KPI Metric Cards**: Real-time cards for CPU Load, Active RAM, Storage Usage, Battery State, and Host Uptime.
+- **CPU Metrics**: Core counts, 1/5/15-minute load averages, and processor model identification.
+- **RAM Telemetry**: Total, used, and free physical memory metrics with utilization percentages.
+- **Disk Partitions**: Storage capacity, used bytes, and free space across all mounted filesystem partitions.
+- **System Specs Export**: Formats a complete hardware audit report and copies it to the clipboard.
+
+---
+
+## 11. Companion CLI Suite & Automation API (16 Complete Tools)
 
 In addition to visual GUI applications, **V Webview RAD Studio** includes **16 companion CLI tools** located in `cli_apps/`. Every single application in the Enterprise Studio suite has a matching command-line interface.
 

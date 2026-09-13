@@ -2059,7 +2059,8 @@ pub fn json_escape(s string) string {
 		} else if c == `\t` {
 			res += '\\t'
 		} else if c < 32 {
-			res += '\\u00' + (int(c)).hex()
+			hex_str := (int(c)).hex()
+			res += '\\u00' + if hex_str.len < 2 { '0' + hex_str } else { hex_str }
 		} else {
 			res += c.ascii_str()
 		}

@@ -3,74 +3,200 @@ module main
 import simplegui
 import system
 
-fn load_process_rows() ![][]string {
-	res := system.exec_safe('ps', ['-axo', 'pid,ppid,%cpu,%mem,comm', '-r'])
+struct ProcessRecord {
+	pid     string
+	user    string
+	cpu     string
+	mem     string
+	command string
+}
+
+fn load_process_records(sort_mode string) ![]ProcessRecord {
+	sort_flag := if sort_mode == 'Sort: Top Memory' { '-m' } else { '-r' }
+	res := system.exec_safe('ps', ['-axo', 'pid,user,%cpu,%mem,comm', sort_flag])
 	if res.exit_code != 0 {
 		return error(res.output)
 	}
 	lines := res.output.split_into_lines()
-	mut rows := [][]string{}
+	mut records := []ProcessRecord{}
 	for i, line in lines {
-		if i == 0 || rows.len >= 11 {
+		if i == 0 {
 			continue
 		}
 		tokens := line.trim_space().split_any(' \t').filter(it != '')
 		if tokens.len >= 5 {
-			rows << [tokens[0], tokens[1], tokens[2], tokens[3], tokens[4..].join(' ')]
+			records << ProcessRecord{
+				pid: tokens[0]
+				user: tokens[1]
+				cpu: tokens[2]
+				mem: tokens[3]
+				command: tokens[4..].join(' ')
+			}
 		}
 	}
-	return rows
+	return records
 }
 
-fn is_valid_pid(pid string) bool {
-	return pid != '' && pid.bytes().all(it.is_digit())
+fn refresh_process_gui(w &simplegui.SimpleWindow, sort_mode string, filter_text string) {
+	records := load_process_records(sort_mode) or {
+		w.toast_error('Failed to load processes: ${err}')
+		return
+	}
+
+	lower_filter := filter_text.to_lower().trim_space()
+	mut filtered := []ProcessRecord{}
+	for r in records {
+		if lower_filter == '' || r.command.to_lower().contains(lower_filter) || r.pid.contains(lower_filter) || r.user.to_lower().contains(lower_filter) {
+			filtered << r
+		}
+	}
+
+	mut rows := [][]string{}
+	for i, r in filtered {
+		if i >= 35 {
+			break
+		}
+		rows << [r.pid, r.user, r.cpu + '%', r.mem + '%', r.command]
+	}
+	if rows.len == 0 {
+		rows << ['-', '-', '-', '-', 'No processes matching "${filter_text}"']
+	}
+
+	top_cpu_str := if records.len > 0 { '${records[0].command} (${records[0].cpu}%)' } else { 'None' }
+	t := system.get_hardware_telemetry()
+
+	w.set_kpi('kpi_processes', '${records.len} Running', '${filtered.len} Filtered')
+	w.set_kpi('kpi_top_cpu', top_cpu_str, 'Top CPU consumer')
+	w.set_kpi('kpi_top_mem', system.format_bytes(t.ram_used_bytes), 'RAM in use')
+	w.set_kpi('kpi_load', '${t.load_avg_1:.2f}, ${t.load_avg_5:.2f}', 'Load Average')
+
+	w.set_table_rows('process_table', rows)
+	w.set_status('Process list updated • ${records.len} total processes active • Top: ${top_cpu_str}')
 }
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Process & Task Manager Studio Pro'
-		width: 1100
-		height: 820
+		title: 'Process & Task Manager Studio Pro Enterprise'
+		width: 1180
+		height: 890
 		theme: 'dracula'
 	)
 
-	win.heading('⚡ Process & Task Manager Studio Pro')
-	win.label('Real-time Operating System Process Inspection, CPU/RAM Metrics & Task Control')
-
-	win.subheading('Active System Processes (Top by CPU)')
-	win.table_named('process_table', ['PID', 'PPID', '% CPU', '% MEM', 'Command Name'], [
-		['-', '-', '-', '-', 'Click Refresh Process List to load processes'],
-	], fn (w &simplegui.SimpleWindow, idx string) {
-		w.notification('Process Inspected', 'Inspected process row #${idx}')
-	})
-
+	win.heading('⚡ Process & Task Manager Studio Pro Enterprise')
+	win.subheading('Real-time Operating System Process Inspection, CPU/RAM Metrics, Filtering & Task Control')
 	win.divider()
-	win.subheading('Task Management')
-	win.input('Enter Process PID to inspect or signal...', '', fn (w &simplegui.SimpleWindow, _ string) {})
 
-	win.button('🔄 Refresh Process List', fn (w &simplegui.SimpleWindow, _ string) {
-		rows := load_process_rows() or {
-			w.alert('Refresh Failed', 'Could not load processes:\n${err}')
-			return
-		}
-		w.set_table_rows('process_table', rows)
-		w.notification('Process List', 'Loaded ${rows.len} active processes')
+	// Top Telemetry Dashboard
+	win.row_start()
+	win.kpi_card_named('kpi_processes', 'Active Processes', '0 Running', 'Reading...')
+	win.kpi_card_named('kpi_top_cpu', 'Top CPU Consumer', 'Scanning...', 'Usage')
+	win.kpi_card_named('kpi_top_mem', 'Memory In Use', 'Scanning...', 'RAM')
+	win.kpi_card_named('kpi_load', 'System Load Avg', '0.00, 0.00', '1m, 5m')
+	win.row_end()
+
+	// Process Controls & Filters Box
+	win.box_start('🔍 Process Filters & Task Management Toolbar')
+	win.row_start()
+	win.input_named('proc_filter', 'Filter by command name, user, or PID...', '', fn (w &simplegui.SimpleWindow, val string) {
+		sort_mode := w.get('sort_mode')
+		refresh_process_gui(w, sort_mode, val)
 	})
-
-	win.button('⚠️ Inspect Selected PID', fn (w &simplegui.SimpleWindow, _ string) {
-		pid := w.get_value('inp_1').trim_space()
-		if !is_valid_pid(pid) {
-			w.alert('Process Info', 'Enter a numeric process PID.')
-			return
-		}
-		res := system.exec_safe('ps', ['-p', pid, '-o', 'pid,ppid,user,%cpu,%mem,comm'])
-		if res.exit_code != 0 {
-			w.alert('Process Not Found', res.output)
-			return
-		}
-		w.alert('Process Details (PID ${pid})', res.output)
+	sort_modes := ['Sort: Top CPU', 'Sort: Top Memory']
+	win.dropdown_named('sort_mode', sort_modes, sort_modes[0], fn (w &simplegui.SimpleWindow, val string) {
+		filter_text := w.get('proc_filter')
+		refresh_process_gui(w, val, filter_text)
 	})
+	win.button('🔄 Refresh Processes', fn (w &simplegui.SimpleWindow, _ string) {
+		sort_mode := w.get('sort_mode')
+		filter_text := w.get('proc_filter')
+		refresh_process_gui(w, sort_mode, filter_text)
+		w.toast_success('Process table refreshed')
+	})
+	win.row_end()
 
-	win.status_bar('Task Manager Studio Pro  •  POSIX Process Management  •  Running')
+	// Signal & Action Controls
+	win.row_start()
+	win.input_named('target_pid', 'Target Process PID to signal...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.button('🛑 Terminate Process (SIGTERM)', fn (w &simplegui.SimpleWindow, _ string) {
+		pid := w.get('target_pid').trim_space()
+		if pid == '' || !pid.bytes().all(it.is_digit()) {
+			w.toast_warning('Please enter a numeric process PID.')
+			return
+		}
+		res := system.exec_safe('kill', [pid])
+		if res.exit_code == 0 {
+			w.toast_success('Sent SIGTERM to process PID ${pid}')
+		} else {
+			w.toast_error('Failed to terminate PID ${pid}: ' + res.output)
+		}
+		sort_mode := w.get('sort_mode')
+		filter_text := w.get('proc_filter')
+		refresh_process_gui(w, sort_mode, filter_text)
+	})
+	win.button('⛔ Force Kill (SIGKILL -9)', fn (w &simplegui.SimpleWindow, _ string) {
+		pid := w.get('target_pid').trim_space()
+		if pid == '' || !pid.bytes().all(it.is_digit()) {
+			w.toast_warning('Please enter a numeric process PID.')
+			return
+		}
+		res := system.exec_safe('kill', ['-9', pid])
+		if res.exit_code == 0 {
+			w.toast_warning('Force killed process PID ${pid}')
+		} else {
+			w.toast_error('Failed to kill PID ${pid}: ' + res.output)
+		}
+		sort_mode := w.get('sort_mode')
+		filter_text := w.get('proc_filter')
+		refresh_process_gui(w, sort_mode, filter_text)
+	})
+	win.button('🔍 Inspect Details', fn (w &simplegui.SimpleWindow, _ string) {
+		pid := w.get('target_pid').trim_space()
+		if pid == '' || !pid.bytes().all(it.is_digit()) {
+			w.toast_warning('Enter a numeric PID.')
+			return
+		}
+		res := system.exec_safe('ps', ['-p', pid, '-o', 'pid,ppid,user,%cpu,%mem,start,time,comm'])
+		if res.exit_code == 0 {
+			w.set_value('proc_details', res.output)
+			w.toast_info('Loaded details for PID ${pid}')
+		} else {
+			w.toast_error('Process PID ${pid} not found')
+		}
+	})
+	win.row_end()
+	win.box_end()
+
+	// Process Table Box
+	win.box_start('📋 Running System Processes')
+	headers := ['PID', 'User', '% CPU', '% MEM', 'Command Path']
+	win.table_named('process_table', headers, [['-', '-', '-', '-', 'Loading processes...']], fn (w &simplegui.SimpleWindow, idx string) {
+		w.toast_info('Inspecting process #${idx}')
+	})
+	win.box_end()
+
+	// Selected Process Details Box
+	win.box_start('📑 Selected Process Inspection Console')
+	win.raw_html('<style>
+		#proc_details {
+			font-family: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+			font-size: 12px;
+			height: 100px;
+			min-height: 100px;
+			background: #191a21;
+			color: #50fa7b;
+			border: 1px solid #282a36;
+			border-radius: 6px;
+			line-height: 1.45;
+			padding: 8px;
+		}
+	</style>')
+	win.textarea_named('proc_details', 'Click "Inspect Details" above to view full process arguments, threads, and start time...', 'Process inspection details will appear here...', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.box_end()
+
+	win.status_bar('Task Manager Studio Pro Enterprise  •  POSIX Process Engine  •  Online')
+
+	// Initial population
+	refresh_process_gui(win, 'Sort: Top CPU', '')
+
 	win.run()
 }

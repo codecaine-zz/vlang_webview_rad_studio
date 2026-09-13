@@ -1252,6 +1252,9 @@ pub fn (win &SimpleWindow) set_value(id string, val string) {
 				el.checked = (${esc} === "true" || ${esc} === "1" || el.value === ${esc});
 			} else if ("value" in el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT")) {
 				el.value = ${esc};
+				if (el.tagName === "TEXTAREA") {
+					el.scrollTop = el.scrollHeight;
+				}
 			} else if (el.classList.contains("sg-kpi-card")) {
 				const valEl = el.querySelector(".sg-kpi-value");
 				if (valEl) { valEl.textContent = ${esc}; } else { el.textContent = ${esc}; }
@@ -2626,16 +2629,16 @@ pub fn (win &SimpleWindow) generate_html() string {
 				body_html += '<button id="${ctrl.id}" class="sg-btn ${ctrl.css_class}" style="${style_str}" ${tip_attr} ${dis_attr} onclick="window.vlangTriggerClick(\'${ctrl.click_id}\', \'${ctrl.id}\')">${ctrl.text}</button>'
 			}
 			.input {
-				body_html += '<input id="${ctrl.id}" type="text" class="sg-input" placeholder="${ctrl.placeholder}" value="${ctrl.value}" style="${style_str}" ${tip_attr} ${dis_attr} oninput="window.vlangTriggerChange(\'${ctrl.change_id}\', \'${ctrl.id}\', this.value)" onkeydown="if(event.key===\'Enter\'){window.vlangTriggerClick(\'enter_${ctrl.id}\', this.value)}" />'
+				body_html += '<input id="${ctrl.id}" type="text" class="sg-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${ctrl.placeholder}" value="${ctrl.value}" style="${style_str}" ${tip_attr} ${dis_attr} oninput="window.vlangTriggerChange(\'${ctrl.change_id}\', \'${ctrl.id}\', this.value)" onkeydown="if(event.key===\'Enter\'){window.vlangTriggerClick(\'enter_${ctrl.id}\', this.value)}" />'
 			}
 			.password {
-				body_html += '<input id="${ctrl.id}" type="password" class="sg-input" placeholder="${ctrl.placeholder}" value="${ctrl.value}" style="${style_str}" ${tip_attr} ${dis_attr} oninput="window.vlangTriggerChange(\'${ctrl.change_id}\', \'${ctrl.id}\', this.value)" onkeydown="if(event.key===\'Enter\'){window.vlangTriggerClick(\'enter_${ctrl.id}\', this.value)}" />'
+				body_html += '<input id="${ctrl.id}" type="password" class="sg-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${ctrl.placeholder}" value="${ctrl.value}" style="${style_str}" ${tip_attr} ${dis_attr} oninput="window.vlangTriggerChange(\'${ctrl.change_id}\', \'${ctrl.id}\', this.value)" onkeydown="if(event.key===\'Enter\'){window.vlangTriggerClick(\'enter_${ctrl.id}\', this.value)}" />'
 			}
 			.textarea {
-				body_html += '<textarea id="${ctrl.id}" class="sg-textarea" placeholder="${ctrl.placeholder}" style="${style_str}" ${tip_attr} ${dis_attr} oninput="window.vlangTriggerChange(\'${ctrl.change_id}\', \'${ctrl.id}\', this.value)">${ctrl.value}</textarea>'
+				body_html += '<textarea id="${ctrl.id}" class="sg-textarea" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${ctrl.placeholder}" style="${style_str}" ${tip_attr} ${dis_attr} oninput="window.vlangTriggerChange(\'${ctrl.change_id}\', \'${ctrl.id}\', this.value)">${ctrl.value}</textarea>'
 			}
 			.search_field {
-				body_html += '<input id="${ctrl.id}" type="search" class="sg-input" placeholder="${ctrl.placeholder}" value="${ctrl.value}" style="${style_str}" ${tip_attr} ${dis_attr} oninput="window.vlangTriggerChange(\'${ctrl.change_id}\', \'${ctrl.id}\', this.value)" onkeydown="if(event.key===\'Enter\'){window.vlangTriggerClick(\'enter_${ctrl.id}\', this.value)}" />'
+				body_html += '<input id="${ctrl.id}" type="search" class="sg-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${ctrl.placeholder}" value="${ctrl.value}" style="${style_str}" ${tip_attr} ${dis_attr} oninput="window.vlangTriggerChange(\'${ctrl.change_id}\', \'${ctrl.id}\', this.value)" onkeydown="if(event.key===\'Enter\'){window.vlangTriggerClick(\'enter_${ctrl.id}\', this.value)}" />'
 			}
 			.checkbox {
 				chk := if ctrl.checked { 'checked' } else { '' }
