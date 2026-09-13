@@ -3,7 +3,7 @@ module main
 import flag
 import os
 import system
-import x.json2
+import json2
 
 fn main() {
 	mut fp := flag.new_flag_parser(os.args)

@@ -14,7 +14,7 @@ pub fn (mut w Webview) attach_system_bindings() {
 	// Hardware telemetry
 	w.bind('systemGetTelemetry', fn (e &Event) string {
 		info := system.get_hardware_telemetry()
-		return '{"cpuModel": ${system.json_escape(info.cpu_model)}, "cpuCores": ${info.cpu_cores}, "cpuArch": "${info.cpu_arch}", "cpuUsage": ${info.cpu_usage:.1f}, "ramTotal": ${info.ram_total_bytes}, "ramFree": ${info.ram_free_bytes}, "ramUsed": ${info.ram_used_bytes}, "ramFormatted": "${info.ram_formatted}", "osName": "${info.os_name}", "osVersion": "${info.os_version}", "hostname": "${info.hostname}", "uptime": ${info.uptime_seconds}, "batteryPercent": ${info.battery_percent}, "batteryCharging": ${info.battery_charging}, "acConnected": ${info.ac_connected}, "loadAvg1": ${info.load_avg_1:.2f}, "loadAvg5": ${info.load_avg_5:.2f}, "loadAvg15": ${info.load_avg_15:.2f}}'
+		return '{"cpuModel": ${system.json_escape(info.cpu_model)}, "cpuCores": ${info.cpu_cores}, "cpuArch": ${system.json_escape(info.cpu_arch)}, "cpuUsage": ${info.cpu_usage:.1f}, "ramTotal": ${info.ram_total_bytes}, "ramFree": ${info.ram_free_bytes}, "ramUsed": ${info.ram_used_bytes}, "ramFormatted": ${system.json_escape(info.ram_formatted)}, "osName": ${system.json_escape(info.os_name)}, "osVersion": ${system.json_escape(info.os_version)}, "hostname": ${system.json_escape(info.hostname)}, "uptime": ${info.uptime_seconds}, "batteryPercent": ${info.battery_percent}, "batteryCharging": ${info.battery_charging}, "acConnected": ${info.ac_connected}, "loadAvg1": ${info.load_avg_1:.2f}, "loadAvg5": ${info.load_avg_5:.2f}, "loadAvg15": ${info.load_avg_15:.2f}}'
 	})
 
 	// Desktop notifications & alerts
@@ -77,14 +77,14 @@ pub fn (mut w Webview) attach_system_bindings() {
 		if !os.exists(path) {
 			return '{"error": "File not found"}'
 		}
-		content := os.read_file(path) or { return '{"error": "${err}"}' }
+		content := os.read_file(path) or { return '{"error": ${system.json_escape(err.str())}}' }
 		return '{"content": ${system.json_escape(content)}}'
 	})
 
 	w.bind('systemWriteFile', fn (e &Event) string {
 		path := e.get_arg[string](0) or { '' }
 		content := e.get_arg[string](1) or { '' }
-		os.write_file(path, content) or { return '{"error": "${err}"}' }
+		os.write_file(path, content) or { return '{"error": ${system.json_escape(err.str())}}' }
 		return '{"success": true}'
 	})
 
@@ -214,7 +214,7 @@ pub fn (mut w Webview) attach_stdlib_bindings() {
 			}
 		}
 		st := system.calculate_stats(numbers) or {
-			return '{"error": "${err}"}'
+			return '{"error": ${system.json_escape(err.str())}}'
 		}
 		return '{"count": ${st.count}, "min": ${st.min}, "max": ${st.max}, "sum": ${st.sum}, "mean": ${st.mean:.4f}, "median": ${st.median:.4f}, "variance": ${st.variance:.4f}, "stdDev": ${st.std_dev:.4f}}'
 	})

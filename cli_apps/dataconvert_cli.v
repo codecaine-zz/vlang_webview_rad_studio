@@ -2,7 +2,7 @@ module main
 
 import flag
 import os
-import x.json2
+import json2
 
 fn csv_to_json(csv string) string {
 	lines := csv.split_into_lines().filter(it.trim_space() != '')

@@ -860,8 +860,9 @@ fn (win &SimpleWindow) set_action_controls_enabled(enabled bool) {
 
 pub fn (win &SimpleWindow) set_control_visible(name string, visible bool) &SimpleWindow {
 	if !isnil(win.wv) {
+		name_esc := system.json_escape(name)
 		disp := if visible { '' } else { 'none' }
-		win.wv.eval('if (document.getElementById("${name}")) { document.getElementById("${name}").style.display = "${disp}"; }')
+		win.wv.eval('if (document.getElementById(${name_esc})) { document.getElementById(${name_esc}).style.display = "${disp}"; }')
 	}
 	return win
 }
@@ -1062,6 +1063,17 @@ pub fn (mut win SimpleWindow) toggle(label string, checked bool, on_change Event
 	return win
 }
 
+pub fn (mut win SimpleWindow) toggle_named(name string, label string, checked bool, on_change EventCallback) &SimpleWindow {
+	id := win.register_control(name, ControlSpec{
+		typ: .toggle
+		text: label
+		checked: checked
+	})
+	win.values[id] = if checked { 'true' } else { 'false' }
+	win.event_handlers['change_${id}'] = on_change
+	return win
+}
+
 pub fn (mut win SimpleWindow) slider(min_val int, max_val int, default_val int, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
 		typ: .slider
@@ -1076,6 +1088,17 @@ pub fn (mut win SimpleWindow) slider(min_val int, max_val int, default_val int, 
 
 pub fn (mut win SimpleWindow) dropdown(options []string, selected string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
+		typ: .dropdown
+		options: options
+		value: selected
+	})
+	win.values[id] = selected
+	win.event_handlers['change_${id}'] = on_change
+	return win
+}
+
+pub fn (mut win SimpleWindow) dropdown_named(name string, options []string, selected string, on_change EventCallback) &SimpleWindow {
+	id := win.register_control(name, ControlSpec{
 		typ: .dropdown
 		options: options
 		value: selected
@@ -1121,6 +1144,17 @@ pub fn (mut win SimpleWindow) kpi_card(title string, value string, change string
 		value: value
 		secondary_text: change
 	})
+	return win
+}
+
+pub fn (mut win SimpleWindow) kpi_card_named(name string, title string, value string, change string) &SimpleWindow {
+	id := win.register_control(name, ControlSpec{
+		typ: .kpi_card
+		text: title
+		value: value
+		secondary_text: change
+	})
+	win.values[id] = value
 	return win
 }
 
@@ -1210,8 +1244,59 @@ pub fn (win &SimpleWindow) set_value(id string, val string) {
 	}
 	if !isnil(win.wv) {
 		esc := system.json_escape(val)
-		win.wv.eval('if (document.getElementById("${actual_id}")) { const el = document.getElementById("${actual_id}"); if (el.type === "checkbox" || el.type === "radio") { el.checked = (${val} === "true" || ${val} === true || el.value === ${esc}); } else { el.value = ${esc}; } }')
+		esc_id := system.json_escape(actual_id)
+		win.wv.eval('(function() {
+			const el = document.getElementById(${esc_id});
+			if (!el) return;
+			if (el.type === "checkbox" || el.type === "radio") {
+				el.checked = (${esc} === "true" || ${esc} === "1" || el.value === ${esc});
+			} else if ("value" in el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT")) {
+				el.value = ${esc};
+			} else if (el.classList.contains("sg-kpi-card")) {
+				const valEl = el.querySelector(".sg-kpi-value");
+				if (valEl) { valEl.textContent = ${esc}; } else { el.textContent = ${esc}; }
+			} else {
+				el.textContent = ${esc};
+			}
+		})();')
 	}
+}
+
+pub fn (win &SimpleWindow) set_kpi(id string, val string, change string) &SimpleWindow {
+	mut actual_id := id
+	unsafe {
+		mut mut_win := &SimpleWindow(voidptr(win))
+		mut_win.state_lock.lock()
+		defer {
+			mut_win.state_lock.unlock()
+		}
+		mut_win.values[id] = val
+		if idx := mut_win.name_to_ctrl[id] {
+			actual_id = mut_win.controls[idx].id
+			mut_win.values[actual_id] = val
+			mut_win.controls[idx].value = val
+			mut_win.controls[idx].secondary_text = change
+			for k, v in mut_win.name_to_ctrl {
+				if v == idx {
+					mut_win.values[k] = val
+				}
+			}
+		}
+	}
+	if !isnil(win.wv) {
+		esc_val := system.json_escape(val)
+		esc_change := system.json_escape(change)
+		esc_id := system.json_escape(actual_id)
+		win.wv.eval('(function() {
+			const el = document.getElementById(${esc_id});
+			if (!el) return;
+			const valEl = el.querySelector(".sg-kpi-value");
+			if (valEl) valEl.textContent = ${esc_val};
+			const chgEl = el.querySelector(".sg-kpi-change");
+			if (chgEl) chgEl.textContent = ${esc_change};
+		})();')
+	}
+	return win
 }
 
 fn table_rows_json(rows [][]string) string {
@@ -1641,7 +1726,7 @@ pub fn (win &SimpleWindow) set_size(w int, h int) &SimpleWindow {
 		win_mut.height = h
 	}
 	if !isnil(win.wv) {
-		win.wv.set_size(w, h, .@none)
+		win.wv.set_size(w, h, .none)
 	}
 	return win
 }
@@ -3223,7 +3308,7 @@ pub fn (mut win SimpleWindow) run() {
 	win.wv = w
 
 	w.set_title(win.title)
-	w.set_size(win.width, win.height, .@none)
+	w.set_size(win.width, win.height, .none)
 
 	if win.always_on_top {
 		w.set_always_on_top(true)

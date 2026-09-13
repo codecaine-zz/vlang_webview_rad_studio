@@ -1,6 +1,6 @@
 module webview
 
-import x.json2
+import json2
 
 pub enum ReturnKind {
 	value = 0
