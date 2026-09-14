@@ -55,10 +55,10 @@ Welcome to the comprehensive API manual for **V Webview RAD Studio**. This guide
    - [Application-Scoped Preferences](#application-scoped-preferences)
 8. [End-to-End Tutorial: Building a Production DevOps Workstation](#8-end-to-end-tutorial-building-a-production-devops-workstation)
 9. [Packaging & Distribution Guide (`build.vsh`)](#9-packaging--distribution-guide-buildvsh)
-10. [Enterprise Desktop Application Suite (16 Complete Studios)](#10-enterprise-desktop-application-suite-16-complete-studios)
+10. [Enterprise Desktop Application Suite (18 Complete Studios)](#10-enterprise-desktop-application-suite-18-complete-studios)
     - [Desktop Workstations Architecture & Engineering Principles](#desktop-workstations-architecture--engineering-principles)
     - [Studio Suite Matrix & Quick Reference](#studio-suite-matrix--quick-reference)
-    - [Deep Dive: All 16 Enterprise Applications](#deep-dive-all-16-enterprise-applications)
+    - [Deep Dive: All 18 Enterprise Applications](#deep-dive-all-18-enterprise-applications)
 11. [Companion CLI Suite & Automation API (16 Complete Tools)](#11-companion-cli-suite--automation-api-16-complete-tools)
 
 - [CLI Architecture & Performance Advantages](#cli-architecture--performance-advantages)
@@ -1690,15 +1690,15 @@ v run build.vsh demos/22_context_menu_and_menu_demo.v
 
 ---
 
-## 10. Enterprise Desktop Application Suite (16 Complete Studios)
+## 10. Enterprise Desktop Application Suite (18 Complete Studios)
 
-**V Webview RAD Studio** includes a complete suite of **16 production-grade desktop application workstations** located in [`applications/`](applications/). Each application is a self-contained, enterprise-ready desktop tool engineered using declarative **SimpleGUI**, native OS Webview, and real system/hardware telemetry APIs.
+**V Webview RAD Studio** includes a complete suite of **18 production-grade desktop application workstations** located in [`applications/`](applications/). Each application is a self-contained, enterprise-ready desktop tool engineered using declarative **SimpleGUI**, native OS Webview, and real system/hardware telemetry APIs.
 
 Unlike typical Electron or browser-based developer applications that require hundreds of megabytes of RAM and heavy runtime dependencies, these applications compile to lean, ultra-fast native binaries (~30–50 MB RAM at runtime) that start up in milliseconds and interface directly with the host operating system.
 
 ### Desktop Workstations Architecture & Engineering Principles
 
-All 16 application studios adhere to a set of production engineering principles:
+All 18 application studios adhere to a set of production engineering principles:
 
 1. **Named Control Identification**: Form controls and outputs utilize explicit named identifiers (e.g. `win.input_named('target_url', ...)` or `win.textarea_named('log_console', ...)`). This enables robust programmatic queries (`win.get_value('target_url')`) and reactive state updates (`win.set_value('log_console', msg)`).
 2. **Worker-Thread Concurrency**: Asynchronous callbacks ensure that I/O-heavy operations (HTTP API requests, SQLite database queries, network port scans, filesystem crawls, shell command executions) run smoothly in the background without freezing the GUI event loop or dropping frames.
@@ -1722,6 +1722,8 @@ All 16 application studios adhere to a set of production engineering principles:
 | **Markdown Studio Pro** | [`applications/markdown_studio.v`](applications/markdown_studio.v) | Split-pane editor with live HTML generation, word/character/line counters, reading time estimation, document templates, standalone HTML export. | `v run applications/markdown_studio.v` |
 | **JSON Studio Pro** | [`applications/json_studio.v`](applications/json_studio.v) | Real-time syntax validation, key/property filtering, 2-space prettify, minify, document size & parse latency telemetry, structural key breakdown table. | `v run applications/json_studio.v` |
 | **Process Studio Pro** | [`applications/process_studio.v`](applications/process_studio.v) | Task manager listing top CPU and top Memory processes, dynamic filter by name or PID, POSIX task signaling (`SIGTERM` & `SIGKILL -9`), inspector console. | `v run applications/process_studio.v` |
+| **Advanced Task Manager** | [`applications/task_manager_studio.v`](applications/task_manager_studio.v) | Full OS Activity Monitor & Task Manager: live process table, CPU/RAM/State, POSIX controls (`SIGTERM`, `SIGKILL -9`, `SIGSTOP`, `SIGCONT`), PID inspector, CSV export. | `v run applications/task_manager_studio.v` |
+| **Finder & File Explorer** | [`applications/finder_studio.v`](applications/finder_studio.v) | Visual desktop file manager & navigator: breadcrumbs, QuickLook text/code/binary inspector, file operations (mkdir/touch/delete/rename), OS app launcher. | `v run applications/finder_studio.v` |
 | **Color Studio Pro** | [`applications/color_studio.v`](applications/color_studio.v) | Exact relative luminance & WCAG 2.1 contrast math against white/black/dark themes (AAA/AA certified), palette generator, CSS `:root`/Tailwind export. | `v run applications/color_studio.v` |
 | **DataConvert Studio** | [`applications/dataconvert_studio.v`](applications/dataconvert_studio.v) | High-speed multi-format transformer: JSON ➔ CSV, CSV ➔ JSON Array, JSON ➔ SQL `INSERT INTO`, CSV ➔ HTML `<table>`, buffer swap, file import/export. | `v run applications/dataconvert_studio.v` |
 | **Regex Studio Pro** | [`applications/regex_studio.v`](applications/regex_studio.v) | Live regex compilation, match highlighting with character span offsets, capture group extraction table, presets library, replacement workbench. | `v run applications/regex_studio.v` |
@@ -1731,7 +1733,7 @@ All 16 application studios adhere to a set of production engineering principles:
 
 ---
 
-### Deep Dive: All 16 Enterprise Applications
+### Deep Dive: All 18 Enterprise Applications
 
 #### 1. API Studio Pro (`applications/api_studio.v`)
 An interactive, cross-platform HTTP client for testing and debugging RESTful APIs:
@@ -1873,6 +1875,26 @@ A hardware intelligence and operating system telemetry workstation:
 - **RAM Telemetry**: Total, used, and free physical memory metrics with utilization percentages.
 - **Disk Partitions**: Storage capacity, used bytes, and free space across all mounted filesystem partitions.
 - **System Specs Export**: Formats a complete hardware audit report and copies it to the clipboard.
+
+#### 17. Advanced Task Manager Studio Enterprise (`applications/task_manager_studio.v`)
+An OS Activity Monitor and Task Manager workstation:
+- **Full Process Grid**: Real-time process listing with PID, PPID, Owning User, CPU%, MEM%, State, and Command Name.
+- **POSIX Signal Controls**: Send `SIGTERM` (graceful exit), `SIGKILL -9` (forced termination), `SIGSTOP` (pause/suspend process), or `SIGCONT` (resume process).
+- **Interactive PID Selection**: Click any row in the process table to immediately inspect the process and populate action buttons.
+- **Deep Process Inspector**: Monospace console displaying executable binary paths, arguments, environment flags, and process parentage.
+- **System Telemetry & Storage Inspector**: Detailed report of CPU cores/load averages, physical RAM in use vs. free, battery power profile, and filesystem disk mounts (`df -h`).
+- **CSV Data Exporter**: Export the full process snapshot table to CSV with one click.
+
+#### 18. Finder & File Explorer Studio Enterprise (`applications/finder_studio.v`)
+A visual desktop file manager and directory navigator:
+- **Breadcrumbs & Quick Jumps**: Instant navigation to `Home (~/ )`, `Desktop`, `Documents`, `Downloads`, or `Up to Parent (..)`.
+- **Direct Path Entry**: Editable path bar with normalization (`os.real_path`) and directory validation.
+- **File System Table**: Detailed table with icons, filenames, human-readable file types, formatted sizes (`KB/MB/GB` or `item count`), POSIX permissions (`drwxr-xr-x`, `-rwxr-xr-x`), and last modification timestamps.
+- **Integrated QuickLook Previewer**:
+  - Code/Text/Markdown/JSON/CSV preview with line counts, byte sizes, and syntax preview (first 120 lines).
+  - Binary/Media/Archive inspection displaying file metadata, MIME type, permissions, and real SHA-256 digests (`system.sha256_file`).
+- **File & Folder Operations**: Create new folders (`mkdir`), touch new files, rename items, delete files/folders, and copy absolute paths to the clipboard.
+- **System Default App Launcher**: Open any selected file or folder in the OS default application (`open` on macOS, `xdg-open` on Linux, `start` on Windows).
 
 ---
 

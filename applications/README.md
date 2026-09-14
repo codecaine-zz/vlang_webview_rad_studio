@@ -1,6 +1,6 @@
-# 🖥️ Enterprise Application Studios Suite (16 Complete Desktop Applications)
+# 🖥️ Enterprise Application Studios Suite (18 Complete Desktop Applications)
 
-Welcome to the **16 Enterprise Desktop Application Studios** included in **V Webview RAD Studio**. 
+Welcome to the **18 Enterprise Desktop Application Studios** included in **V Webview RAD Studio**. 
 
 Every application in this directory is a complete, production-grade workstation built with declarative **SimpleGUI**, native OS Webview, and real system/vlib modules. They are designed for enterprise reliability, high performance, and rapid developer workflows.
 
@@ -22,6 +22,8 @@ Unlike typical web or Electron-based developer tools that consume hundreds of me
 | **Markdown Studio Pro** | [`markdown_studio.v`](markdown_studio.v) | Split-pane editor with live HTML generation, word/character/line counters, reading time estimation, document templates, standalone HTML export. | `v run applications/markdown_studio.v` |
 | **JSON Studio Pro** | [`json_studio.v`](json_studio.v) | Real-time syntax validation, key/property filtering, 2-space prettify, minify, document size & parse latency telemetry, structural key breakdown table. | `v run applications/json_studio.v` |
 | **Process Studio Pro** | [`process_studio.v`](process_studio.v) | Task manager listing top CPU and top Memory processes, dynamic filter by name or PID, POSIX task signaling (`SIGTERM` & `SIGKILL -9`), inspector console. | `v run applications/process_studio.v` |
+| **Advanced Task Manager** | [`task_manager_studio.v`](task_manager_studio.v) | Full OS Activity Monitor & Task Manager: live process table, CPU/RAM/State, POSIX controls (`SIGTERM`, `SIGKILL -9`, `SIGSTOP`, `SIGCONT`), PID inspector, CSV export. | `v run applications/task_manager_studio.v` |
+| **Finder & File Explorer** | [`finder_studio.v`](finder_studio.v) | Visual desktop file manager & navigator: breadcrumbs, QuickLook text/code/binary inspector, file operations (mkdir/touch/delete/rename), OS app launcher. | `v run applications/finder_studio.v` |
 | **Color Studio Pro** | [`color_studio.v`](color_studio.v) | Exact relative luminance & WCAG 2.1 contrast math against white/black/dark themes (AAA/AA certified), harmonious palette generator, CSS `:root`/Tailwind export. | `v run applications/color_studio.v` |
 | **DataConvert Studio** | [`dataconvert_studio.v`](dataconvert_studio.v) | High-speed multi-format transformer: JSON ➔ CSV, CSV ➔ JSON Array, JSON ➔ SQL `INSERT INTO`, CSV ➔ HTML `<table>`, buffer swap, file import/export. | `v run applications/dataconvert_studio.v` |
 | **Regex Studio Pro** | [`regex_studio.v`](regex_studio.v) | Live regex compilation, match highlighting with character span offsets, capture group extraction table, presets library, replacement workbench. | `v run applications/regex_studio.v` |
@@ -185,6 +187,26 @@ A hardware intelligence and operating system telemetry workstation:
 - **RAM Telemetry**: Total, used, and free physical memory metrics with utilization percentages.
 - **Disk Partitions**: Storage capacity, used bytes, and free space across all mounted filesystem partitions.
 - **System Specs Export**: Formats a complete hardware audit report and copies it to the clipboard.
+
+### 17. ⚡ Advanced Task Manager Studio Enterprise (`applications/task_manager_studio.v`)
+An OS Activity Monitor and Task Manager workstation:
+- **Full Process Grid**: Real-time process listing with PID, PPID, Owning User, CPU%, MEM%, State, and Command Name.
+- **POSIX Signal Controls**: Send `SIGTERM` (graceful exit), `SIGKILL -9` (forced termination), `SIGSTOP` (pause/suspend process), or `SIGCONT` (resume process).
+- **Interactive PID Selection**: Click any row in the process table to immediately inspect the process and populate action buttons.
+- **Deep Process Inspector**: Monospace console displaying executable binary paths, arguments, environment flags, and process parentage.
+- **System Telemetry & Storage Inspector**: Detailed report of CPU cores/load averages, physical RAM in use vs. free, battery power profile, and filesystem disk mounts (`df -h`).
+- **CSV Data Exporter**: Export the full process snapshot table to CSV with one click.
+
+### 18. 🗂️ Finder & File Explorer Studio Enterprise (`applications/finder_studio.v`)
+A visual desktop file manager and directory navigator:
+- **Breadcrumbs & Quick Jumps**: Instant navigation to `Home (~/ )`, `Desktop`, `Documents`, `Downloads`, or `Up to Parent (..)`.
+- **Direct Path Entry**: Editable path bar with normalization (`os.real_path`) and directory validation.
+- **File System Table**: Detailed table with icons, filenames, human-readable file types, formatted sizes (`KB/MB/GB` or `item count`), POSIX permissions (`drwxr-xr-x`, `-rwxr-xr-x`), and last modification timestamps.
+- **Integrated QuickLook Previewer**:
+  - Code/Text/Markdown/JSON/CSV preview with line counts, byte sizes, and syntax preview (first 120 lines).
+  - Binary/Media/Archive inspection displaying file metadata, MIME type, permissions, and real SHA-256 digests (`system.sha256_file`).
+- **File & Folder Operations**: Create new folders (`mkdir`), touch new files, rename items, delete files/folders, and copy absolute paths to the clipboard.
+- **System Default App Launcher**: Open any selected file or folder in the OS default application (`open` on macOS, `xdg-open` on Linux, `start` on Windows).
 
 ---
 

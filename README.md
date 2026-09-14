@@ -223,7 +223,7 @@ Choosing the right architectural model for cross-platform desktop development de
   - Native file pickers, folders, and modal alerts (`osascript`, PowerShell, `zenity`)
   - Native clipboard manipulation (`pbcopy`/`pbpaste`, PowerShell, `xclip`)
   - Full Standard Library utilities: HTTP Client, Cryptography (SHA256, SHA512, MD5, HMAC), Base64/Hex encoding, String helpers, and Math Statistics
-- **16 Enterprise System Studio Applications**: Complete GUI workstations in `applications/`
+- **18 Enterprise System Studio Applications**: Complete GUI workstations in `applications/`
 - **16 Companion CLI Workstations**: Matching CLI tools in `cli_apps/`
 - **24 Interactive Feature Demos**: Complete showcase gallery in `demos/`
 - **Standalone Cross-Platform Builder**: `build.vsh` packages native macOS `.app` bundles with custom `.icns`, Linux ELF binaries, and Windows `.exe`.
@@ -242,7 +242,7 @@ Choosing the right architectural model for cross-platform desktop development de
 
 ---
 
-## 📸 Enterprise Application Studios (16 Complete Apps)
+## 📸 Enterprise Application Studios (18 Complete Apps)
 
 | Application Studio       | Screenshot                                                                                          | Description & Quick Run                                                                                                                                                                            |
 | ------------------------ | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -256,6 +256,8 @@ Choosing the right architectural model for cross-platform desktop development de
 | **Markdown Studio Pro**  | <img src="resources/screenshots/app_markdown_studio.png" width="300" alt="Markdown Studio Pro" />   | **Live Markdown Authoring & HTML Workbench**: Split-pane editor and HTML generator, real-time word/character/line telemetry, reading time estimation, document templates (README, API docs, changelogs), and standalone HTML export.<br>`v run applications/markdown_studio.v` |
 | **JSON Studio Pro**      | <img src="resources/screenshots/app_json_studio.png" width="300" alt="JSON Studio Pro" />           | **JSON Query & Schema Inspector**: Real-time syntax validation, key/property filtering, prettify/minify, document size and parse latency telemetry, and a structural key breakdown table.<br>`v run applications/json_studio.v` |
 | **Process Studio Pro**   | <img src="resources/screenshots/app_process_studio.png" width="300" alt="Process Studio Pro" />     | **Task Manager & Process Inspector**: Real-time top CPU and top Memory process listing, dynamic search/filter by name or PID, POSIX task signaling (`SIGTERM` and `SIGKILL -9`), and detailed process inspector console.<br>`v run applications/process_studio.v` |
+| **Advanced Task Manager**| <img src="resources/screenshots/app_process_studio.png" width="300" alt="Advanced Task Manager" /> | **Full OS Activity Monitor & Task Deck**: Complete live process grid with PID, PPID, Owning User, CPU%, MEM%, State, POSIX controls (`SIGTERM`, `SIGKILL -9`, `SIGSTOP`, `SIGCONT`), PID inspector, and CSV export.<br>`v run applications/task_manager_studio.v` |
+| **Finder & File Explorer**| <img src="resources/screenshots/demo_09_file_explorer_ide_template.png" width="300" alt="Finder Studio" /> | **Desktop File Browser & Navigator**: Breadcrumbs, quick jumps (Home, Desktop, Documents, Downloads), QuickLook text/code/binary previewer, file operations (mkdir, touch, rename, delete), and OS default app launcher.<br>`v run applications/finder_studio.v` |
 | **Color Studio Pro**     | <img src="resources/screenshots/app_color_studio.png" width="300" alt="Color Studio Pro" />         | **Palette Generator & WCAG 2.1 Analyzer**: Exact relative luminance and WCAG 2.1 contrast math against white, black, and dark themes (AAA/AA certified), harmonious palette generator, and CSS `:root` / Tailwind export.<br>`v run applications/color_studio.v` |
 | **DataConvert Studio**   | <img src="resources/screenshots/app_dataconvert_studio.png" width="300" alt="DataConvert Studio" /> | **Multi-Format Data Transformer**: High-speed converter for JSON ➔ CSV, CSV ➔ JSON Array, JSON ➔ SQL `INSERT INTO` statements, CSV ➔ HTML `<table>`, input/output buffer swap, and native file import/export.<br>`v run applications/dataconvert_studio.v` |
 | **Regex Studio Pro**     | <img src="resources/screenshots/app_regex_studio.png" width="300" alt="Regex Studio Pro" />         | **Regex Tester & Replacement Suite**: Live regex compilation, match highlighting with character span offsets, capture group extraction, pattern presets library, and regex text replacement workbench.<br>`v run applications/regex_studio.v` |
@@ -323,12 +325,14 @@ vlang_webview_rad_studio/
 │   ├── controls.v                 # 70+ Control specifications & references
 │   └── theme.v                    # Catalog of 76 desktop form themes
 │
-├── applications/                  # 16 Enterprise RAD System Studio Desktop Applications
+├── applications/                  # 18 Enterprise RAD System Studio Desktop Applications
 │   ├── system_studio.v            # System Information & Hardware Telemetry Studio
 │   ├── crypto_studio.v            # Cryptographic Hashes & Encoders Studio
 │   ├── json_studio.v              # JSON Formatter, Validator & Tree Query Studio
 │   ├── devtools_studio.v          # Omnitool Developer Utilities & Time Studio
 │   ├── process_studio.v           # Process & Task Manager Workstation
+│   ├── task_manager_studio.v      # Advanced Task Manager & Activity Monitor Studio
+│   ├── finder_studio.v            # Finder & File Explorer Workspace Studio
 │   ├── database_studio.v          # SQLite Database & SQL Console Studio
 │   ├── api_studio.v               # REST API Client & Endpoint Studio
 │   ├── dataconvert_studio.v       # JSON / CSV / TSV Data Converter Studio
