@@ -19,7 +19,7 @@ fn main() {
 	)
 
 	win.heading('🛠️ Developer Utility Toolkit Showcase')
-	win.subheading('30 Production-Grade Utility Modules embedded directly into Vlang RAD Studio')
+	win.subheading('37 Production-Grade Utility Modules embedded directly into Vlang RAD Studio')
 	win.divider()
 
 	// -------------------------------------------------------------------------
