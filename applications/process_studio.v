@@ -26,10 +26,10 @@ fn load_process_records(sort_mode string) ![]ProcessRecord {
 		tokens := line.trim_space().split_any(' \t').filter(it != '')
 		if tokens.len >= 5 {
 			records << ProcessRecord{
-				pid: tokens[0]
-				user: tokens[1]
-				cpu: tokens[2]
-				mem: tokens[3]
+				pid:     tokens[0]
+				user:    tokens[1]
+				cpu:     tokens[2]
+				mem:     tokens[3]
 				command: tokens[4..].join(' ')
 			}
 		}
@@ -46,7 +46,8 @@ fn refresh_process_gui(w &simplegui.SimpleWindow, sort_mode string, filter_text 
 	lower_filter := filter_text.to_lower().trim_space()
 	mut filtered := []ProcessRecord{}
 	for r in records {
-		if lower_filter == '' || r.command.to_lower().contains(lower_filter) || r.pid.contains(lower_filter) || r.user.to_lower().contains(lower_filter) {
+		if lower_filter == '' || r.command.to_lower().contains(lower_filter)
+			|| r.pid.contains(lower_filter) || r.user.to_lower().contains(lower_filter) {
 			filtered << r
 		}
 	}
@@ -62,7 +63,11 @@ fn refresh_process_gui(w &simplegui.SimpleWindow, sort_mode string, filter_text 
 		rows << ['-', '-', '-', '-', 'No processes matching "${filter_text}"']
 	}
 
-	top_cpu_str := if records.len > 0 { '${records[0].command} (${records[0].cpu}%)' } else { 'None' }
+	top_cpu_str := if records.len > 0 {
+		'${records[0].command} (${records[0].cpu}%)'
+	} else {
+		'None'
+	}
 	t := system.get_hardware_telemetry()
 
 	w.set_kpi('kpi_processes', '${records.len} Running', '${filtered.len} Filtered')
@@ -76,10 +81,10 @@ fn refresh_process_gui(w &simplegui.SimpleWindow, sort_mode string, filter_text 
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Process & Task Manager Studio Pro Enterprise'
-		width: 1180
+		title:  'Process & Task Manager Studio Pro Enterprise'
+		width:  1180
 		height: 890
-		theme: 'dracula'
+		theme:  'dracula'
 	)
 
 	win.heading('⚡ Process & Task Manager Studio Pro Enterprise')
@@ -116,7 +121,8 @@ fn main() {
 
 	// Signal & Action Controls
 	win.row_start()
-	win.input_named('target_pid', 'Target Process PID to signal...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('target_pid', 'Target Process PID to signal...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.button('🛑 Terminate Process (SIGTERM)', fn (w &simplegui.SimpleWindow, _ string) {
 		pid := w.get('target_pid').trim_space()
 		if pid == '' || !pid.bytes().all(it.is_digit()) {
@@ -169,7 +175,9 @@ fn main() {
 	// Process Table Box
 	win.box_start('📋 Running System Processes')
 	headers := ['PID', 'User', '% CPU', '% MEM', 'Command Path']
-	win.table_named('process_table', headers, [['-', '-', '-', '-', 'Loading processes...']], fn (w &simplegui.SimpleWindow, idx string) {
+	win.table_named('process_table', headers, [
+		['-', '-', '-', '-', 'Loading processes...'],
+	], fn (w &simplegui.SimpleWindow, idx string) {
 		w.toast_info('Inspecting process #${idx}')
 	})
 	win.box_end()
@@ -190,7 +198,10 @@ fn main() {
 			padding: 8px;
 		}
 	</style>')
-	win.textarea_named('proc_details', 'Click "Inspect Details" above to view full process arguments, threads, and start time...', 'Process inspection details will appear here...', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('proc_details',
+		'Click "Inspect Details" above to view full process arguments, threads, and start time...',
+		'Process inspection details will appear here...',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	win.status_bar('Task Manager Studio Pro Enterprise  •  POSIX Process Engine  •  Online')

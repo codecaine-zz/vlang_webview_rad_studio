@@ -5,8 +5,8 @@ import os
 import system
 
 fn is_valid_host(host string) bool {
-	return host != '' && !host.starts_with('-')
-		&& host.bytes().all(it.is_alnum() || it in [`.`, `-`, `:`, `_`])
+	return host != '' && !host.starts_with('-') && host.bytes().all(it.is_alnum()
+		|| it in [`.`, `-`, `:`, `_`])
 }
 
 fn main() {

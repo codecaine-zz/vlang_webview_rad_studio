@@ -5,10 +5,10 @@ import system
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 3 - Data Grid, Timer & Code View'
-		width: 960
+		title:  'Demo 3 - Data Grid, Timer & Code View'
+		width:  960
 		height: 700
-		theme: 'dracula'
+		theme:  'dracula'
 	)
 
 	win.heading('🗄️ Enterprise Data Grid & Live Controls')
@@ -63,7 +63,9 @@ fn main() {
 	win.box_end()
 
 	win.box_start('SQL Query Console')
-	win.textarea('SQL Query', 'SELECT id, name, email, balance FROM customers WHERE balance > 5000 ORDER BY balance DESC;', fn (w &simplegui.SimpleWindow, val string) {})
+	win.textarea('SQL Query',
+		'SELECT id, name, email, balance FROM customers WHERE balance > 5000 ORDER BY balance DESC;',
+		fn (w &simplegui.SimpleWindow, val string) {})
 	win.row_start()
 	win.button('⚡ Execute SQL', fn (w &simplegui.SimpleWindow, _ string) {
 		w.alert('Query Executed', '5 rows returned in 1.4ms.')

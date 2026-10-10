@@ -14,7 +14,8 @@ fn refresh_env_table(w &simplegui.SimpleWindow, filter_text string) {
 	mut rows := [][]string{}
 	for k in keys {
 		v := env_map[k]
-		if lower_filter == '' || k.to_lower().contains(lower_filter) || v.to_lower().contains(lower_filter) {
+		if lower_filter == '' || k.to_lower().contains(lower_filter)
+			|| v.to_lower().contains(lower_filter) {
 			display_val := if v.len > 50 { v[..47] + '...' } else { v }
 			rows << [k, display_val, '${v.len} chars']
 		}
@@ -28,7 +29,11 @@ fn refresh_env_table(w &simplegui.SimpleWindow, filter_text string) {
 	path_dirs := path_val.split(os.path_delimiter).filter(it.trim_space() != '')
 
 	w.set_kpi('kpi_total', '${env_map.len} Variables', 'Process Context')
-	w.set_kpi('kpi_filtered', '${rows.len} Matches', if lower_filter != '' { 'Filtered' } else { 'All' })
+	w.set_kpi('kpi_filtered', '${rows.len} Matches', if lower_filter != '' {
+		'Filtered'
+	} else {
+		'All'
+	})
 	w.set_kpi('kpi_path_dirs', '${path_dirs.len} Paths', 'PATH variable')
 	w.set_kpi('kpi_user', system.get_env('USER'), system.get_user_home_dir())
 
@@ -50,10 +55,10 @@ fn export_env_file_format(env_map map[string]string) string {
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Env Studio Pro Enterprise -- Environment Variables Workbench'
-		width: 1180
+		title:  'Env Studio Pro Enterprise -- Environment Variables Workbench'
+		width:  1180
 		height: 890
-		theme: 'kanagawa'
+		theme:  'kanagawa'
 	)
 
 	win.heading('🌱 Env Studio Pro Enterprise')
@@ -82,8 +87,10 @@ fn main() {
 	win.row_end()
 
 	win.row_start()
-	win.input_named('new_key', 'Variable Name (e.g. RAD_ENV, API_KEY)...', '', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.input_named('new_val', 'Variable Value (e.g. production, secret_123)...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('new_key', 'Variable Name (e.g. RAD_ENV, API_KEY)...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('new_val', 'Variable Value (e.g. production, secret_123)...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.button('💾 Set / Update Variable', fn (w &simplegui.SimpleWindow, _ string) {
 		k := w.get('new_key').trim_space()
 		v := w.get('new_val').trim_space()
@@ -166,7 +173,8 @@ fn main() {
 	if path_rows.len == 0 {
 		path_rows << ['-', 'PATH is empty', '-']
 	}
-	win.table_named('path_table', path_headers, path_rows, fn (w &simplegui.SimpleWindow, _ string) {})
+	win.table_named('path_table', path_headers, path_rows,
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	win.status_bar('Env Studio Pro Enterprise  •  POSIX Environment  •  Ready')

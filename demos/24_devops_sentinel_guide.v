@@ -9,10 +9,10 @@ fn main() {
 	target_host := state['target_host'] or { '1.1.1.1' }
 
 	mut win := simplegui.new_window(
-		title: 'DevOps Hardware & Network Sentinel'
-		width: 1024
-		height: 720
-		theme: 'tokyo_night'
+		title:      'DevOps Hardware & Network Sentinel'
+		width:      1024
+		height:     720
+		theme:      'tokyo_night'
 		fullscreen: true
 	)
 
@@ -21,10 +21,18 @@ fn main() {
 		simplegui.MenuCategory{
 			title: '⚡ Actions'
 			items: [
-				simplegui.MenuItem{ text: '🔄 Refresh Now', action: 'refresh', shortcut: 'Cmd+R' },
-				simplegui.MenuItem{ text: '🚪 Quit', action: 'quit', shortcut: 'Cmd+Q' },
+				simplegui.MenuItem{
+					text:     '🔄 Refresh Now'
+					action:   'refresh'
+					shortcut: 'Cmd+R'
+				},
+				simplegui.MenuItem{
+					text:     '🚪 Quit'
+					action:   'quit'
+					shortcut: 'Cmd+Q'
+				},
 			]
-		}
+		},
 	], fn (w &simplegui.SimpleWindow, action string) {
 		if action == 'quit' { w.quit() }
 	})
@@ -35,7 +43,11 @@ fn main() {
 	win.row_start()
 	win.kpi_card('CPU Model', hw.cpu_model, '${hw.cpu_cores} Cores (${hw.cpu_usage.str()}% load)')
 	win.kpi_card('Memory (RAM)', hw.ram_formatted, 'RAM in use')
-	win.kpi_card('Battery', '${hw.battery_percent}%', if hw.battery_charging { '⚡ Charging' } else { '🔋 On Battery' })
+	win.kpi_card('Battery', '${hw.battery_percent}%', if hw.battery_charging {
+		'⚡ Charging'
+	} else {
+		'🔋 On Battery'
+	})
 	win.row_end()
 	win.box_end()
 
@@ -44,7 +56,8 @@ fn main() {
 	win.row_start()
 	masked_ip := system.get_masked_ip()
 	is_online := system.ping_host(target_host)
-	win.label('Network IP: ${masked_ip} | Host ${target_host}: ' + if is_online { 'ONLINE ✅' } else { 'OFFLINE ❌' })
+	win.label('Network IP: ${masked_ip} | Host ${target_host}: ' +
+		if is_online { 'ONLINE ✅' } else { 'OFFLINE ❌' })
 	win.row_end()
 	win.box_end()
 

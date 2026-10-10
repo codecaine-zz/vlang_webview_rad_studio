@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 17 - SimpleGUI Layout Types Showcase'
-		width: 960
+		title:  'Demo 17 - SimpleGUI Layout Types Showcase'
+		width:  960
 		height: 720
-		theme: 'gruvbox'
+		theme:  'gruvbox'
 	)
 
 	win.heading('📐 SimpleGUI Modern Layout Architecture')
@@ -25,7 +25,8 @@ fn main() {
 	win.row_start()
 	win.input('First Name', 'Sarah', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.input('Last Name', 'Connor', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.dropdown(['Engineering', 'Operations', 'Security'], 'Security', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.dropdown(['Engineering', 'Operations', 'Security'], 'Security',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 	win.box_end()
 

@@ -7,10 +7,10 @@ import os
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'DataConvert Studio Pro Enterprise -- Data Format Transformation Workstation'
-		width: 1180
+		title:  'DataConvert Studio Pro Enterprise -- Data Format Transformation Workstation'
+		width:  1180
 		height: 890
-		theme: 'catppuccin'
+		theme:  'catppuccin'
 	)
 
 	win.heading('🔄 DataConvert Studio Pro Enterprise')
@@ -35,8 +35,10 @@ fn main() {
 	win.row_end()
 
 	win.row_start()
-	win.textarea_named('data_input', 'Enter raw data to convert...', sample_json, fn (w &simplegui.SimpleWindow, _ string) {})
-	win.textarea_named('data_output', 'Converted representation will display here...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('data_input', 'Enter raw data to convert...', sample_json,
+		fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('data_output', 'Converted representation will display here...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 
 	// Conversion Actions Row
@@ -121,10 +123,18 @@ fn main() {
 					for k, v in item {
 						cols << k
 						vals << match v {
-							string { "'${v.replace("'", "''")}'" }
-							int, i64, f64 { v.str() }
-							bool { if v { '1' } else { '0' } }
-							else { "'${v.json_str()}'" }
+							string {
+								"'${v.replace("'", "''")}'"
+							}
+							int, i64, f64 {
+								v.str()
+							}
+							bool {
+								if v { '1' } else { '0' }
+							}
+							else {
+								"'${v.json_str()}'"
+							}
 						}
 					}
 					sql_statements << 'INSERT INTO records (${cols.join(', ')}) VALUES (${vals.join(', ')});'

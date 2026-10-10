@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 20 - Codefreelance Desktop Theme Showcase'
-		width: 960
+		title:  'Demo 20 - Codefreelance Desktop Theme Showcase'
+		width:  960
 		height: 720
-		theme: 'monokai_pro'
+		theme:  'monokai_pro'
 	)
 
 	win.heading('🎨 42 Desktop Form Themes Showcase')
@@ -17,10 +17,14 @@ fn main() {
 	win.box_start('Theme Catalog Highlights')
 	headers := ['Category', 'Themes Included', 'Style Aesthetic']
 	rows := [
-		['Modern IDE', 'Monokai Pro, Tokyo Night, Dracula, Nord, One Dark', 'High-contrast vibrant palettes'],
-		['Operating Systems', 'macOS Sonoma, Windows 11 Fluent, Ubuntu Yaru', 'Native OS mimicry & rounded corners'],
-		['Retro Computing', 'Windows 95, Commodore 64, Amiga 500, Mac System 7', 'Authentic 90s beveled borders'],
-		['Hacker & Synth', 'Cyberpunk 2077, Synthwave 84, Matrix Phosphor', 'Neon glows & phosphor green scanlines'],
+		['Modern IDE', 'Monokai Pro, Tokyo Night, Dracula, Nord, One Dark',
+			'High-contrast vibrant palettes'],
+		['Operating Systems', 'macOS Sonoma, Windows 11 Fluent, Ubuntu Yaru',
+			'Native OS mimicry & rounded corners'],
+		['Retro Computing', 'Windows 95, Commodore 64, Amiga 500, Mac System 7',
+			'Authentic 90s beveled borders'],
+		['Hacker & Synth', 'Cyberpunk 2077, Synthwave 84, Matrix Phosphor',
+			'Neon glows & phosphor green scanlines'],
 	]
 	win.table(headers, rows, fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
@@ -50,8 +54,10 @@ fn main() {
 	win.row_end()
 
 	win.row_start()
-	win.input('Theme Testing Input', 'Type something here...', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.dropdown(['Monokai Pro', 'Dracula', 'Nord', 'Gruvbox', 'Cyberpunk'], 'Monokai Pro', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input('Theme Testing Input', 'Type something here...',
+		fn (w &simplegui.SimpleWindow, _ string) {})
+	win.dropdown(['Monokai Pro', 'Dracula', 'Nord', 'Gruvbox', 'Cyberpunk'], 'Monokai Pro',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.toggle('High Contrast Glow', true, fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 	win.box_end()

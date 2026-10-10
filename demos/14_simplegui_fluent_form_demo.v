@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 14 - SimpleGUI Fluent User Form Demo'
-		width: 840
+		title:  'Demo 14 - SimpleGUI Fluent User Form Demo'
+		width:  840
 		height: 660
-		theme: 'monokai_pro'
+		theme:  'monokai_pro'
 	)
 
 	win.heading('👤 User Account & Profile Setup')
@@ -27,7 +27,8 @@ fn main() {
 
 	win.row_start()
 	win.label('Account Plan:')
-	win.dropdown(['Developer (Free)', 'Pro ($19/mo)', 'Enterprise ($99/mo)'], 'Pro ($19/mo)', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.dropdown(['Developer (Free)', 'Pro ($19/mo)', 'Enterprise ($99/mo)'], 'Pro ($19/mo)',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 	win.box_end()
 

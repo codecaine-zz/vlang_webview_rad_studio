@@ -12,10 +12,10 @@ import timeutils
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 25 - Comprehensive Developer Utilities Suite'
-		width: 960
+		title:  'Demo 25 - Comprehensive Developer Utilities Suite'
+		width:  960
 		height: 740
-		theme: 'dracula'
+		theme:  'dracula'
 	)
 
 	win.heading('🛠️ Developer Utility Toolkit Showcase')
@@ -62,7 +62,13 @@ fn main() {
 	// -------------------------------------------------------------------------
 	win.box_start('🎨 3. Color Space Engine (colorutils)')
 	hex_col := '#6366f1'
-	rgb_col := colorutils.hex_to_rgb(hex_col) or { colorutils.RGB{r: 99, g: 102, b: 241} }
+	rgb_col := colorutils.hex_to_rgb(hex_col) or {
+		colorutils.RGB{
+			r: 99
+			g: 102
+			b: 241
+		}
+	}
 	hsl_col := colorutils.rgb_to_hsl(rgb_col)
 
 	win.row_start()
@@ -86,9 +92,18 @@ fn main() {
 	is_valid_url := validutils.validate_url(test_url)
 
 	win.row_start()
-	win.kpi_card('SemVer Check', '${v1.str()} ^2.0.0', if satisfies { 'Satisfied' } else { 'Failed' })
-	win.kpi_card('Email Validation', test_email, if is_valid_email { 'Valid format' } else { 'Invalid' })
-	win.kpi_card('URL Validation', 'GitHub URL', if is_valid_url { 'Valid HTTP(S)' } else { 'Invalid' })
+	win.kpi_card('SemVer Check', '${v1.str()} ^2.0.0',
+		if satisfies { 'Satisfied' } else { 'Failed' })
+	win.kpi_card('Email Validation', test_email, if is_valid_email {
+		'Valid format'
+	} else {
+		'Invalid'
+	})
+	win.kpi_card('URL Validation', 'GitHub URL', if is_valid_url {
+		'Valid HTTP(S)'
+	} else {
+		'Invalid'
+	})
 	win.row_end()
 	win.box_end()
 

@@ -28,8 +28,7 @@ fn convert_markdown_to_html(md string) string {
 		'blockquote { border-left: 4px solid #88c0d0; margin: 0; padding-left: 16px; color: #4c566a; }\n' +
 		'table { border-collapse: collapse; width: 100%; margin: 16px 0; }\n' +
 		'th, td { border: 1px solid #d8dee9; padding: 8px 12px; text-align: left; }\n' +
-		'th { background: #e5e9f0; }\n' +
-		'</style>\n</head>\n<body>\n'
+		'th { background: #e5e9f0; }\n' + '</style>\n</head>\n<body>\n'
 
 	mut in_code_block := false
 	for line in md.split_into_lines() {
@@ -73,10 +72,10 @@ fn main() {
 	sample_md := '# Welcome to Markdown Studio Pro Enterprise\n\nA modern markdown authoring workstation built with **Vlang Webview RAD Studio**.\n\n## Key Architectural Features\n\n- High-performance zero-latency native rendering\n- Live document statistics and word counting\n- Standalone responsive HTML export\n- Full cross-platform desktop integration\n\n```v\nimport simplegui\n\nfn main() {\n    println("Hello from Vlang Webview RAD Studio!")\n}\n```\n\n> "Simplicity is prerequisite for reliability." — Edsger W. Dijkstra\n'
 
 	mut win := simplegui.new_window(
-		title: 'Markdown Studio Pro Enterprise -- Document Authoring Workbench'
-		width: 1180
+		title:  'Markdown Studio Pro Enterprise -- Document Authoring Workbench'
+		width:  1180
 		height: 890
-		theme: 'rose_pine'
+		theme:  'rose_pine'
 	)
 
 	win.heading('📝 Markdown Studio Pro Enterprise')
@@ -113,8 +112,11 @@ fn main() {
 			'Template: Engineering Blog Post' {
 				'# Building Next-Gen Desktop Apps with V\n\n*Published on September 13, 2026*\n\nModern software development demands both speed and simplicity.\n\n## Why Native Matters\n\nBy leveraging OS-native webviews and lightweight compiled binaries, we achieve microsecond startup times.\n'
 			}
-			else { '# Document\n\nContent here.\n' }
+			else {
+				'# Document\n\nContent here.\n'
+			}
 		}
+
 		w.set_value('md_source', text)
 		update_markdown_telemetry(w, text)
 		w.toast_info('Loaded: ' + val)
@@ -138,7 +140,8 @@ fn main() {
 	win.textarea_named('md_source', 'Write markdown content here...', sample_md, fn (w &simplegui.SimpleWindow, val string) {
 		update_markdown_telemetry(w, val)
 	})
-	win.textarea_named('html_rendered', 'HTML markup will appear here...', convert_markdown_to_html(sample_md), fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('html_rendered', 'HTML markup will appear here...',
+		convert_markdown_to_html(sample_md), fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 
 	// Action Buttons Row

@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 6 - Timer Control Studio & Event Intervals'
-		width: 900
+		title:  'Demo 6 - Timer Control Studio & Event Intervals'
+		width:  900
 		height: 650
-		theme: 'cyberpunk'
+		theme:  'cyberpunk'
 	)
 
 	win.heading('⏱️ Timer Control Studio & Event Intervals')

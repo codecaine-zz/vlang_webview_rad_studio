@@ -44,7 +44,7 @@ fn run_with_timeout(executable string, args []string, timeout time.Duration) !Cl
 	}
 	process.wait()
 	result := CliResult{
-		code: process.code
+		code:   process.code
 		stdout: process.stdout_slurp()
 		stderr: process.stderr_slurp()
 	}
@@ -74,7 +74,8 @@ fn assert_terminates_on_signal(executable string, args []string) ! {
 
 fn test_all_cli_help_version_and_invalid_flags() {
 	project_root := os.dir(os.dir(os.real_path(@FILE)))
-	build_dir := os.join_path(os.temp_dir(), 'vlang_gui_cli_test_${os.getpid()}_${time.now().unix_nano()}')
+	build_dir := os.join_path(os.temp_dir(),
+		'vlang_gui_cli_test_${os.getpid()}_${time.now().unix_nano()}')
 	os.mkdir_all(build_dir) or { panic(err) }
 	defer {
 		os.rmdir_all(build_dir) or {}
@@ -104,7 +105,8 @@ fn test_all_cli_help_version_and_invalid_flags() {
 	for name in cli_names {
 		source := os.join_path(project_root, 'cli_apps', '${name}.v')
 		executable := os.join_path(build_dir, name)
-		compile := os.execute('${os.quoted_path(@VEXE)} -o ${os.quoted_path(executable)} ${os.quoted_path(source)}')
+		compile :=
+			os.execute('${os.quoted_path(@VEXE)} -o ${os.quoted_path(executable)} ${os.quoted_path(source)}')
 		assert compile.exit_code == 0, 'failed to compile ${name}: ${compile.output}'
 
 		help := run_with_timeout(executable, ['--help'], 2 * time.second) or { panic(err) }

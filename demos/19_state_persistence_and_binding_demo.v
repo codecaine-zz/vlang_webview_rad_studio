@@ -27,11 +27,11 @@ fn update_preview(w &simplegui.SimpleWindow, status_label string, change_label s
 
 fn main() {
 	mut initial_state := UserProfileState{
-		username: 'alex_mercer'
-		company: 'Antigravity Systems'
-		role: 'Architect'
+		username:         'alex_mercer'
+		company:          'Antigravity Systems'
+		role:             'Architect'
 		remember_session: true
-		updated_at: 'Initial Preset'
+		updated_at:       'Initial Preset'
 	}
 
 	if stateutils.app_state_exists(app_id, state_filename) {
@@ -41,10 +41,10 @@ fn main() {
 	}
 
 	mut win := simplegui.new_window(
-		title: 'Demo 19 - State Persistence & Reactive Bindings'
-		width: 900
+		title:  'Demo 19 - State Persistence & Reactive Bindings'
+		width:  900
 		height: 660
-		theme: 'nord'
+		theme:  'nord'
 	)
 
 	win.heading('💾 State Persistence & Two-Way Bindings')
@@ -64,11 +64,13 @@ fn main() {
 	win.row_end()
 
 	win.row_start()
-	win.dropdown_named('role', ['Engineer', 'Manager', 'Architect', 'Director'], initial_state.role, fn (w &simplegui.SimpleWindow, val string) {
+	win.dropdown_named('role', ['Engineer', 'Manager', 'Architect', 'Director'],
+		initial_state.role, fn (w &simplegui.SimpleWindow, val string) {
 		update_preview(w, 'Modified', 'Role Changed')
 		w.set_status('⚡ Role selection changed to "${val}" (unsaved changes)')
 	})
-	win.toggle_named('remember_session', 'Remember Session on Exit', initial_state.remember_session, fn (w &simplegui.SimpleWindow, val string) {
+	win.toggle_named('remember_session', 'Remember Session on Exit',
+		initial_state.remember_session, fn (w &simplegui.SimpleWindow, val string) {
 		status_desc := if val == 'true' { 'Enabled' } else { 'Disabled' }
 		update_preview(w, 'Modified', 'Session: ' + status_desc)
 		w.set_status('⚡ Session persistence set to ${status_desc} (unsaved changes)')
@@ -87,11 +89,11 @@ fn main() {
 	win.row_start()
 	win.button('💾 Force Save State', fn (w &simplegui.SimpleWindow, _ string) {
 		profile := UserProfileState{
-			username: w.get('username')
-			company: w.get('company')
-			role: w.get('role')
+			username:         w.get('username')
+			company:          w.get('company')
+			role:             w.get('role')
 			remember_session: w.get_bool('remember_session')
-			updated_at: time.now().format_ss()
+			updated_at:       time.now().format_ss()
 		}
 		stateutils.save_app_state[UserProfileState](app_id, state_filename, profile) or {
 			w.toast_error('Failed to save state: ${err.msg()}')

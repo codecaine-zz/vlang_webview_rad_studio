@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 23 - All 76 Themes & 70+ Controls Ultimate Mega-Showcase'
-		width: 1100
+		title:  'Demo 23 - All 76 Themes & 70+ Controls Ultimate Mega-Showcase'
+		width:  1100
 		height: 800
-		theme: 'monokai_pro'
+		theme:  'monokai_pro'
 	)
 
 	win.heading('👑 The Ultimate RAD Studio Mega-Showcase')
@@ -35,9 +35,11 @@ fn main() {
 
 	win.box_start('Interactive Component Playground')
 	win.row_start()
-	win.input('User Input', 'Hello, Cross-Platform V Webview!', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input('User Input', 'Hello, Cross-Platform V Webview!',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.password('Secure Input', 'hunter2', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.dropdown(['Desktop Client', 'Cloud Node', 'Embedded Edge'], 'Desktop Client', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.dropdown(['Desktop Client', 'Cloud Node', 'Embedded Edge'], 'Desktop Client',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 
 	win.row_start()
@@ -51,7 +53,9 @@ fn main() {
 	win.row_end()
 
 	win.label('Active Workspace & Runtime Telemetry Notes:')
-	win.textarea('Telemetry Logs', 'Webview FFI bridge initialized.\n76 theme styles injected.\nHardware acceleration active.\nAnchors and docking layout operational.', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea('Telemetry Logs',
+		'Webview FFI bridge initialized.\n76 theme styles injected.\nHardware acceleration active.\nAnchors and docking layout operational.',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	win.box_start('Overall System Health & Performance (94%)')

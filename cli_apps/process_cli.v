@@ -27,11 +27,11 @@ fn list_processes() ![]ProcessEntry {
 				pid := parts[1].trim('"')
 				mem := parts[4].trim('"')
 				procs << ProcessEntry{
-					pid: pid
+					pid:  pid
 					user: 'User'
-					cpu: '0.0'
-					mem: mem
-					cmd: cmd
+					cpu:  '0.0'
+					mem:  mem
+					cmd:  cmd
 				}
 			}
 		}
@@ -50,11 +50,11 @@ fn list_processes() ![]ProcessEntry {
 			tokens := line.split_any(' \t').filter(it != '')
 			if tokens.len >= 5 {
 				procs << ProcessEntry{
-					pid: tokens[0]
+					pid:  tokens[0]
 					user: tokens[1]
-					cpu: tokens[2]
-					mem: tokens[3]
-					cmd: tokens[4..].join(' ')
+					cpu:  tokens[2]
+					mem:  tokens[3]
+					cmd:  tokens[4..].join(' ')
 				}
 			}
 		}

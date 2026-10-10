@@ -123,4 +123,3 @@ pub:
 	title string
 	items []MenuItem
 }
-

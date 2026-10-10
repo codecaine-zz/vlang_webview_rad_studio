@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 7 - Labeled Form & Desktop Controls'
-		width: 920
+		title:  'Demo 7 - Labeled Form & Desktop Controls'
+		width:  920
 		height: 700
-		theme: 'one_dark'
+		theme:  'one_dark'
 	)
 
 	win.heading('📋 Labeled Form & Desktop Controls Showcase')
@@ -18,7 +18,8 @@ fn main() {
 	win.row_start()
 	win.input('Hostname', 'prod-api-cluster.internal', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.input('Port', '8080', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.dropdown(['IPv4', 'IPv6', 'Dual Stack'], 'IPv4', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.dropdown(['IPv4', 'IPv6', 'Dual Stack'], 'IPv4',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 	win.box_end()
 

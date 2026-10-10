@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 13 - Productivity Controls Studio'
-		width: 960
+		title:  'Demo 13 - Productivity Controls Studio'
+		width:  960
 		height: 720
-		theme: 'rose_pine'
+		theme:  'rose_pine'
 	)
 
 	win.heading('⚡ Developer Productivity Workstation')
@@ -21,7 +21,9 @@ fn main() {
 	win.row_end()
 
 	win.box_start('Quick Developer Scratchpad')
-	win.textarea('Scratchpad Notes', '// Quick thoughts & code snippets...\nfn compute_hash() string {\n    return "sha256:4a8b9f..."\n}', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea('Scratchpad Notes',
+		'// Quick thoughts & code snippets...\nfn compute_hash() string {\n    return "sha256:4a8b9f..."\n}',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_start()
 	win.button('📋 Copy to Clipboard', fn (w &simplegui.SimpleWindow, _ string) {
 		w.eval('

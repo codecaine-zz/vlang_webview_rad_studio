@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 1 - Standard RAD Controls & Helpers'
-		width: 900
+		title:  'Demo 1 - Standard RAD Controls & Helpers'
+		width:  900
 		height: 700
-		theme: 'monokai_pro'
+		theme:  'monokai_pro'
 	)
 
 	win.heading('👤 User Registration & Account Setup')

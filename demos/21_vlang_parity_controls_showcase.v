@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 21 - Vlang Parity Controls Showcase'
-		width: 960
+		title:  'Demo 21 - Vlang Parity Controls Showcase'
+		width:  960
 		height: 700
-		theme: 'matrix'
+		theme:  'matrix'
 	)
 
 	win.heading('⚡ Vlang Native GUI Parity Controls Showcase')
@@ -22,8 +22,10 @@ fn main() {
 
 	win.box_start('Parity Benchmark Form Controls')
 	win.row_start()
-	win.input('V Function Name', 'fn compute_metrics()', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.dropdown(['Struct Method', 'Free Function', 'Anonymous Closure'], 'Struct Method', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input('V Function Name', 'fn compute_metrics()',
+		fn (w &simplegui.SimpleWindow, _ string) {})
+	win.dropdown(['Struct Method', 'Free Function', 'Anonymous Closure'], 'Struct Method',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.toggle('Inline Optimization', true, fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 

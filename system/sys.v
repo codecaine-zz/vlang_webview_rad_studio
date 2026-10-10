@@ -17,6 +17,7 @@ $if macos || linux || freebsd {
 
 	$if macos || freebsd {
 		#include <sys/sysctl.h>
+
 		fn C.sysctl(name &int, namelen u32, oldp voidptr, oldlenp &usize, newp voidptr, newlen usize) int
 	}
 
@@ -133,13 +134,13 @@ pub fn exec_cmd(command string) CommandResult {
 	out, code := exec(command)
 	dur := sw.elapsed().milliseconds()
 	return CommandResult{
-		command: command
-		output: out
-		exit_code: code
-		timed_out: false
+		command:     command
+		output:      out
+		exit_code:   code
+		timed_out:   false
 		duration_ms: dur
-		attempts: 1
-		success: code == 0
+		attempts:    1
+		success:     code == 0
 	}
 }
 
@@ -303,7 +304,11 @@ pub fn get_user_home_dir() string {
 // Windows: %APPDATA%\<app_name>
 // Linux: $XDG_CONFIG_HOME/<app_name> (default ~/.config/<app_name>)
 pub fn get_app_config_dir(app_name string) string {
-	clean_name := if app_name.trim_space() != '' { sanitize_filename(app_name.trim_space()) } else { 'rad_studio' }
+	clean_name := if app_name.trim_space() != '' {
+		sanitize_filename(app_name.trim_space())
+	} else {
+		'rad_studio'
+	}
 	$if macos {
 		home := get_user_home_dir()
 		return os.join_path(home, 'Library', 'Application Support', clean_name)
@@ -328,7 +333,11 @@ pub fn get_app_config_dir(app_name string) string {
 
 // get_app_data_dir returns the recommended application data directory for the OS.
 pub fn get_app_data_dir(app_name string) string {
-	clean_name := if app_name.trim_space() != '' { sanitize_filename(app_name.trim_space()) } else { 'rad_studio' }
+	clean_name := if app_name.trim_space() != '' {
+		sanitize_filename(app_name.trim_space())
+	} else {
+		'rad_studio'
+	}
 	$if macos {
 		home := get_user_home_dir()
 		return os.join_path(home, 'Library', 'Application Support', clean_name)
@@ -353,7 +362,11 @@ pub fn get_app_data_dir(app_name string) string {
 
 // get_app_cache_dir returns the recommended cache directory for the OS.
 pub fn get_app_cache_dir(app_name string) string {
-	clean_name := if app_name.trim_space() != '' { sanitize_filename(app_name.trim_space()) } else { 'rad_studio' }
+	clean_name := if app_name.trim_space() != '' {
+		sanitize_filename(app_name.trim_space())
+	} else {
+		'rad_studio'
+	}
 	$if macos {
 		home := get_user_home_dir()
 		return os.join_path(home, 'Library', 'Caches', clean_name)
@@ -374,7 +387,11 @@ pub fn get_app_cache_dir(app_name string) string {
 
 // get_app_state_dir returns the recommended persistent application state directory for the OS.
 pub fn get_app_state_dir(app_name string) string {
-	clean_name := if app_name.trim_space() != '' { sanitize_filename(app_name.trim_space()) } else { 'rad_studio' }
+	clean_name := if app_name.trim_space() != '' {
+		sanitize_filename(app_name.trim_space())
+	} else {
+		'rad_studio'
+	}
 	$if macos {
 		home := get_user_home_dir()
 		return os.join_path(home, 'Library', 'Application Support', clean_name, 'state')
@@ -399,7 +416,11 @@ pub fn get_app_state_dir(app_name string) string {
 
 // get_app_log_dir returns the recommended log directory for the OS.
 pub fn get_app_log_dir(app_name string) string {
-	clean_name := if app_name.trim_space() != '' { sanitize_filename(app_name.trim_space()) } else { 'rad_studio' }
+	clean_name := if app_name.trim_space() != '' {
+		sanitize_filename(app_name.trim_space())
+	} else {
+		'rad_studio'
+	}
 	$if macos {
 		home := get_user_home_dir()
 		return os.join_path(home, 'Library', 'Logs', clean_name)
@@ -420,7 +441,11 @@ pub fn get_app_log_dir(app_name string) string {
 
 // get_app_runtime_dir returns the recommended runtime/transient directory for the OS.
 pub fn get_app_runtime_dir(app_name string) string {
-	clean_name := if app_name.trim_space() != '' { sanitize_filename(app_name.trim_space()) } else { 'rad_studio' }
+	clean_name := if app_name.trim_space() != '' {
+		sanitize_filename(app_name.trim_space())
+	} else {
+		'rad_studio'
+	}
 	$if macos {
 		user := os.user_os()
 		return os.join_path(os.temp_dir(), '${clean_name}-${user}')
@@ -494,9 +519,11 @@ pub fn resolve_user_path(raw_path string) string {
 		mut i := 0
 		bytes := p.bytes()
 		for i < bytes.len {
-			if bytes[i] == `$` && i + 1 < bytes.len && (bytes[i + 1].is_letter() || bytes[i + 1] == `_`) {
+			if bytes[i] == `$` && i + 1 < bytes.len && (bytes[i + 1].is_letter()
+				|| bytes[i + 1] == `_`) {
 				mut j := i + 1
-				for j < bytes.len && (bytes[j].is_letter() || bytes[j].is_digit() || bytes[j] == `_`) {
+				for j < bytes.len && (bytes[j].is_letter() || bytes[j].is_digit()
+					|| bytes[j] == `_`) {
 					j++
 				}
 				var_name := p[i + 1..j]
@@ -538,23 +565,47 @@ pub fn expand_user_path(raw_path string) string {
 pub fn get_system_path(name string) string {
 	home := get_user_home_dir()
 	return match name.to_lower() {
-		'home' { home }
-		'temp', 'tmp' { os.temp_dir() }
-		'desktop' { os.join_path(home, 'Desktop') }
-		'documents' { os.join_path(home, 'Documents') }
-		'downloads' { os.join_path(home, 'Downloads') }
-		'cache' { os.cache_dir() }
-		'config' { os.config_dir() or { os.join_path(home, '.config') } }
-		'data' { os.data_dir() }
+		'home' {
+			home
+		}
+		'temp', 'tmp' {
+			os.temp_dir()
+		}
+		'desktop' {
+			os.join_path(home, 'Desktop')
+		}
+		'documents' {
+			os.join_path(home, 'Documents')
+		}
+		'downloads' {
+			os.join_path(home, 'Downloads')
+		}
+		'cache' {
+			os.cache_dir()
+		}
+		'config' {
+			os.config_dir() or { os.join_path(home, '.config') }
+		}
+		'data' {
+			os.data_dir()
+		}
 		'state' {
 			$if macos {
 				os.join_path(home, 'Library', 'Application Support')
 			} $else $if windows {
 				env := os.getenv('LOCALAPPDATA')
-				if env != '' { env } else { os.join_path(home, 'AppData', 'Local') }
+				if env != '' {
+					env
+				} else {
+					os.join_path(home, 'AppData', 'Local')
+				}
 			} $else {
 				env := os.getenv('XDG_STATE_HOME')
-				if env != '' { env } else { os.join_path(home, '.local', 'state') }
+				if env != '' {
+					env
+				} else {
+					os.join_path(home, '.local', 'state')
+				}
 			}
 		}
 		'logs' {
@@ -562,14 +613,26 @@ pub fn get_system_path(name string) string {
 				os.join_path(home, 'Library', 'Logs')
 			} $else $if windows {
 				env := os.getenv('LOCALAPPDATA')
-				if env != '' { os.join_path(env, 'Logs') } else { os.join_path(home, 'AppData', 'Local', 'Logs') }
+				if env != '' {
+					os.join_path(env, 'Logs')
+				} else {
+					os.join_path(home, 'AppData', 'Local', 'Logs')
+				}
 			} $else {
 				env := os.getenv('XDG_STATE_HOME')
-				if env != '' { os.join_path(env, 'logs') } else { os.join_path(home, '.local', 'state', 'logs') }
+				if env != '' {
+					os.join_path(env, 'logs')
+				} else {
+					os.join_path(home, '.local', 'state', 'logs')
+				}
 			}
 		}
-		'app' { os.dir(os.executable()) }
-		else { home }
+		'app' {
+			os.dir(os.executable())
+		}
+		else {
+			home
+		}
 	}
 }
 
@@ -682,7 +745,8 @@ pub fn trash_file(path string) ! {
 			return error('Failed to move to Recycle Bin: ${out}')
 		}
 	} $else {
-		out, code := exec('gio trash "${abs_path}" 2>/dev/null || trash-put "${abs_path}" 2>/dev/null')
+		out, code :=
+			exec('gio trash "${abs_path}" 2>/dev/null || trash-put "${abs_path}" 2>/dev/null')
 		if code != 0 {
 			return error('Failed to move file to trash: ${out}')
 		}
@@ -698,7 +762,8 @@ pub fn zip_directory(dir_path string, zip_path string) ! {
 	base := os.base(abs_dir)
 	target_zip := resolve_user_path(zip_path)
 	$if windows {
-		out, code := exec('powershell -Command "Compress-Archive -Path \'${abs_dir}\' -DestinationPath \'${target_zip}\' -Force"')
+		out, code :=
+			exec('powershell -Command "Compress-Archive -Path \'${abs_dir}\' -DestinationPath \'${target_zip}\' -Force"')
 		if code != 0 {
 			return error('Failed to create zip archive: ${out}')
 		}
@@ -718,7 +783,8 @@ pub fn unzip_archive(zip_path string, dest_dir string) ! {
 	abs_dest := resolve_user_path(dest_dir)
 	os.mkdir_all(abs_dest)!
 	$if windows {
-		out, code := exec('powershell -Command "Expand-Archive -Path \'${abs_zip}\' -DestinationPath \'${abs_dest}\' -Force"')
+		out, code :=
+			exec('powershell -Command "Expand-Archive -Path \'${abs_zip}\' -DestinationPath \'${abs_dest}\' -Force"')
 		if code != 0 {
 			return error('Failed to extract zip archive: ${out}')
 		}
@@ -763,21 +829,21 @@ pub fn get_file_metadata(path string) !FileMetadata {
 	}
 	st := os.stat(clean)!
 	return FileMetadata{
-		size: i64(st.size)
-		inode: u64(st.inode)
-		nlink: 1
-		dev: 0
-		uid: 0
-		gid: 0
-		mode: u32(st.mode)
-		atime: i64(st.atime)
-		mtime: i64(st.mtime)
-		ctime: i64(st.ctime)
-		is_dir: os.is_dir(clean)
-		is_file: os.is_file(clean)
-		is_link: os.is_link(clean)
-		is_readable: os.is_readable(clean)
-		is_writable: os.is_writable(clean)
+		size:          i64(st.size)
+		inode:         u64(st.inode)
+		nlink:         1
+		dev:           0
+		uid:           0
+		gid:           0
+		mode:          u32(st.mode)
+		atime:         i64(st.atime)
+		mtime:         i64(st.mtime)
+		ctime:         i64(st.ctime)
+		is_dir:        os.is_dir(clean)
+		is_file:       os.is_file(clean)
+		is_link:       os.is_link(clean)
+		is_readable:   os.is_readable(clean)
+		is_writable:   os.is_writable(clean)
 		is_executable: os.is_executable(clean)
 	}
 }
@@ -788,7 +854,8 @@ pub fn get_disk_usage(path string) !DiskStats {
 		return error('Path does not exist: ${target_path}')
 	}
 	$if macos || linux || freebsd {
-		out := exec_or("df -k \"${target_path}\" | tail -n 1 | awk '{print \$2\" \"\$4\" \"\$3}'", '')
+		out :=
+			exec_or("df -k \"${target_path}\" | tail -n 1 | awk '{print \$2\" \"\$4\" \"\$3}'", '')
 		lines := out.split_into_lines()
 		if lines.len > 0 {
 			parts := lines[0].split(' ').filter(it.len > 0)
@@ -797,18 +864,19 @@ pub fn get_disk_usage(path string) !DiskStats {
 				avail_kb := parts[1].u64()
 				used_kb := parts[2].u64()
 				return DiskStats{
-					total: total_kb * 1024
-					available: avail_kb * 1024
-					used: used_kb * 1024
+					total:       total_kb * 1024
+					available:   avail_kb * 1024
+					used:        used_kb * 1024
 					total_bytes: total_kb * 1024
-					free_bytes: avail_kb * 1024
-					used_bytes: used_kb * 1024
+					free_bytes:  avail_kb * 1024
+					used_bytes:  used_kb * 1024
 					mount_point: target_path
 				}
 			}
 		}
 	} $else $if windows {
-		raw := exec_or("powershell -Command \"Get-Volume -FilePath '${target_path}' | Select-Object Size, SizeRemaining\"", '')
+		raw :=
+			exec_or("powershell -Command \"Get-Volume -FilePath '${target_path}' | Select-Object Size, SizeRemaining\"", '')
 		lines := raw.split_into_lines()
 		if lines.len >= 2 {
 			parts := lines[1].trim_space().split(' ').filter(it.len > 0)
@@ -817,12 +885,12 @@ pub fn get_disk_usage(path string) !DiskStats {
 				rem := parts[1].u64()
 				used_val := if sz >= rem { sz - rem } else { u64(0) }
 				return DiskStats{
-					total: sz
-					available: rem
-					used: used_val
+					total:       sz
+					available:   rem
+					used:        used_val
 					total_bytes: sz
-					free_bytes: rem
-					used_bytes: used_val
+					free_bytes:  rem
+					used_bytes:  used_val
 					mount_point: target_path
 				}
 			}
@@ -915,7 +983,8 @@ pub fn osascript_dialog(prompt string, default_value string) string {
 		out, code := exec(cmd)
 		return if code == 0 { out.trim_space() } else { '' }
 	} $else {
-		out, code := exec('zenity --entry --title="Input" --text="${prompt}" --entry-text="${default_value}" 2>/dev/null')
+		out, code :=
+			exec('zenity --entry --title="Input" --text="${prompt}" --entry-text="${default_value}" 2>/dev/null')
 		return if code == 0 { out.trim_space() } else { '' }
 	}
 }
@@ -969,7 +1038,8 @@ pub fn save_file_dialog(prompt string, default_name string) string {
 		res, code := exec(cmd)
 		return if code == 0 { res.trim_space() } else { '' }
 	} $else {
-		res, code := exec('zenity --file-selection --save --confirm-overwrite --title="${prompt}" --filename="${default_name}" 2>/dev/null')
+		res, code :=
+			exec('zenity --file-selection --save --confirm-overwrite --title="${prompt}" --filename="${default_name}" 2>/dev/null')
 		return if code == 0 { res.trim_space() } else { '' }
 	}
 }
@@ -1000,7 +1070,8 @@ pub fn get_clipboard_text() string {
 	} $else $if windows {
 		return exec_or('powershell -Command "Get-Clipboard"', '')
 	} $else {
-		return exec_or('xclip -selection clipboard -o 2>/dev/null || xsel --clipboard --output 2>/dev/null', '')
+		return exec_or('xclip -selection clipboard -o 2>/dev/null || xsel --clipboard --output 2>/dev/null',
+			'')
 	}
 }
 
@@ -1198,13 +1269,19 @@ pub fn get_memory_info() (u64, u64, u64) {
 				for p in parts {
 					tokens := p.split(' ')
 					for tok in tokens {
-						if tok.u64() > 0 { total = tok.u64() * 1024; break }
+						if tok.u64() > 0 {
+							total = tok.u64() * 1024
+							break
+						}
 					}
 				}
 			} else if line.starts_with('MemAvailable:') {
 				tokens := line.split(' ')
 				for tok in tokens {
-					if tok.u64() > 0 { free = tok.u64() * 1024; break }
+					if tok.u64() > 0 {
+						free = tok.u64() * 1024
+						break
+					}
 				}
 			}
 		}
@@ -1216,8 +1293,15 @@ pub fn get_memory_info() (u64, u64, u64) {
 
 pub fn get_memory_pressure() string {
 	$if macos {
-		level := exec_or('sysctl -n kern.memorystatus_vm_pressure_level 2>/dev/null', '').trim_space().int()
-		if level >= 4 { return 'critical' } else if level >= 2 { return 'warn' } else if level == 1 { return 'normal' }
+		level :=
+			exec_or('sysctl -n kern.memorystatus_vm_pressure_level 2>/dev/null', '').trim_space().int()
+		if level >= 4 {
+			return 'critical'
+		} else if level >= 2 {
+			return 'warn'
+		} else if level == 1 {
+			return 'normal'
+		}
 	}
 	return 'normal'
 }
@@ -1226,9 +1310,10 @@ pub fn get_swap_usage() string {
 	$if macos {
 		return exec_or('sysctl -n vm.swapusage', 'unknown').trim_space()
 	} $else $if windows {
-		return exec_or('powershell -Command "(Get-CimInstance Win32_PageFileUsage).AllocatedBaseSize | % { \"$_ MB\" }"', 'unknown').trim_space()
+		return exec_or('powershell -Command "(Get-CimInstance Win32_PageFileUsage).AllocatedBaseSize | % { "$_ MB" }"',
+			'unknown').trim_space()
 	} $else {
-		return exec_or("free -h 2>/dev/null | grep Swap | awk '{print \$3\" / \"\$2}'", 'unknown').trim_space()
+		return exec_or('free -h 2>/dev/null | grep Swap | awk \'{print \$3" / "\$2}\'', 'unknown').trim_space()
 	}
 }
 
@@ -1256,12 +1341,12 @@ pub fn get_disk_info(mount_point string) DiskStats {
 			used := parts[1].u64() * 1024
 			free := parts[2].u64() * 1024
 			return DiskStats{
-				total: total
-				available: free
-				used: used
+				total:       total
+				available:   free
+				used:        used
 				total_bytes: total
-				free_bytes: free
-				used_bytes: used
+				free_bytes:  free
+				used_bytes:  used
 				mount_point: path
 			}
 		}
@@ -1281,12 +1366,12 @@ pub fn get_disk_info(mount_point string) DiskStats {
 					total := valid[1]
 					used := if total >= free { total - free } else { 0 }
 					return DiskStats{
-						total: total
-						available: free
-						used: used
+						total:       total
+						available:   free
+						used:        used
 						total_bytes: total
-						free_bytes: free
-						used_bytes: used
+						free_bytes:  free
+						used_bytes:  used
 						mount_point: 'C:'
 					}
 				}
@@ -1294,12 +1379,12 @@ pub fn get_disk_info(mount_point string) DiskStats {
 		}
 	}
 	return DiskStats{
-		total: 512 * 1024 * 1024 * 1024
-		available: 256 * 1024 * 1024 * 1024
-		used: 256 * 1024 * 1024 * 1024
+		total:       512 * 1024 * 1024 * 1024
+		available:   256 * 1024 * 1024 * 1024
+		used:        256 * 1024 * 1024 * 1024
 		total_bytes: 512 * 1024 * 1024 * 1024
-		free_bytes: 256 * 1024 * 1024 * 1024
-		used_bytes: 256 * 1024 * 1024 * 1024
+		free_bytes:  256 * 1024 * 1024 * 1024
+		used_bytes:  256 * 1024 * 1024 * 1024
 		mount_point: path
 	}
 }
@@ -1351,7 +1436,9 @@ pub fn get_battery_info() (int, bool, bool) {
 				if part.contains('%') {
 					idx := part.index('%') or { 0 }
 					mut start := idx - 1
-					for start >= 0 && part[start].is_digit() { start-- }
+					for start >= 0 && part[start].is_digit() {
+						start--
+					}
 					percent = part[start + 1..idx].int()
 				}
 				if part.contains('charging') && !part.contains('discharging') {
@@ -1380,7 +1467,8 @@ pub fn get_os_info() (string, string, string) {
 		ver := exec_or('sw_vers -productVersion', 'macOS')
 		return 'macOS', ver, get_cpu_architecture()
 	} $else $if windows {
-		ver := exec_or('powershell -Command "(Get-CimInstance Win32_OperatingSystem).Caption"', 'Windows')
+		ver := exec_or('powershell -Command "(Get-CimInstance Win32_OperatingSystem).Caption"',
+			'Windows')
 		return 'Windows', ver, get_cpu_architecture()
 	} $else {
 		ver := exec_or('uname -r', 'Linux')
@@ -1438,7 +1526,8 @@ pub fn get_device_model() string {
 
 pub fn get_serial_number() string {
 	$if macos {
-		return exec_or('ioreg -c IOPlatformExpertDevice 2>/dev/null | awk -F \'"\' \'/IOPlatformSerialNumber/{print $4}\'', 'unavailable').trim_space()
+		return exec_or('ioreg -c IOPlatformExpertDevice 2>/dev/null | awk -F \'"\' \'/IOPlatformSerialNumber/{print $4}\'',
+			'unavailable').trim_space()
 	} $else $if windows {
 		return exec_or('wmic bios get serialnumber', 'unavailable').split_into_lines()[1].trim_space()
 	} $else {
@@ -1448,7 +1537,8 @@ pub fn get_serial_number() string {
 
 pub fn get_screen_resolution() string {
 	$if macos {
-		raw := exec_or('osascript -e \'tell application "Finder" to get bounds of window of desktop\' 2>/dev/null', '')
+		raw :=
+			exec_or('osascript -e \'tell application "Finder" to get bounds of window of desktop\' 2>/dev/null', '')
 		if raw.len > 0 {
 			parts := raw.split(',').map(it.trim_space())
 			if parts.len >= 4 {
@@ -1456,7 +1546,8 @@ pub fn get_screen_resolution() string {
 			}
 		}
 	} $else $if windows {
-		raw := exec_or('powershell -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width.ToString() + \' x \' + [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height.ToString()"', '')
+		raw :=
+			exec_or('powershell -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width.ToString() + \' x \' + [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height.ToString()"', '')
 		if raw.len > 0 {
 			return raw.trim_space()
 		}
@@ -1471,7 +1562,8 @@ pub fn get_screen_resolution() string {
 
 pub fn get_gpu_info() string {
 	$if macos {
-		ioreg_gpu := exec_or('ioreg -rc IOPCIDevice 2>/dev/null | awk -F \'"\' \'/"model" = /{print \$4}\' | head -1', '').trim_space()
+		ioreg_gpu :=
+			exec_or('ioreg -rc IOPCIDevice 2>/dev/null | awk -F \'"\' \'/"model" = /{print \$4}\' | head -1', '').trim_space()
 		if ioreg_gpu.len > 0 {
 			return ioreg_gpu
 		}
@@ -1482,7 +1574,7 @@ pub fn get_gpu_info() string {
 			return lines[1].trim_space()
 		}
 	} $else {
-		raw := exec_or("lspci 2>/dev/null | grep -i vga | cut -d: -f3", '')
+		raw := exec_or('lspci 2>/dev/null | grep -i vga | cut -d: -f3', '')
 		if raw.len > 0 {
 			return raw.trim_space()
 		}
@@ -1548,24 +1640,24 @@ pub fn get_hardware_telemetry() HardwareInfo {
 	l1, l5, l15 := get_load_average()
 
 	return HardwareInfo{
-		cpu_model: get_cpu_info()
-		cpu_cores: get_cpu_cores()
-		cpu_arch: get_cpu_architecture()
-		cpu_usage: get_cpu_usage()
-		ram_total_bytes: tot_ram
-		ram_free_bytes: free_ram
-		ram_used_bytes: used_ram
-		ram_formatted: format_bytes(tot_ram)
-		os_name: os_name
-		os_version: os_ver
-		hostname: get_hostname()
-		uptime_seconds: get_uptime()
-		battery_percent: bat_pct
+		cpu_model:        get_cpu_info()
+		cpu_cores:        get_cpu_cores()
+		cpu_arch:         get_cpu_architecture()
+		cpu_usage:        get_cpu_usage()
+		ram_total_bytes:  tot_ram
+		ram_free_bytes:   free_ram
+		ram_used_bytes:   used_ram
+		ram_formatted:    format_bytes(tot_ram)
+		os_name:          os_name
+		os_version:       os_ver
+		hostname:         get_hostname()
+		uptime_seconds:   get_uptime()
+		battery_percent:  bat_pct
 		battery_charging: bat_chg
-		ac_connected: ac_conn
-		load_avg_1: l1
-		load_avg_5: l5
-		load_avg_15: l15
+		ac_connected:     ac_conn
+		load_avg_1:       l1
+		load_avg_5:       l5
+		load_avg_15:      l15
 	}
 }
 
@@ -1578,10 +1670,12 @@ pub fn is_dark_mode() bool {
 		style := exec_or('defaults read -g AppleInterfaceStyle 2>/dev/null', '').trim_space()
 		return style.to_lower() == 'dark'
 	} $else $if windows {
-		raw := exec_or('powershell -Command "(Get-ItemProperty -Path HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize).AppsUseLightTheme"', '1').trim_space()
+		raw :=
+			exec_or('powershell -Command "(Get-ItemProperty -Path HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize).AppsUseLightTheme"', '1').trim_space()
 		return raw == '0'
 	} $else {
-		raw := exec_or('gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null', '').to_lower()
+		raw :=
+			exec_or('gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null', '').to_lower()
 		return raw.contains('dark')
 	}
 }
@@ -1599,7 +1693,7 @@ pub fn set_system_dark_mode(enabled bool) {
 		exec_bg("osascript -e 'tell application \"System Events\" to tell appearance preferences to set dark mode to ${value}'")
 	} $else $if windows {
 		val_num := if enabled { 0 } else { 1 }
-		cmd := "reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme /t REG_DWORD /d ${val_num} /f"
+		cmd := 'reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme /t REG_DWORD /d ${val_num} /f'
 		exec_bg(cmd)
 	} $else {
 		scheme := if enabled { 'prefer-dark' } else { 'default' }
@@ -1623,7 +1717,7 @@ pub fn sleep_display() {
 	$if macos {
 		exec_bg('pmset displaysleepnow')
 	} $else $if windows {
-		exec_bg("powershell -Command \"(Add-Type '[DllImport(\\\"user32.dll\\\")]public static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);' -Name a -Passthru)::SendMessage(-1, 0x0112, 0xF170, 2)\"")
+		exec_bg('powershell -Command "(Add-Type \'[DllImport(\\"user32.dll\\")]public static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);\' -Name a -Passthru)::SendMessage(-1, 0x0112, 0xF170, 2)"')
 	} $else {
 		exec_bg('xset dpms force off 2>/dev/null')
 	}
@@ -1694,7 +1788,7 @@ pub fn prevent_sleep_bg(duration_sec int) {
 	$if macos {
 		exec_bg('caffeinate -t ${dur}')
 	} $else $if windows {
-		exec_bg("powershell -Command \"Add-Type '[DllImport(\\\"kernel32.dll\\\")]public static extern uint SetThreadExecutionState(uint f);' -Name sys -Passthru; [sys]::SetThreadExecutionState(0x80000003)\"")
+		exec_bg('powershell -Command "Add-Type \'[DllImport(\\"kernel32.dll\\")]public static extern uint SetThreadExecutionState(uint f);\' -Name sys -Passthru; [sys]::SetThreadExecutionState(0x80000003)"')
 	} $else {
 		exec_bg('systemd-inhibit --what=idle --why="rad_studio" sleep ${dur} 2>/dev/null')
 	}
@@ -1702,31 +1796,41 @@ pub fn prevent_sleep_bg(duration_sec int) {
 
 pub fn get_volume() int {
 	$if macos {
-		vol_str := exec_or("osascript -e 'output volume of (get volume settings)' 2>/dev/null", '0').trim_space()
+		vol_str :=
+			exec_or("osascript -e 'output volume of (get volume settings)' 2>/dev/null", '0').trim_space()
 		return vol_str.int()
 	} $else $if windows {
-		raw := exec_or('powershell -Command "[int]((Get-CimInstance -ClassName Win32_SoundDevice).Volume)"', '50').trim_space()
+		raw :=
+			exec_or('powershell -Command "[int]((Get-CimInstance -ClassName Win32_SoundDevice).Volume)"', '50').trim_space()
 		return raw.int()
 	} $else {
-		raw := exec_or("amixer sget Master 2>/dev/null | grep -oE '[0-9]+%' | head -1 | tr -d '%'", '50').trim_space()
+		raw :=
+			exec_or("amixer sget Master 2>/dev/null | grep -oE '[0-9]+%' | head -1 | tr -d '%'", '50').trim_space()
 		return raw.int()
 	}
 }
 
 pub fn set_volume(level int) {
-	clamped := if level < 0 { 0 } else if level > 100 { 100 } else { level }
+	clamped := if level < 0 {
+		0
+	} else if level > 100 {
+		100
+	} else {
+		level
+	}
 	$if macos {
 		exec_bg("osascript -e 'set volume output volume ${clamped}'")
 	} $else $if windows {
-		exec_bg("powershell -Command \"(New-Object -ComObject WScript.Shell).SendKeys([char]174)\"")
+		exec_bg('powershell -Command "(New-Object -ComObject WScript.Shell).SendKeys([char]174)"')
 	} $else {
-		exec_bg("amixer -q sset Master ${clamped}% 2>/dev/null")
+		exec_bg('amixer -q sset Master ${clamped}% 2>/dev/null')
 	}
 }
 
 pub fn is_muted() bool {
 	$if macos {
-		muted_str := exec_or("osascript -e 'output muted of (get volume settings)' 2>/dev/null", 'false').trim_space()
+		muted_str := exec_or("osascript -e 'output muted of (get volume settings)' 2>/dev/null",
+			'false').trim_space()
 		return muted_str.to_lower() == 'true'
 	} $else {
 		return false
@@ -1738,10 +1842,10 @@ pub fn set_muted(mute bool) {
 		val := if mute { 'true' } else { 'false' }
 		exec_bg("osascript -e 'set volume output muted ${val}'")
 	} $else $if windows {
-		exec_bg("powershell -Command \"(New-Object -ComObject WScript.Shell).SendKeys([char]173)\"")
+		exec_bg('powershell -Command "(New-Object -ComObject WScript.Shell).SendKeys([char]173)"')
 	} $else {
 		m_str := if mute { 'mute' } else { 'unmute' }
-		exec_bg("amixer -q sset Master ${m_str} 2>/dev/null")
+		exec_bg('amixer -q sset Master ${m_str} 2>/dev/null')
 	}
 }
 
@@ -1783,7 +1887,7 @@ pub fn sys_beep() {
 	$if macos {
 		os.execute_opt("osascript -e 'beep'") or {}
 	} $else $if windows {
-		os.execute_opt("powershell -Command \"[console]::beep(800,200)\"") or {}
+		os.execute_opt('powershell -Command "[console]::beep(800,200)"') or {}
 	} $else {
 		print('\a')
 	}
@@ -1896,9 +2000,11 @@ pub fn get_masked_ip() string {
 
 pub fn get_local_ip() string {
 	$if macos {
-		return exec_or("ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null", '127.0.0.1')
+		return exec_or('ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null',
+			'127.0.0.1')
 	} $else $if windows {
-		return exec_or('powershell -Command "(Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias Wi-Fi,Ethernet).IPAddress | Select-Object -First 1"', '127.0.0.1')
+		return exec_or('powershell -Command "(Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias Wi-Fi,Ethernet).IPAddress | Select-Object -First 1"',
+			'127.0.0.1')
 	} $else {
 		return exec_or("hostname -I 2>/dev/null | awk '{print \$1}'", '127.0.0.1')
 	}
@@ -1919,7 +2025,8 @@ pub fn get_public_ip_raw() string {
 
 pub fn is_port_open(host string, port int) bool {
 	$if windows {
-		out, code := exec('powershell -Command "Test-NetConnection -ComputerName ${host} -Port ${port} -InformationLevel Quiet"')
+		out, code :=
+			exec('powershell -Command "Test-NetConnection -ComputerName ${host} -Port ${port} -InformationLevel Quiet"')
 		return code == 0 && out.contains('True')
 	} $else {
 		_, code := exec('nc -z -G 1 "${host}" ${port} 2>/dev/null')
@@ -1985,42 +2092,58 @@ pub fn resolve_font_path_by_category(category string) string {
 	$if macos {
 		candidates := match cat {
 			'mono', 'monospace', 'code' {
-				['/System/Library/Fonts/Supplemental/Courier New.ttf', '/System/Library/Fonts/Monaco.ttf']
+				['/System/Library/Fonts/Supplemental/Courier New.ttf',
+					'/System/Library/Fonts/Monaco.ttf']
 			}
 			'serif', 'editorial' {
-				['/System/Library/Fonts/Supplemental/Times New Roman.ttf', '/System/Library/Fonts/Supplemental/Georgia.ttf']
+				['/System/Library/Fonts/Supplemental/Times New Roman.ttf',
+					'/System/Library/Fonts/Supplemental/Georgia.ttf']
 			}
 			'display', 'impact' {
-				['/System/Library/Fonts/Supplemental/Impact.ttf', '/System/Library/Fonts/Supplemental/Trebuchet MS.ttf']
+				['/System/Library/Fonts/Supplemental/Impact.ttf',
+					'/System/Library/Fonts/Supplemental/Trebuchet MS.ttf']
 			}
 			else {
-				['/System/Library/Fonts/Supplemental/Arial.ttf', '/System/Library/Fonts/Supplemental/Helvetica.ttf']
+				['/System/Library/Fonts/Supplemental/Arial.ttf',
+					'/System/Library/Fonts/Supplemental/Helvetica.ttf']
 			}
 		}
+
 		for c in candidates {
 			if os.exists(c) { return c }
 		}
 	} $else $if linux {
 		candidates := match cat {
 			'mono', 'monospace', 'code' {
-				['/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', '/usr/share/fonts/truetype/ubuntu/UbuntuMono-R.ttf']
+				['/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf',
+					'/usr/share/fonts/truetype/ubuntu/UbuntuMono-R.ttf']
 			}
 			'serif', 'editorial' {
-				['/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf', '/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf']
+				['/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf',
+					'/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf']
 			}
 			else {
-				['/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', '/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf']
+				['/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+					'/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf']
 			}
 		}
+
 		for c in candidates {
 			if os.exists(c) { return c }
 		}
 	} $else $if windows {
 		candidates := match cat {
-			'mono', 'monospace', 'code' { ['C:\\Windows\\Fonts\\consola.ttf', 'C:\\Windows\\Fonts\\cour.ttf'] }
-			'serif', 'editorial' { ['C:\\Windows\\Fonts\\times.ttf', 'C:\\Windows\\Fonts\\georgia.ttf'] }
-			else { ['C:\\Windows\\Fonts\\arial.ttf', 'C:\\Windows\\Fonts\\verdana.ttf'] }
+			'mono', 'monospace', 'code' {
+				['C:\\Windows\\Fonts\\consola.ttf', 'C:\\Windows\\Fonts\\cour.ttf']
+			}
+			'serif', 'editorial' {
+				['C:\\Windows\\Fonts\\times.ttf', 'C:\\Windows\\Fonts\\georgia.ttf']
+			}
+			else {
+				['C:\\Windows\\Fonts\\arial.ttf', 'C:\\Windows\\Fonts\\verdana.ttf']
+			}
 		}
+
 		for c in candidates {
 			if os.exists(c) { return c }
 		}

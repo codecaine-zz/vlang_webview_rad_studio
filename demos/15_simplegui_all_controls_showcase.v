@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 15 - SimpleGUI All Controls Showcase'
-		width: 1040
+		title:  'Demo 15 - SimpleGUI All Controls Showcase'
+		width:  1040
 		height: 760
-		theme: 'tokyo_night'
+		theme:  'tokyo_night'
 	)
 
 	win.heading('🎨 SimpleGUI All-Controls Gallery')
@@ -24,7 +24,8 @@ fn main() {
 	win.row_start()
 	win.input('Text Input', 'Sample text', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.password('Password', 'password123', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.dropdown(['Option Alpha', 'Option Beta', 'Option Gamma'], 'Option Alpha', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.dropdown(['Option Alpha', 'Option Beta', 'Option Gamma'], 'Option Alpha',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 
 	win.row_start()

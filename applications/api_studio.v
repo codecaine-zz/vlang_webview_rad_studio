@@ -98,7 +98,11 @@ fn execute_api_request(w &simplegui.SimpleWindow, mut history []RequestHistoryIt
 
 	// Update GUI state
 	w.set_value('res_body', display_body)
-	w.set_kpi('kpi_status', status_str, if resp.status_code >= 200 && resp.status_code < 300 { 'Success' } else { 'Attention' })
+	w.set_kpi('kpi_status', status_str, if resp.status_code >= 200 && resp.status_code < 300 {
+		'Success'
+	} else {
+		'Attention'
+	})
 	w.set_kpi('kpi_latency', '${dur_ms}ms', 'Roundtrip')
 	w.set_kpi('kpi_size', size_str, '${size_bytes} Bytes')
 
@@ -114,15 +118,16 @@ fn execute_api_request(w &simplegui.SimpleWindow, mut history []RequestHistoryIt
 
 	// Append to History
 	history << RequestHistoryItem{
-		timestamp: now_str
-		method: method
-		url: url
+		timestamp:   now_str
+		method:      method
+		url:         url
 		status_code: resp.status_code
 		duration_ms: dur_ms
-		size_bytes: size_bytes
+		size_bytes:  size_bytes
 	}
 	w.set_kpi('kpi_requests', '${history.len} Total', '+1 just now')
-	w.add_table_row('req_history_table', [now_str, method, '${resp.status_code}', '${dur_ms}ms', size_str, url])
+	w.add_table_row('req_history_table', [now_str, method, '${resp.status_code}', '${dur_ms}ms',
+		size_str, url])
 
 	if resp.status_code >= 200 && resp.status_code < 400 {
 		w.toast_success('HTTP ${resp.status_code} received [${dur_ms}ms]')
@@ -137,10 +142,10 @@ fn main() {
 	mut history := []RequestHistoryItem{}
 
 	mut win := simplegui.new_window(
-		title: 'API Studio Pro Enterprise -- REST Client & HTTP Inspector'
-		width: 1180
+		title:  'API Studio Pro Enterprise -- REST Client & HTTP Inspector'
+		width:  1180
 		height: 890
-		theme: 'nord'
+		theme:  'nord'
 	)
 
 	win.heading('🌐 API Studio Pro Enterprise')
@@ -164,7 +169,8 @@ fn main() {
 	win.dropdown_named('req_method', methods, 'GET', fn (w &simplegui.SimpleWindow, val string) {
 		w.set_status('HTTP Method changed to: ' + val)
 	})
-	win.input_named('req_url', 'Endpoint URL (e.g. https://httpbin.org/get)...', 'https://httpbin.org/get', fn (w &simplegui.SimpleWindow, val string) {
+	win.input_named('req_url', 'Endpoint URL (e.g. https://httpbin.org/get)...',
+		'https://httpbin.org/get', fn (w &simplegui.SimpleWindow, val string) {
 		w.set_status('Endpoint URL: ' + val)
 	})
 	presets := [
@@ -182,7 +188,8 @@ fn main() {
 			'Quick Endpoint: httpbin POST' {
 				w.set_value('req_method', 'POST')
 				w.set_value('req_url', 'https://httpbin.org/post')
-				w.set_value('req_body', '{\n  "message": "Hello from API Studio Pro!",\n  "timestamp": "${time.now().unix()}"\n}')
+				w.set_value('req_body',
+					'{\n  "message": "Hello from API Studio Pro!",\n  "timestamp": "${time.now().unix()}"\n}')
 			}
 			'Quick Endpoint: JSONPlaceholder Todo' {
 				w.set_value('req_method', 'GET')
@@ -194,6 +201,7 @@ fn main() {
 			}
 			else {}
 		}
+
 		w.toast_info('Loaded endpoint: ' + val)
 	})
 	win.button('🚀 Send Request', fn [mut history] (w &simplegui.SimpleWindow, _ string) {
@@ -209,9 +217,11 @@ fn main() {
 
 	win.row_start()
 	default_headers := 'Content-Type: application/json\nUser-Agent: Vlang-Webview-RAD-Studio/1.0\nAccept: application/json'
-	win.textarea_named('req_headers', 'Enter headers (Header-Name: Value)...', default_headers, fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('req_headers', 'Enter headers (Header-Name: Value)...', default_headers,
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	default_body := '{\n  "app": "API Studio Pro",\n  "action": "test_request",\n  "active": true\n}'
-	win.textarea_named('req_body', 'Request payload (POST, PUT, PATCH)...', default_body, fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('req_body', 'Request payload (POST, PUT, PATCH)...', default_body,
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 
 	win.row_start()
@@ -248,7 +258,9 @@ fn main() {
 			padding: 10px;
 		}
 	</style>')
-	win.textarea_named('res_body', 'Response body will appear here after request execution...', 'Status: Ready\nClick "🚀 Send Request" to execute.', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('res_body', 'Response body will appear here after request execution...',
+		'Status: Ready\nClick "🚀 Send Request" to execute.',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 
 	win.row_start()
 	win.button('📋 Copy Response Body', fn (w &simplegui.SimpleWindow, _ string) {
@@ -285,7 +297,8 @@ fn main() {
 	headers_init := [
 		['Connection', 'Ready'],
 	]
-	win.table_named('res_headers_table', headers_head, headers_init, fn (w &simplegui.SimpleWindow, _ string) {})
+	win.table_named('res_headers_table', headers_head, headers_init,
+		fn (w &simplegui.SimpleWindow, _ string) {})
 
 	win.subheading('Request History & Audit Log')
 	hist_headers := ['Timestamp', 'Method', 'Status', 'Duration', 'Size', 'Endpoint URL']

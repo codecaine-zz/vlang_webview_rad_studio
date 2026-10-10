@@ -30,10 +30,10 @@ fn main() {
 	mut probe_count := 0
 
 	mut win := simplegui.new_window(
-		title: 'Network Studio Pro Enterprise -- Network Diagnostics & Telemetry'
-		width: 1180
+		title:  'Network Studio Pro Enterprise -- Network Diagnostics & Telemetry'
+		width:  1180
 		height: 890
-		theme: 'navy_blue'
+		theme:  'navy_blue'
 	)
 
 	win.heading('🌐 Network Studio Pro Enterprise')
@@ -72,6 +72,7 @@ fn main() {
 			'Preset: GitHub (github.com)' { 'github.com' }
 			else { 'google.com' }
 		}
+
 		w.set_value('target_host', host)
 		w.toast_info('Loaded host target: ' + host)
 	})
@@ -94,12 +95,22 @@ fn main() {
 
 		probe_count++
 		w.set_kpi('kpi_probes', '${probe_count} Run', '+1 just now')
-		w.set_kpi('kpi_ping', '${dur.milliseconds()}ms', if res.exit_code == 0 { 'Reachable' } else { 'Failed' })
+		w.set_kpi('kpi_ping', '${dur.milliseconds()}ms', if res.exit_code == 0 {
+			'Reachable'
+		} else {
+			'Failed'
+		})
 
-		status := if res.exit_code == 0 { 'Reachable (Exit 0)' } else { 'Unreachable (${res.exit_code})' }
-		w.add_table_row('diagnostics_table', [now_str, 'ICMP Ping', host, status, '${dur.milliseconds()}ms'])
+		status := if res.exit_code == 0 {
+			'Reachable (Exit 0)'
+		} else {
+			'Unreachable (${res.exit_code})'
+		}
+		w.add_table_row('diagnostics_table', [now_str, 'ICMP Ping', host, status,
+			'${dur.milliseconds()}ms'])
 
-		append_net_log(w, '[${now_str}] ⚡ PING ${host}\n${res.output.trim_space()}\n------------------------------------------------------------')
+		append_net_log(w,
+			'[${now_str}] ⚡ PING ${host}\n${res.output.trim_space()}\n------------------------------------------------------------')
 		w.toast_success('Ping probe complete for: ' + host)
 	})
 
@@ -117,9 +128,11 @@ fn main() {
 		probe_count++
 		w.set_kpi('kpi_probes', '${probe_count} Run', '+1 just now')
 		status := if res.exit_code == 0 { 'Resolved' } else { 'Failed (${res.exit_code})' }
-		w.add_table_row('diagnostics_table', [now_str, 'DNS Lookup', host, status, '${dur.milliseconds()}ms'])
+		w.add_table_row('diagnostics_table', [now_str, 'DNS Lookup', host, status,
+			'${dur.milliseconds()}ms'])
 
-		append_net_log(w, '[${now_str}] 🔍 DNS NSLOOKUP ${host}\n${res.output.trim_space()}\n------------------------------------------------------------')
+		append_net_log(w,
+			'[${now_str}] 🔍 DNS NSLOOKUP ${host}\n${res.output.trim_space()}\n------------------------------------------------------------')
 		w.toast_success('DNS resolution complete for: ' + host)
 	})
 
@@ -140,18 +153,27 @@ fn main() {
 			}
 		}
 
-		status := if open_ports.len > 0 { 'Open: ' + open_ports.join(', ') } else { 'No common open ports' }
+		status := if open_ports.len > 0 {
+			'Open: ' + open_ports.join(', ')
+		} else {
+			'No common open ports'
+		}
 		probe_count++
 		w.set_kpi('kpi_probes', '${probe_count} Run', '+1 just now')
 		w.add_table_row('diagnostics_table', [now_str, 'Port Scan', host, status, '<1s'])
 
-		append_net_log(w, '[${now_str}] 🔌 PORT SCAN ${host}\nScanned ports: ${ports_to_test.join(', ')}\nResult: ${status}\n------------------------------------------------------------')
+		append_net_log(w,
+			'[${now_str}] 🔌 PORT SCAN ${host}\nScanned ports: ${ports_to_test.join(', ')}\nResult: ${status}\n------------------------------------------------------------')
 		w.toast_info('Port scan complete: ' + status)
 	})
 
 	win.button('🌐 HTTP Health Check', fn [mut probe_count] (w &simplegui.SimpleWindow, _ string) {
 		host := w.get('target_host').trim_space()
-		url := if host.starts_with('http://') || host.starts_with('https://') { host } else { 'https://' + host }
+		url := if host.starts_with('http://') || host.starts_with('https://') {
+			host
+		} else {
+			'https://' + host
+		}
 		now_str := time.now().custom_format('HH:mm:ss')
 		sw := time.new_stopwatch()
 		resp := system.http_get(url)
@@ -160,9 +182,14 @@ fn main() {
 		probe_count++
 		w.set_kpi('kpi_probes', '${probe_count} Run', '+1 just now')
 		status := if resp.status_code > 0 { 'HTTP ${resp.status_code}' } else { 'HTTP Error' }
-		w.add_table_row('diagnostics_table', [now_str, 'HTTP Probe', url, status, '${dur.milliseconds()}ms'])
+		w.add_table_row('diagnostics_table', [now_str, 'HTTP Probe', url, status,
+			'${dur.milliseconds()}ms'])
 
-		append_net_log(w, '[${now_str}] 🌐 HTTP GET ${url}\nStatus: ${resp.status_code}\nRoundtrip: ${dur.milliseconds()}ms\nBody preview: ${if resp.body.len > 120 { resp.body[..120] + '...' } else { resp.body }}\n------------------------------------------------------------')
+		append_net_log(w, '[${now_str}] 🌐 HTTP GET ${url}\nStatus: ${resp.status_code}\nRoundtrip: ${dur.milliseconds()}ms\nBody preview: ${if resp.body.len > 120 {
+			resp.body[..120] + '...'
+		} else {
+			resp.body
+		}}\n------------------------------------------------------------')
 		w.toast_success('HTTP Health check: ${status} [${dur.milliseconds()}ms]')
 	})
 	win.row_end()
@@ -184,7 +211,8 @@ fn main() {
 			padding: 10px;
 		}
 	</style>')
-	win.textarea_named('net_console', 'Console output from network probes will appear here...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('net_console', 'Console output from network probes will appear here...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_start()
 	win.button('🧹 Clear Console', fn (w &simplegui.SimpleWindow, _ string) {
 		w.set_value('net_console', '')
@@ -206,7 +234,8 @@ fn main() {
 	win.box_start('📋 Diagnostic Probes & History Table')
 	diag_headers := ['Timestamp', 'Probe Type', 'Target', 'Result / Status', 'Latency']
 	diag_rows := [
-		[time.now().custom_format('HH:mm:ss'), 'Interface Check', local_ip, 'Local IP Detected', '0ms'],
+		[time.now().custom_format('HH:mm:ss'), 'Interface Check', local_ip, 'Local IP Detected',
+			'0ms'],
 	]
 	win.table_named('diagnostics_table', diag_headers, diag_rows, fn (w &simplegui.SimpleWindow, idx string) {
 		w.toast_info('Inspected probe row #${idx}')

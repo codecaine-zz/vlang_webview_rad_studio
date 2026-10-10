@@ -37,7 +37,8 @@ fn main() {
 		eprintln(fp.usage())
 		exit(2)
 	}
-	mode_count := int(gen_uuid) + int(show_time) + int(do_slug) + int(do_title) + int(do_reverse) + int(do_words) + int(do_stats)
+	mode_count := int(gen_uuid) + int(show_time) + int(do_slug) + int(do_title) + int(do_reverse) +
+		int(do_words) + int(do_stats)
 	if mode_count > 1 {
 		eprintln('Error: Developer tool operation flags are mutually exclusive')
 		exit(2)

@@ -48,12 +48,12 @@ fn fetch_process_list(sort_mode string) ![]ProcessRecord {
 		tokens := line.trim_space().split_any(' \t').filter(it != '')
 		if tokens.len >= 7 {
 			list << ProcessRecord{
-				pid: tokens[0]
-				ppid: tokens[1]
-				user: tokens[2]
-				cpu: parse_float_safe(tokens[3])
-				mem: parse_float_safe(tokens[4])
-				state: tokens[5]
+				pid:     tokens[0]
+				ppid:    tokens[1]
+				user:    tokens[2]
+				cpu:     parse_float_safe(tokens[3])
+				mem:     parse_float_safe(tokens[4])
+				state:   tokens[5]
 				command: tokens[6..].join(' ')
 			}
 		}
@@ -81,7 +81,11 @@ fn inspect_process_details(pid string) string {
 	lines := p_res.output.split_into_lines()
 	full_cmd := if lines.len > 1 {
 		tokens := lines[1].trim_space().split_any(' \t').filter(it != '')
-		if tokens.len >= 8 { tokens[7..].join(' ') } else { lines[1] }
+		if tokens.len >= 8 {
+			tokens[7..].join(' ')
+		} else {
+			lines[1]
+		}
 	} else {
 		'Unavailable'
 	}
@@ -115,7 +119,11 @@ fn inspect_process_details(pid string) string {
 fn get_system_health_report() string {
 	t := system.get_hardware_telemetry()
 	now := time.now().format_ss()
-	ram_usage_pct := if t.ram_total_bytes > 0 { (f64(t.ram_used_bytes) / f64(t.ram_total_bytes)) * 100.0 } else { 0.0 }
+	ram_usage_pct := if t.ram_total_bytes > 0 {
+		(f64(t.ram_used_bytes) / f64(t.ram_total_bytes)) * 100.0
+	} else {
+		0.0
+	}
 
 	df_res := system.exec_safe('df', ['-h'])
 	df_out := if df_res.exit_code == 0 { df_res.output.trim_space() } else { 'Unavailable' }
@@ -142,7 +150,11 @@ fn get_system_health_report() string {
 		'BATTERY & POWER SENSOR:',
 		'-------------------------------------------------------------------',
 		'Charge Level:     ${t.battery_percent}%',
-		'Charging State:   ${if t.battery_charging { 'AC Connected (Charging)' } else { 'Battery Power' }}',
+		'Charging State:   ${if t.battery_charging {
+			'AC Connected (Charging)'
+		} else {
+			'Battery Power'
+		}}',
 		'',
 		'STORAGE PARTITIONS & MOUNTS (df -h):',
 		'-------------------------------------------------------------------',
@@ -189,12 +201,22 @@ fn refresh_task_manager_gui(w &simplegui.SimpleWindow) {
 	}
 
 	t := system.get_hardware_telemetry()
-	ram_usage_pct := if t.ram_total_bytes > 0 { (f64(t.ram_used_bytes) / f64(t.ram_total_bytes)) * 100.0 } else { 0.0 }
-	top_proc := if processes.len > 0 { '${processes[0].command} (${processes[0].cpu:.1f}%)' } else { 'None' }
+	ram_usage_pct := if t.ram_total_bytes > 0 {
+		(f64(t.ram_used_bytes) / f64(t.ram_total_bytes)) * 100.0
+	} else {
+		0.0
+	}
+	top_proc := if processes.len > 0 {
+		'${processes[0].command} (${processes[0].cpu:.1f}%)'
+	} else {
+		'None'
+	}
 
 	w.set_kpi('kpi_processes', '${processes.len} Active', '${filtered.len} Filtered')
-	w.set_kpi('kpi_cpu_load', '${t.cpu_cores} Cores', 'Load: ${t.load_avg_1:.2f}, ${t.load_avg_5:.2f}')
-	w.set_kpi('kpi_ram', system.format_bytes(t.ram_used_bytes), '${ram_usage_pct:.1f}% of ${system.format_bytes(t.ram_total_bytes)}')
+	w.set_kpi('kpi_cpu_load', '${t.cpu_cores} Cores',
+		'Load: ${t.load_avg_1:.2f}, ${t.load_avg_5:.2f}')
+	w.set_kpi('kpi_ram', system.format_bytes(t.ram_used_bytes),
+		'${ram_usage_pct:.1f}% of ${system.format_bytes(t.ram_total_bytes)}')
 	w.set_kpi('kpi_uptime', format_uptime_seconds(t.uptime_seconds), '${t.os_name} ${t.cpu_arch}')
 
 	w.set_table_rows('proc_table', table_rows)
@@ -210,10 +232,10 @@ fn refresh_task_manager_gui(w &simplegui.SimpleWindow) {
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Advanced Task Manager Studio Pro Enterprise'
-		width: 1240
+		title:  'Advanced Task Manager Studio Pro Enterprise'
+		width:  1240
 		height: 920
-		theme: 'dracula'
+		theme:  'dracula'
 	)
 
 	win.heading('⚡ Advanced Task Manager Studio Pro Enterprise')
@@ -222,7 +244,11 @@ fn main() {
 
 	// Initial fetch
 	init_t := system.get_hardware_telemetry()
-	init_ram_pct := if init_t.ram_total_bytes > 0 { (f64(init_t.ram_used_bytes) / f64(init_t.ram_total_bytes)) * 100.0 } else { 0.0 }
+	init_ram_pct := if init_t.ram_total_bytes > 0 {
+		(f64(init_t.ram_used_bytes) / f64(init_t.ram_total_bytes)) * 100.0
+	} else {
+		0.0
+	}
 	init_procs := fetch_process_list('Sort: Top CPU') or { []ProcessRecord{} }
 	mut init_rows := [][]string{}
 	for i, p in init_procs {
@@ -238,9 +264,12 @@ fn main() {
 	// 1. Top Telemetry KPI Cards
 	win.row_start()
 	win.kpi_card_named('kpi_processes', 'Active Processes', '${init_procs.len} Active', 'Real-Time')
-	win.kpi_card_named('kpi_cpu_load', 'CPU & Load Average', '${init_t.cpu_cores} Cores', 'Load: ${init_t.load_avg_1:.2f}, ${init_t.load_avg_5:.2f}')
-	win.kpi_card_named('kpi_ram', 'Physical RAM', system.format_bytes(init_t.ram_used_bytes), '${init_ram_pct:.1f}% Used')
-	win.kpi_card_named('kpi_uptime', 'System Uptime', format_uptime_seconds(init_t.uptime_seconds), '${init_t.os_name} ${init_t.cpu_arch}')
+	win.kpi_card_named('kpi_cpu_load', 'CPU & Load Average', '${init_t.cpu_cores} Cores',
+		'Load: ${init_t.load_avg_1:.2f}, ${init_t.load_avg_5:.2f}')
+	win.kpi_card_named('kpi_ram', 'Physical RAM', system.format_bytes(init_t.ram_used_bytes),
+		'${init_ram_pct:.1f}% Used')
+	win.kpi_card_named('kpi_uptime', 'System Uptime', format_uptime_seconds(init_t.uptime_seconds),
+		'${init_t.os_name} ${init_t.cpu_arch}')
 	win.row_end()
 
 	// 2. Filter & Sort Toolbar
@@ -406,11 +435,14 @@ fn main() {
 	win.row_start()
 
 	win.box_start('🔬 Process Details & Command Inspector')
-	win.textarea_named('proc_inspector', 'Process details inspector...', 'Select a process from the table above or enter a PID to view full arguments, path, and POSIX state.', fn (_ &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('proc_inspector', 'Process details inspector...',
+		'Select a process from the table above or enter a PID to view full arguments, path, and POSIX state.',
+		fn (_ &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	win.box_start('📊 System Resources, Memory & Storage Partitions')
-	win.textarea_named('sys_inspector', 'System telemetry...', get_system_health_report(), fn (_ &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('sys_inspector', 'System telemetry...', get_system_health_report(),
+		fn (_ &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	win.row_end()

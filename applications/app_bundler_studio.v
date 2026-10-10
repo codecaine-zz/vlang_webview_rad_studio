@@ -36,7 +36,8 @@ fn build_application_bundle(w &simplegui.SimpleWindow) {
 	out_bin := name.to_lower().replace(' ', '_')
 	flags << ['-o', out_bin, entry]
 
-	w.set_value('build_console', '[${now_str}] 🚀 Invoking V compiler...\nCommand: v ${flags.join(' ')}\n------------------------------------------------------------')
+	w.set_value('build_console',
+		'[${now_str}] 🚀 Invoking V compiler...\nCommand: v ${flags.join(' ')}\n------------------------------------------------------------')
 
 	sw := time.new_stopwatch()
 	res := system.exec_safe('v', flags)
@@ -50,7 +51,8 @@ fn build_application_bundle(w &simplegui.SimpleWindow) {
 		w.toast_error('Build failed: ${res.output}')
 
 		current_log := w.get('build_console')
-		w.set_value('build_console', current_log + '\n\n❌ ERROR:\n' + res.output + '\n------------------------------------------------------------')
+		w.set_value('build_console', current_log + '\n\n❌ ERROR:\n' + res.output +
+			'\n------------------------------------------------------------')
 		return
 	}
 
@@ -92,9 +94,7 @@ fn build_application_bundle(w &simplegui.SimpleWindow) {
 
 	log_msg := '[${now_str}] ✅ Build Completed Successfully!\n' +
 		'Target:   ${final_artifact}\n' +
-		'Size:     ${bin_size_str} (${bin_size} bytes)\n' +
-		'Duration: ${dur_str}\n' +
-		'Output:\n${if res.output.trim_space() != '' { res.output } else { 'No warnings or compiler notices.' }}\n' +
+		'Size:     ${bin_size_str} (${bin_size} bytes)\n' + 'Duration: ${dur_str}\n' + 'Output:\n${if res.output.trim_space() != '' { res.output } else { 'No warnings or compiler notices.' }}\n' +
 		'============================================================'
 	w.set_value('build_console', log_msg)
 
@@ -104,10 +104,10 @@ fn build_application_bundle(w &simplegui.SimpleWindow) {
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'App Bundler Studio Pro Enterprise -- Desktop Application Packager'
-		width: 1180
+		title:  'App Bundler Studio Pro Enterprise -- Desktop Application Packager'
+		width:  1180
 		height: 890
-		theme: 'sonoma_dark'
+		theme:  'sonoma_dark'
 	)
 
 	win.heading('📦 App Bundler Studio Pro Enterprise')
@@ -125,12 +125,15 @@ fn main() {
 	// Packaging Configuration Box
 	win.box_start('⚙️ Application Metadata & Source Configuration')
 	win.row_start()
-	win.input_named('app_name', 'Application Display Name...', 'RADStudioApp', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.input_named('bundle_id', 'Bundle Identifier...', 'com.vlang.radstudio', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('app_name', 'Application Display Name...', 'RADStudioApp',
+		fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('bundle_id', 'Bundle Identifier...', 'com.vlang.radstudio',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 
 	win.row_start()
-	win.input_named('entry_file', 'V Source Entry File (e.g. applications/api_studio.v)...', 'applications/api_studio.v', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('entry_file', 'V Source Entry File (e.g. applications/api_studio.v)...',
+		'applications/api_studio.v', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.button('📂 Browse Source File...', fn (w &simplegui.SimpleWindow, _ string) {
 		path := w.open_file_dialog('Select Entry V Source File', 'v')
 		if path != '' {
@@ -181,7 +184,10 @@ fn main() {
 			padding: 10px;
 		}
 	</style>')
-	win.textarea_named('build_console', 'Build console output (compiler logs, warnings, packaging status) will appear here...', 'Ready to compile. Select options above and click "🚀 Build & Package App".', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('build_console',
+		'Build console output (compiler logs, warnings, packaging status) will appear here...',
+		'Ready to compile. Select options above and click "🚀 Build & Package App".',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 
 	win.row_start()
 	win.button('📂 Reveal in Finder / Explorer', fn (w &simplegui.SimpleWindow, _ string) {

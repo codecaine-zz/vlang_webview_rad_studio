@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 11 - Application Settings & Preferences'
-		width: 900
+		title:  'Demo 11 - Application Settings & Preferences'
+		width:  900
 		height: 700
-		theme: 'macos_sonoma'
+		theme:  'macos_sonoma'
 	)
 
 	win.heading('⚙️ Application Settings & Preferences')
@@ -16,7 +16,8 @@ fn main() {
 
 	win.box_start('Appearance & Window Behavior')
 	win.row_start()
-	win.dropdown(['monokai_pro', 'tokyo_night', 'dracula', 'nord', 'macos_sonoma', 'windows_11_fluent', 'cyberpunk', 'gruvbox'], 'macos_sonoma', fn (w &simplegui.SimpleWindow, val string) {
+	win.dropdown(['monokai_pro', 'tokyo_night', 'dracula', 'nord', 'macos_sonoma',
+		'windows_11_fluent', 'cyberpunk', 'gruvbox'], 'macos_sonoma', fn (w &simplegui.SimpleWindow, val string) {
 		println('Selected Theme: ${val}')
 	})
 	win.toggle('Always on Top', false, fn (w &simplegui.SimpleWindow, val string) {

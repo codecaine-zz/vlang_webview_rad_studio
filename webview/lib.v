@@ -45,7 +45,7 @@ pub fn create(opts CreateOptions) &Webview {
 		debug
 	}
 	return &Webview{
-		w: C.webview_create(int(dbg), opts.window)
+		w:             C.webview_create(int(dbg), opts.window)
 		always_on_top: false
 		is_fullscreen: false
 	}

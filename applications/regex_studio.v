@@ -69,7 +69,8 @@ fn test_and_evaluate_regex(w &simplegui.SimpleWindow) {
 		rows << ['(no match)', 'Pattern did not match any text in input', '-', '-']
 	}
 
-	w.set_kpi('kpi_matches', '${match_count} Matches', if match_count > 0 { 'Found' } else { 'None' })
+	w.set_kpi('kpi_matches', '${match_count} Matches',
+		if match_count > 0 { 'Found' } else { 'None' })
 	w.set_kpi('kpi_groups', '${re.group_csave.len} Groups', 'Defined')
 	w.set_table_rows('regex_table', rows)
 	w.set_status('Regex evaluated • ${match_count} match(es) found • ${txt.len} chars scanned')
@@ -83,10 +84,10 @@ fn test_and_evaluate_regex(w &simplegui.SimpleWindow) {
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Regex Studio Pro Enterprise -- Regular Expression Tester & Debugger'
-		width: 1180
+		title:  'Regex Studio Pro Enterprise -- Regular Expression Tester & Debugger'
+		width:  1180
 		height: 890
-		theme: 'cyberpunk'
+		theme:  'cyberpunk'
 	)
 
 	win.heading('🎯 Regex Studio Pro Enterprise')
@@ -124,11 +125,13 @@ fn main() {
 			'Preset: Numbers / Decimals' { r'\b\d+(\.\d+)?\b' }
 			else { r'\w+' }
 		}
+
 		w.set_value('regex_pat', pat)
 		w.toast_info('Loaded pattern: ' + val)
 		test_and_evaluate_regex(w)
 	})
-	win.input_named('regex_pat', 'Regular expression pattern...', r'(\w+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})', fn (w &simplegui.SimpleWindow, _ string) {
+	win.input_named('regex_pat', 'Regular expression pattern...',
+		r'(\w+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})', fn (w &simplegui.SimpleWindow, _ string) {
 		test_and_evaluate_regex(w)
 	})
 	win.button('⚡ Test Pattern', fn (w &simplegui.SimpleWindow, _ string) {
@@ -145,7 +148,8 @@ fn main() {
 	})
 
 	win.row_start()
-	win.input_named('replace_pat', 'Replacement text (e.g. [REDACTED_EMAIL])...', '[REDACTED_EMAIL]', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('replace_pat', 'Replacement text (e.g. [REDACTED_EMAIL])...',
+		'[REDACTED_EMAIL]', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.button('🔄 Execute Replace All', fn (w &simplegui.SimpleWindow, _ string) {
 		pat := w.get('regex_pat').trim_space()
 		txt := w.get('regex_text')
@@ -169,7 +173,8 @@ fn main() {
 	})
 	win.row_end()
 
-	win.textarea_named('replace_output', 'Text with replacements applied will appear here...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('replace_output', 'Text with replacements applied will appear here...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	// Matches Table Box

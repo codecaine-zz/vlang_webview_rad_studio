@@ -44,7 +44,11 @@ fn update_devtools_table(w &simplegui.SimpleWindow, input_text string) {
 	w.set_kpi('kpi_words', '${system.word_count(input_text)} Words', 'Word Count')
 	w.set_kpi('kpi_bytes', '${input_text.len} Bytes', '${input_text.len * 8} bits')
 
-	sample := if input_text.trim_space() != '' { input_text } else { 'Antigravity Vlang Webview RAD Studio 2026' }
+	sample := if input_text.trim_space() != '' {
+		input_text
+	} else {
+		'Antigravity Vlang Webview RAD Studio 2026'
+	}
 
 	rows := [
 		['Slugify (URL Friendly)', system.slugify(sample), 'Lowercase slug'],
@@ -55,7 +59,8 @@ fn update_devtools_table(w &simplegui.SimpleWindow, input_text string) {
 		['UPPERCASE', sample.to_upper(), 'Uppercase'],
 		['lowercase', sample.to_lower(), 'Lowercase'],
 		['Reverse String', system.reverse_string(sample), 'Inverted characters'],
-		['Is Palindrome', if system.is_palindrome(sample) { 'Yes (True)' } else { 'No (False)' }, 'Symmetry'],
+		['Is Palindrome', if system.is_palindrome(sample) { 'Yes (True)' } else { 'No (False)' },
+			'Symmetry'],
 		['SHA-256 Digest', system.hash_sha256(sample), 'Digest Hex'],
 		['Base64 Representation', system.encode_base64(sample), 'Base64'],
 	]
@@ -67,10 +72,10 @@ fn main() {
 	default_text := 'Antigravity Vlang Webview RAD Studio 2026'
 
 	mut win := simplegui.new_window(
-		title: 'DevTools Studio Pro Enterprise -- Developer Utilities Suite'
-		width: 1180
+		title:  'DevTools Studio Pro Enterprise -- Developer Utilities Suite'
+		width:  1180
 		height: 890
-		theme: 'codefreelance'
+		theme:  'codefreelance'
 	)
 
 	win.heading('🛠️ DevTools Studio Pro Enterprise')
@@ -107,7 +112,9 @@ fn main() {
 	// Transformations Table Box
 	win.box_start('📊 Computed String Transformations & Codecs')
 	headers := ['Utility Transform', 'Computed Output', 'Format Type']
-	win.table_named('transforms_table', headers, [['Loading...', 'Calculating...', '-']], fn (w &simplegui.SimpleWindow, idx string) {
+	win.table_named('transforms_table', headers, [
+		['Loading...', 'Calculating...', '-'],
+	], fn (w &simplegui.SimpleWindow, idx string) {
 		w.toast_info('Inspected transform #${idx}')
 	})
 	win.box_end()
@@ -115,7 +122,9 @@ fn main() {
 	// JWT & Timestamp Toolkit Box
 	win.box_start('🔓 JWT Token Decoder & Timestamp Inspector')
 	win.row_start()
-	win.input_named('jwt_input', 'Paste JWT token (e.g. eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('jwt_input',
+		'Paste JWT token (e.g. eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.button('🔍 Decode JWT Payload', fn (w &simplegui.SimpleWindow, _ string) {
 		token := w.get('jwt_input')
 		decoded := decode_jwt_preview(token)
@@ -147,7 +156,8 @@ fn main() {
 			padding: 8px;
 		}
 	</style>')
-	win.textarea_named('jwt_output', 'Decoded JWT header and payload will display here...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('jwt_output', 'Decoded JWT header and payload will display here...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	win.status_bar('DevTools Studio Pro Enterprise  •  High-Efficiency V Utilities  •  Ready')

@@ -45,6 +45,7 @@ fn analyze_json_document(w &simplegui.SimpleWindow, raw string) {
 				map[string]json2.Any { 'object (${v.len} keys)' }
 				else { 'null' }
 			}
+
 			preview := v.json_str()
 			display_prev := if preview.len > 40 { preview[..37] + '...' } else { preview }
 			rows << [k, typ_str, display_prev]
@@ -74,10 +75,10 @@ fn analyze_json_document(w &simplegui.SimpleWindow, raw string) {
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'JSON Query Studio Pro Enterprise -- High-Performance JSON Workbench'
-		width: 1180
+		title:  'JSON Query Studio Pro Enterprise -- High-Performance JSON Workbench'
+		width:  1180
 		height: 890
-		theme: 'tokyo_night'
+		theme:  'tokyo_night'
 	)
 
 	win.heading('⚡ JSON Query Studio Pro Enterprise')
@@ -105,11 +106,13 @@ fn main() {
 	win.textarea_named('json_input', 'Paste or load JSON content here...', default_json, fn (w &simplegui.SimpleWindow, val string) {
 		analyze_json_document(w, val)
 	})
-	win.textarea_named('json_output', 'Filtered or formatted output representation...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('json_output', 'Filtered or formatted output representation...', '',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_end()
 
 	win.row_start()
-	win.input_named('query_key', 'Filter key or property (e.g. features, metrics, project)...', 'features', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('query_key', 'Filter key or property (e.g. features, metrics, project)...',
+		'features', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.button('🔍 Filter by Key', fn (w &simplegui.SimpleWindow, _ string) {
 		raw := w.get('json_input')
 		key := w.get('query_key').trim_space()

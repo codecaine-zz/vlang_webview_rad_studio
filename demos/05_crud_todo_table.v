@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 5 - Dynamic Table & Data Grid Control Studio'
-		width: 980
+		title:  'Demo 5 - Dynamic Table & Data Grid Control Studio'
+		width:  980
 		height: 720
-		theme: 'nord'
+		theme:  'nord'
 	)
 
 	win.heading('⚡ Dynamic Table Control & CRUD Operations')
@@ -49,7 +49,8 @@ fn main() {
 		}
 		task_id := 101 + w.table_row_count('tasks_table')
 		priority := w.get_value('task_priority')
-		w.add_table_row('tasks_table', ['#${task_id}', description, 'Current User', priority, 'Pending'])
+		w.add_table_row('tasks_table', ['#${task_id}', description, 'Current User', priority,
+			'Pending'])
 		w.set_value('task_description', '')
 		w.set_status('Added task #${task_id}: ${description}')
 		w.alert('Task Added', 'Task #${task_id} was added to the table.')

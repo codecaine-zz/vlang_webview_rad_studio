@@ -16,7 +16,9 @@ fn test_interactive_builders_register_handlers() {
 
 	for control in win.controls {
 		handler_id := match control.typ {
-			.button, .table { control.click_id }
+			.button, .table {
+				control.click_id
+			}
 			.input, .textarea, .checkbox, .radio, .toggle, .slider, .dropdown {
 				control.change_id
 			}
@@ -24,6 +26,7 @@ fn test_interactive_builders_register_handlers() {
 				continue
 			}
 		}
+
 		assert handler_id in win.event_handlers, 'missing handler for ${control.id}'
 	}
 }

@@ -11,10 +11,10 @@ pub type EventCallback = fn (win &SimpleWindow, val string)
 pub struct SimpleWindowOptions {
 pub:
 	title         string = 'SimpleGUI Desktop Application'
-	width         int = 1000
-	height        int = 700
+	width         int    = 1000
+	height        int    = 700
 	theme         string = 'monokai_pro'
-	fullscreen    bool = true
+	fullscreen    bool   = true
 	always_on_top bool
 	padding       int = 24
 	spacing       int = 16
@@ -48,12 +48,12 @@ pub mut:
 	min_height              int
 	max_width               int
 	max_height              int
-	opacity                 f64 = 1.0
+	opacity                 f64    = 1.0
 	cursor_name             string = 'arrow'
-	is_resizable            bool = true
-	is_minimizable          bool = true
-	is_maximizable          bool = true
-	responsive_layout       bool = true
+	is_resizable            bool   = true
+	is_minimizable          bool   = true
+	is_maximizable          bool   = true
+	responsive_layout       bool   = true
 	status_text             string
 	x_pos                   int = 100
 	y_pos                   int = 100
@@ -64,40 +64,40 @@ pub mut:
 
 pub fn new_window(opts SimpleWindowOptions) &SimpleWindow {
 	return &SimpleWindow{
-		title: opts.title
-		width: opts.width
-		height: opts.height
-		theme_name: opts.theme
-		fullscreen: opts.fullscreen
-		always_on_top: opts.always_on_top
-		padding: opts.padding
-		spacing: opts.spacing
-		controls: []ControlSpec{}
-		values: map[string]string{}
-		event_handlers: map[string]EventCallback{}
-		menubar: []MenuCategory{}
-		menubar_handler_id: ''
-		context_menu_items: []MenuItem{}
+		title:                   opts.title
+		width:                   opts.width
+		height:                  opts.height
+		theme_name:              opts.theme
+		fullscreen:              opts.fullscreen
+		always_on_top:           opts.always_on_top
+		padding:                 opts.padding
+		spacing:                 opts.spacing
+		controls:                []ControlSpec{}
+		values:                  map[string]string{}
+		event_handlers:          map[string]EventCallback{}
+		menubar:                 []MenuCategory{}
+		menubar_handler_id:      ''
+		context_menu_items:      []MenuItem{}
 		context_menu_handler_id: ''
-		control_seq: 0
-		input_seq: 0
-		name_to_ctrl: map[string]int{}
-		last_ctrl_id: ''
-		is_debug_mode: false
-		min_width: 200
-		min_height: 150
-		max_width: 3840
-		max_height: 2160
-		opacity: 1.0
-		cursor_name: 'arrow'
-		is_resizable: true
-		is_minimizable: true
-		is_maximizable: true
-		responsive_layout: true
-		status_text: ''
-		x_pos: 100
-		y_pos: 100
-		action_active: false
+		control_seq:             0
+		input_seq:               0
+		name_to_ctrl:            map[string]int{}
+		last_ctrl_id:            ''
+		is_debug_mode:           false
+		min_width:               200
+		min_height:              150
+		max_width:               3840
+		max_height:              2160
+		opacity:                 1.0
+		cursor_name:             'arrow'
+		is_resizable:            true
+		is_minimizable:          true
+		is_maximizable:          true
+		responsive_layout:       true
+		status_text:             ''
+		x_pos:                   100
+		y_pos:                   100
+		action_active:           false
 	}
 }
 
@@ -121,8 +121,8 @@ fn (mut win SimpleWindow) end_action() {
 
 pub fn new_simple_window(title string, width int, height int) &SimpleWindow {
 	return new_window(
-		title: title
-		width: width
+		title:  title
+		width:  width
 		height: height
 	)
 }
@@ -165,7 +165,7 @@ fn (mut win SimpleWindow) register_control(name string, spec ControlSpec) string
 
 pub fn (mut win SimpleWindow) add_input(name string, value string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .input
+		typ:   .input
 		value: value
 	})
 	win.values[id] = value
@@ -174,7 +174,7 @@ pub fn (mut win SimpleWindow) add_input(name string, value string) &SimpleWindow
 
 pub fn (mut win SimpleWindow) add_password(name string, value string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .password
+		typ:   .password
 		value: value
 	})
 	win.values[id] = value
@@ -183,7 +183,7 @@ pub fn (mut win SimpleWindow) add_password(name string, value string) &SimpleWin
 
 pub fn (mut win SimpleWindow) add_textarea(name string, value string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .textarea
+		typ:   .textarea
 		value: value
 	})
 	win.values[id] = value
@@ -192,7 +192,7 @@ pub fn (mut win SimpleWindow) add_textarea(name string, value string) &SimpleWin
 
 pub fn (mut win SimpleWindow) add_search_field(name string, placeholder string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .search_field
+		typ:         .search_field
 		placeholder: placeholder
 	})
 	win.values[id] = ''
@@ -201,7 +201,7 @@ pub fn (mut win SimpleWindow) add_search_field(name string, placeholder string) 
 
 pub fn (mut win SimpleWindow) add_label(name string, text string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .label
+		typ:  .label
 		text: text
 	})
 	return win
@@ -209,7 +209,7 @@ pub fn (mut win SimpleWindow) add_label(name string, text string) &SimpleWindow 
 
 pub fn (mut win SimpleWindow) add_heading(title string) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .heading
+		typ:  .heading
 		text: title
 	})
 	return win
@@ -217,7 +217,7 @@ pub fn (mut win SimpleWindow) add_heading(title string) &SimpleWindow {
 
 pub fn (mut win SimpleWindow) add_subheading(title string) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .subheading
+		typ:  .subheading
 		text: title
 	})
 	return win
@@ -225,8 +225,8 @@ pub fn (mut win SimpleWindow) add_subheading(title string) &SimpleWindow {
 
 pub fn (mut win SimpleWindow) add_section_header(name string, title string, subtitle string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .section_header
-		text: title
+		typ:            .section_header
+		text:           title
 		secondary_text: subtitle
 	})
 	return win
@@ -234,8 +234,8 @@ pub fn (mut win SimpleWindow) add_section_header(name string, title string, subt
 
 pub fn (mut win SimpleWindow) add_hotkey_badge(name string, shortcut_str string, description string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .hotkey_badge
-		text: shortcut_str
+		typ:            .hotkey_badge
+		text:           shortcut_str
 		secondary_text: description
 	})
 	return win
@@ -243,7 +243,7 @@ pub fn (mut win SimpleWindow) add_hotkey_badge(name string, shortcut_str string,
 
 pub fn (mut win SimpleWindow) add_button(name string, title string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .button
+		typ:  .button
 		text: title
 	})
 	return win
@@ -251,7 +251,7 @@ pub fn (mut win SimpleWindow) add_button(name string, title string) &SimpleWindo
 
 pub fn (mut win SimpleWindow) add_image_button(name string, symbol string, title string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .button
+		typ:  .button
 		text: if title != '' { '${symbol} ${title}' } else { symbol }
 	})
 	return win
@@ -259,8 +259,8 @@ pub fn (mut win SimpleWindow) add_image_button(name string, symbol string, title
 
 pub fn (mut win SimpleWindow) add_help_button(name string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .button
-		text: '?'
+		typ:       .button
+		text:      '?'
 		css_class: 'sg-btn-help'
 	})
 	return win
@@ -270,9 +270,9 @@ pub fn (mut win SimpleWindow) add_split_button(name string, title string, menu_i
 	mut opts := [title]
 	opts << menu_items
 	id := win.register_control(name, ControlSpec{
-		typ: .dropdown
+		typ:     .dropdown
 		options: opts
-		value: title
+		value:   title
 	})
 	win.values[id] = title
 	return win
@@ -280,8 +280,8 @@ pub fn (mut win SimpleWindow) add_split_button(name string, title string, menu_i
 
 pub fn (mut win SimpleWindow) add_badge_button(name string, title string, count int, badge_color string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .button
-		text: '${title} (${count})'
+		typ:              .button
+		text:             '${title} (${count})'
 		background_color: badge_color
 	})
 	return win
@@ -289,9 +289,9 @@ pub fn (mut win SimpleWindow) add_badge_button(name string, title string, count 
 
 pub fn (mut win SimpleWindow) add_link(name string, text string, url string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .button
-		text: text
-		value: url
+		typ:       .button
+		text:      text
+		value:     url
 		css_class: 'sg-link'
 	})
 	win.event_handlers['click_${id}'] = fn [url] (_ &SimpleWindow, _ string) {
@@ -302,8 +302,8 @@ pub fn (mut win SimpleWindow) add_link(name string, text string, url string) &Si
 
 pub fn (mut win SimpleWindow) add_checkbox(name string, label string, checked bool) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .checkbox
-		text: label
+		typ:     .checkbox
+		text:    label
 		checked: checked
 	})
 	win.values[id] = checked.str()
@@ -312,8 +312,8 @@ pub fn (mut win SimpleWindow) add_checkbox(name string, label string, checked bo
 
 pub fn (mut win SimpleWindow) add_switch(name string, label string, checked bool) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .toggle
-		text: label
+		typ:     .toggle
+		text:    label
 		checked: checked
 	})
 	win.values[id] = checked.str()
@@ -326,9 +326,9 @@ pub fn (mut win SimpleWindow) add_toggle(name string, label string, checked bool
 
 pub fn (mut win SimpleWindow) add_radio(name string, label string, checked bool) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .radio
-		text: label
-		checked: checked
+		typ:            .radio
+		text:           label
+		checked:        checked
 		secondary_text: 'sg_default_radio_group'
 	})
 	win.values[id] = checked.str()
@@ -337,9 +337,9 @@ pub fn (mut win SimpleWindow) add_radio(name string, label string, checked bool)
 
 pub fn (mut win SimpleWindow) add_radio_group(name string, items []string, selected string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .radio
-		options: items
-		value: selected
+		typ:            .radio
+		options:        items
+		value:          selected
 		secondary_text: name
 	})
 	win.values[id] = selected
@@ -348,9 +348,9 @@ pub fn (mut win SimpleWindow) add_radio_group(name string, items []string, selec
 
 pub fn (mut win SimpleWindow) add_dropdown(name string, items []string, selected string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .dropdown
+		typ:     .dropdown
 		options: items
-		value: selected
+		value:   selected
 	})
 	win.values[id] = selected
 	return win
@@ -360,10 +360,10 @@ pub fn (mut win SimpleWindow) add_pull_down(name string, title string, items []s
 	mut opts := [title]
 	opts << items
 	id := win.register_control(name, ControlSpec{
-		typ: .dropdown
+		typ:     .dropdown
 		options: opts
-		value: title
-		text: title
+		value:   title
+		text:    title
 	})
 	win.values[id] = title
 	return win
@@ -387,10 +387,10 @@ pub fn (mut win SimpleWindow) add_mode_control(name string, selected string) &Si
 
 pub fn (mut win SimpleWindow) add_slider(name string, min int, max int, value int) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .slider
+		typ:     .slider
 		min_val: min
 		max_val: max
-		value: value.str()
+		value:   value.str()
 	})
 	win.values[id] = value.str()
 	return win
@@ -402,10 +402,10 @@ pub fn (mut win SimpleWindow) add_stepper(name string, min int, max int, value i
 
 pub fn (mut win SimpleWindow) add_number_input(name string, min int, max int, value int) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .input
+		typ:     .input
 		min_val: min
 		max_val: max
-		value: value.str()
+		value:   value.str()
 	})
 	win.values[id] = value.str()
 	return win
@@ -413,8 +413,8 @@ pub fn (mut win SimpleWindow) add_number_input(name string, min int, max int, va
 
 pub fn (mut win SimpleWindow) add_progress_indicator(name string, value int) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .progress
-		value: value.str()
+		typ:     .progress
+		value:   value.str()
 		max_val: 100
 	})
 	win.values[id] = value.str()
@@ -427,8 +427,8 @@ pub fn (mut win SimpleWindow) add_progress_bar(name string, value int) &SimpleWi
 
 pub fn (mut win SimpleWindow) add_progress(name string, value int, max int) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .progress
-		value: value.str()
+		typ:     .progress
+		value:   value.str()
 		max_val: max
 	})
 	win.values[id] = value.str()
@@ -441,9 +441,9 @@ pub fn (mut win SimpleWindow) add_circular_progress(name string, value int) &Sim
 
 pub fn (mut win SimpleWindow) add_kpi_card(name string, title string, value string, subtitle string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .kpi_card
-		text: title
-		value: value
+		typ:            .kpi_card
+		text:           title
+		value:          value
 		secondary_text: subtitle
 	})
 	return win
@@ -451,10 +451,10 @@ pub fn (mut win SimpleWindow) add_kpi_card(name string, title string, value stri
 
 pub fn (mut win SimpleWindow) add_badge(name string, text string, color string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .badge
-		text: text
+		typ:              .badge
+		text:             text
 		background_color: color
-		font_color: '#ffffff'
+		font_color:       '#ffffff'
 	})
 	return win
 }
@@ -472,8 +472,8 @@ pub fn (mut win SimpleWindow) add_divider_line() &SimpleWindow {
 
 pub fn (mut win SimpleWindow) add_spacer(name string, height int) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .raw_html
-		text: '<div style="height: ${height}px;"></div>'
+		typ:    .raw_html
+		text:   '<div style="height: ${height}px;"></div>'
 		height: height
 	})
 	return win
@@ -485,7 +485,7 @@ pub fn (mut win SimpleWindow) add_space(height int) &SimpleWindow {
 
 pub fn (mut win SimpleWindow) add_status_bar(name string, text string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .status_bar
+		typ:  .status_bar
 		text: text
 	})
 	return win
@@ -493,7 +493,7 @@ pub fn (mut win SimpleWindow) add_status_bar(name string, text string) &SimpleWi
 
 pub fn (mut win SimpleWindow) add_date_picker(name string, date string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .date_picker
+		typ:   .date_picker
 		value: date
 	})
 	win.values[id] = date
@@ -502,9 +502,9 @@ pub fn (mut win SimpleWindow) add_date_picker(name string, date string) &SimpleW
 
 pub fn (mut win SimpleWindow) add_color_picker(name string, default_color string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .color_picker
+		typ:   .color_picker
 		value: default_color
-		text: default_color
+		text:  default_color
 	})
 	win.values[id] = default_color
 	return win
@@ -512,18 +512,18 @@ pub fn (mut win SimpleWindow) add_color_picker(name string, default_color string
 
 pub fn (mut win SimpleWindow) add_table(name string, headers []string, rows [][]string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .table
+		typ:     .table
 		headers: headers
-		rows: rows
+		rows:    rows
 	})
 	return win
 }
 
 pub fn (mut win SimpleWindow) add_image(name string, src string, width int, height int) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .image
-		value: src
-		width: width
+		typ:    .image
+		value:  src
+		width:  width
 		height: height
 	})
 	return win
@@ -531,7 +531,7 @@ pub fn (mut win SimpleWindow) add_image(name string, src string, width int, heig
 
 pub fn (mut win SimpleWindow) add_markdown(name string, md_text string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .markdown
+		typ:  .markdown
 		text: md_text
 	})
 	return win
@@ -539,8 +539,8 @@ pub fn (mut win SimpleWindow) add_markdown(name string, md_text string) &SimpleW
 
 pub fn (mut win SimpleWindow) add_code_view(name string, code string, language string) &SimpleWindow {
 	win.register_control(name, ControlSpec{
-		typ: .code_view
-		text: code
+		typ:            .code_view
+		text:           code
 		secondary_text: language
 	})
 	return win
@@ -553,8 +553,9 @@ pub fn (mut win SimpleWindow) add_alert_banner(name string, title string, messag
 		'error' { '#590d22' }
 		else { '#2b2d42' }
 	}
+
 	win.register_control(name, ControlSpec{
-		typ: .raw_html
+		typ:  .raw_html
 		text: '<div id="${name}" class="sg-kpi-card" style="background-color: ${bg}; margin-bottom: 8px;"><div style="font-weight:700; font-size:15px; margin-bottom:4px;">${title}</div><div style="font-size:13px; opacity:0.9;">${message}</div></div>'
 	})
 	return win
@@ -618,6 +619,7 @@ pub fn (mut win SimpleWindow) begin_flex_box(name string, direction string, just
 		}
 		else {}
 	}
+
 	mut a_val := 'center'
 	match align {
 		'start' {
@@ -631,6 +633,7 @@ pub fn (mut win SimpleWindow) begin_flex_box(name string, direction string, just
 		}
 		else {}
 	}
+
 	return win.raw_html('<div id="${name}" style="display: flex; flex-direction: ${dir}; justify-content: ${j_val}; align-items: ${a_val}; gap: 12px; width: 100%;">')
 }
 
@@ -942,7 +945,7 @@ pub fn (win &SimpleWindow) require_control(name string) string {
 
 pub fn (mut win SimpleWindow) button(text string, on_click EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .button
+		typ:  .button
 		text: text
 	})
 	win.event_handlers['click_${id}'] = on_click
@@ -951,7 +954,7 @@ pub fn (mut win SimpleWindow) button(text string, on_click EventCallback) &Simpl
 
 pub fn (mut win SimpleWindow) label(text string) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .label
+		typ:  .label
 		text: text
 	})
 	return win
@@ -959,7 +962,7 @@ pub fn (mut win SimpleWindow) label(text string) &SimpleWindow {
 
 pub fn (mut win SimpleWindow) heading(text string) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .heading
+		typ:  .heading
 		text: text
 	})
 	return win
@@ -967,7 +970,7 @@ pub fn (mut win SimpleWindow) heading(text string) &SimpleWindow {
 
 pub fn (mut win SimpleWindow) subheading(text string) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .subheading
+		typ:  .subheading
 		text: text
 	})
 	return win
@@ -975,9 +978,9 @@ pub fn (mut win SimpleWindow) subheading(text string) &SimpleWindow {
 
 pub fn (mut win SimpleWindow) input(placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .input
+		typ:         .input
 		placeholder: placeholder
-		value: default_val
+		value:       default_val
 	})
 	win.values[id] = default_val
 	win.event_handlers['change_${id}'] = on_change
@@ -986,9 +989,9 @@ pub fn (mut win SimpleWindow) input(placeholder string, default_val string, on_c
 
 pub fn (mut win SimpleWindow) input_named(name string, placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .input
+		typ:         .input
 		placeholder: placeholder
-		value: default_val
+		value:       default_val
 	})
 	win.values[id] = default_val
 	win.event_handlers['change_${id}'] = on_change
@@ -997,9 +1000,9 @@ pub fn (mut win SimpleWindow) input_named(name string, placeholder string, defau
 
 pub fn (mut win SimpleWindow) password(placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .password
+		typ:         .password
 		placeholder: placeholder
-		value: default_val
+		value:       default_val
 	})
 	win.values[id] = default_val
 	win.event_handlers['change_${id}'] = on_change
@@ -1008,9 +1011,9 @@ pub fn (mut win SimpleWindow) password(placeholder string, default_val string, o
 
 pub fn (mut win SimpleWindow) textarea(placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .textarea
+		typ:         .textarea
 		placeholder: placeholder
-		value: default_val
+		value:       default_val
 	})
 	win.values[id] = default_val
 	win.event_handlers['change_${id}'] = on_change
@@ -1019,9 +1022,9 @@ pub fn (mut win SimpleWindow) textarea(placeholder string, default_val string, o
 
 pub fn (mut win SimpleWindow) textarea_named(name string, placeholder string, default_val string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .textarea
+		typ:         .textarea
 		placeholder: placeholder
-		value: default_val
+		value:       default_val
 	})
 	win.values[id] = default_val
 	win.event_handlers['change_${id}'] = on_change
@@ -1030,8 +1033,8 @@ pub fn (mut win SimpleWindow) textarea_named(name string, placeholder string, de
 
 pub fn (mut win SimpleWindow) checkbox(label string, checked bool, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .checkbox
-		text: label
+		typ:     .checkbox
+		text:    label
 		checked: checked
 	})
 	win.values[id] = if checked { 'true' } else { 'false' }
@@ -1041,11 +1044,11 @@ pub fn (mut win SimpleWindow) checkbox(label string, checked bool, on_change Eve
 
 pub fn (mut win SimpleWindow) radio(group_name string, label string, checked bool, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .radio
-		text: label
+		typ:            .radio
+		text:           label
 		secondary_text: group_name
-		value: label
-		checked: checked
+		value:          label
+		checked:        checked
 	})
 	win.values[id] = if checked { label } else { '' }
 	win.event_handlers['change_${id}'] = on_change
@@ -1054,8 +1057,8 @@ pub fn (mut win SimpleWindow) radio(group_name string, label string, checked boo
 
 pub fn (mut win SimpleWindow) toggle(label string, checked bool, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .toggle
-		text: label
+		typ:     .toggle
+		text:    label
 		checked: checked
 	})
 	win.values[id] = if checked { 'true' } else { 'false' }
@@ -1065,8 +1068,8 @@ pub fn (mut win SimpleWindow) toggle(label string, checked bool, on_change Event
 
 pub fn (mut win SimpleWindow) toggle_named(name string, label string, checked bool, on_change EventCallback) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .toggle
-		text: label
+		typ:     .toggle
+		text:    label
 		checked: checked
 	})
 	win.values[id] = if checked { 'true' } else { 'false' }
@@ -1076,10 +1079,10 @@ pub fn (mut win SimpleWindow) toggle_named(name string, label string, checked bo
 
 pub fn (mut win SimpleWindow) slider(min_val int, max_val int, default_val int, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .slider
+		typ:     .slider
 		min_val: min_val
 		max_val: max_val
-		value: default_val.str()
+		value:   default_val.str()
 	})
 	win.values[id] = default_val.str()
 	win.event_handlers['change_${id}'] = on_change
@@ -1088,9 +1091,9 @@ pub fn (mut win SimpleWindow) slider(min_val int, max_val int, default_val int, 
 
 pub fn (mut win SimpleWindow) dropdown(options []string, selected string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .dropdown
+		typ:     .dropdown
 		options: options
-		value: selected
+		value:   selected
 	})
 	win.values[id] = selected
 	win.event_handlers['change_${id}'] = on_change
@@ -1099,9 +1102,9 @@ pub fn (mut win SimpleWindow) dropdown(options []string, selected string, on_cha
 
 pub fn (mut win SimpleWindow) dropdown_named(name string, options []string, selected string, on_change EventCallback) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .dropdown
+		typ:     .dropdown
 		options: options
-		value: selected
+		value:   selected
 	})
 	win.values[id] = selected
 	win.event_handlers['change_${id}'] = on_change
@@ -1110,9 +1113,9 @@ pub fn (mut win SimpleWindow) dropdown_named(name string, options []string, sele
 
 pub fn (mut win SimpleWindow) table(headers []string, rows [][]string, on_select EventCallback) &SimpleWindow {
 	id := win.register_control('', ControlSpec{
-		typ: .table
+		typ:     .table
 		headers: headers
-		rows: rows
+		rows:    rows
 	})
 	win.event_handlers['click_${id}'] = on_select
 	return win
@@ -1120,9 +1123,9 @@ pub fn (mut win SimpleWindow) table(headers []string, rows [][]string, on_select
 
 pub fn (mut win SimpleWindow) table_named(name string, headers []string, rows [][]string, on_select EventCallback) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .table
+		typ:     .table
 		headers: headers
-		rows: rows
+		rows:    rows
 	})
 	win.event_handlers['click_${id}'] = on_select
 	return win
@@ -1130,8 +1133,8 @@ pub fn (mut win SimpleWindow) table_named(name string, headers []string, rows []
 
 pub fn (mut win SimpleWindow) progress(value int, max_val int) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .progress
-		value: value.str()
+		typ:     .progress
+		value:   value.str()
 		max_val: max_val
 	})
 	return win
@@ -1139,9 +1142,9 @@ pub fn (mut win SimpleWindow) progress(value int, max_val int) &SimpleWindow {
 
 pub fn (mut win SimpleWindow) kpi_card(title string, value string, change string) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .kpi_card
-		text: title
-		value: value
+		typ:            .kpi_card
+		text:           title
+		value:          value
 		secondary_text: change
 	})
 	return win
@@ -1149,9 +1152,9 @@ pub fn (mut win SimpleWindow) kpi_card(title string, value string, change string
 
 pub fn (mut win SimpleWindow) kpi_card_named(name string, title string, value string, change string) &SimpleWindow {
 	id := win.register_control(name, ControlSpec{
-		typ: .kpi_card
-		text: title
-		value: value
+		typ:            .kpi_card
+		text:           title
+		value:          value
 		secondary_text: change
 	})
 	win.values[id] = value
@@ -1167,7 +1170,7 @@ pub fn (mut win SimpleWindow) divider() &SimpleWindow {
 
 pub fn (mut win SimpleWindow) status_bar(text string) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .status_bar
+		typ:  .status_bar
 		text: text
 	})
 	return win
@@ -1175,7 +1178,7 @@ pub fn (mut win SimpleWindow) status_bar(text string) &SimpleWindow {
 
 pub fn (mut win SimpleWindow) raw_html(html_str string) &SimpleWindow {
 	win.register_control('', ControlSpec{
-		typ: .raw_html
+		typ:  .raw_html
 		text: html_str
 	})
 	return win
@@ -1578,7 +1581,11 @@ pub fn (win &SimpleWindow) set_theme(theme_name string) &SimpleWindow {
 				r.style.setProperty("--bg-card", "${theme.card_background}");
 				r.style.setProperty("--border-card", "${theme.card_border}");
 				r.style.setProperty("--btn-text", "${btn_txt}");
-				r.style.setProperty("--color-scheme", "${if theme.is_dark { 'dark' } else { 'light' }}");
+				r.style.setProperty("--color-scheme", "${if theme.is_dark {
+			'dark'
+		} else {
+			'light'
+		}}");
 				document.body.style.backgroundColor = "${theme.background_color}";
 				document.body.style.color = "${theme.font_color}";
 			})();
@@ -1959,6 +1966,7 @@ pub fn (win &SimpleWindow) set_cursor(name string) &SimpleWindow {
 			'closed_hand' { 'grabbing' }
 			else { 'default' }
 		}
+
 		win.wv.eval('document.body.style.cursor = "${css_cursor}";')
 	}
 	return win
@@ -2793,7 +2801,11 @@ pub fn (win &SimpleWindow) generate_html() string {
 	--bg-card: ${theme.card_background};
 	--border-card: ${theme.card_border};
 	--btn-text: ${hex_to_contrast_color(theme.accent_color)};
-	--color-scheme: ${if theme.is_dark { 'dark' } else { 'light' }};
+	--color-scheme: ${if theme.is_dark {
+		'dark'
+	} else {
+		'light'
+	}};
 }
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 body {

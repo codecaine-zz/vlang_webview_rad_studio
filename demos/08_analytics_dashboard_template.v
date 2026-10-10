@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 8 - Analytics Dashboard Template'
-		width: 1000
+		title:  'Demo 8 - Analytics Dashboard Template'
+		width:  1000
 		height: 750
-		theme: 'catppuccin_mocha'
+		theme:  'catppuccin_mocha'
 	)
 
 	win.heading('📈 Enterprise Analytics & Executive Dashboard')
@@ -28,7 +28,8 @@ fn main() {
 	win.box_start('Recent High-Value Enterprise Transactions')
 	headers := ['Transaction ID', 'Account Name', 'Plan Tier', 'Amount', 'Date', 'Status']
 	rows := [
-		['TXN-9042', 'Global Logistics LLC', 'Enterprise Annual', '$24,000.00', '2026-09-08', 'Settled'],
+		['TXN-9042', 'Global Logistics LLC', 'Enterprise Annual', '$24,000.00', '2026-09-08',
+			'Settled'],
 		['TXN-9043', 'OmniCorp Dynamics', 'Scale Custom', '$18,500.00', '2026-09-09', 'Settled'],
 		['TXN-9044', 'Apex Systems Group', 'Enterprise Pro', '$12,000.00', '2026-09-09', 'Settled'],
 		['TXN-9045', 'Horizon Media Cloud', 'Developer Pro', '$2,400.00', '2026-09-10', 'Processing'],

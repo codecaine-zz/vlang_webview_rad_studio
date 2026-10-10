@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 10 - Database Studio Query Editor Template'
-		width: 980
+		title:  'Demo 10 - Database Studio Query Editor Template'
+		width:  980
 		height: 720
-		theme: 'monokai_pro'
+		theme:  'monokai_pro'
 	)
 
 	win.heading('🗃️ Database Studio & SQL Query Console Template')
@@ -17,7 +17,8 @@ fn main() {
 	win.box_start('Active Database Connection')
 	win.row_start()
 	win.input('Database URL', 'sqlite://production.db', fn (w &simplegui.SimpleWindow, _ string) {})
-	win.dropdown(['sqlite://production.db', 'sqlite://analytics.db', 'sqlite://staging.db'], 'sqlite://production.db', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.dropdown(['sqlite://production.db', 'sqlite://analytics.db', 'sqlite://staging.db'],
+		'sqlite://production.db', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.button('🔌 Reconnect', fn (w &simplegui.SimpleWindow, _ string) {
 		w.alert('Connected', 'Established SQLite connection.')
 	})
@@ -25,7 +26,9 @@ fn main() {
 	win.box_end()
 
 	win.box_start('SQL Query Buffer')
-	win.textarea('SQL Query', 'SELECT id, username, email, role, created_at FROM users WHERE active = 1 ORDER BY id DESC LIMIT 10;', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea('SQL Query',
+		'SELECT id, username, email, role, created_at FROM users WHERE active = 1 ORDER BY id DESC LIMIT 10;',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_start()
 	win.button('▶ Run Query (Cmd+Enter)', fn (w &simplegui.SimpleWindow, _ string) {
 		w.toast_success('Query executed in 0.8ms — 4 records returned')

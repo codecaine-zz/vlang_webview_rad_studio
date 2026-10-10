@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 16 - SimpleGUI Parity API Demo'
-		width: 900
+		title:  'Demo 16 - SimpleGUI Parity API Demo'
+		width:  900
 		height: 650
-		theme: 'dracula'
+		theme:  'dracula'
 	)
 
 	win.heading('🔄 SimpleGUI Native & Webview Parity API')

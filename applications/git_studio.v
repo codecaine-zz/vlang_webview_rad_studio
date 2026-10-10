@@ -27,7 +27,11 @@ fn refresh_git_state(w &simplegui.SimpleWindow) {
 			}
 			if y != ' ' && y != '?' {
 				unstaged_count++
-				state = if state.starts_with('Staged') { 'Partially Staged' } else { 'Modified (${y})' }
+				state = if state.starts_with('Staged') {
+					'Partially Staged'
+				} else {
+					'Modified (${y})'
+				}
 			}
 			if x == '?' && y == '?' {
 				unstaged_count++
@@ -44,8 +48,16 @@ fn refresh_git_state(w &simplegui.SimpleWindow) {
 	commit_count := system.exec_or('git rev-list --count HEAD', '0').trim_space()
 
 	w.set_kpi('kpi_branch', branch, 'Git Repository')
-	w.set_kpi('kpi_unstaged', '${unstaged_count} Files', if unstaged_count > 0 { 'Needs action' } else { 'Clean' })
-	w.set_kpi('kpi_staged', '${staged_count} Files', if staged_count > 0 { 'Ready to commit' } else { 'Empty index' })
+	w.set_kpi('kpi_unstaged', '${unstaged_count} Files', if unstaged_count > 0 {
+		'Needs action'
+	} else {
+		'Clean'
+	})
+	w.set_kpi('kpi_staged', '${staged_count} Files', if staged_count > 0 {
+		'Ready to commit'
+	} else {
+		'Empty index'
+	})
 	w.set_kpi('kpi_commits', '${commit_count} Commits', 'HEAD')
 
 	w.set_table_rows('git_status_table', status_rows)
@@ -77,10 +89,10 @@ fn refresh_git_state(w &simplegui.SimpleWindow) {
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Git Studio Pro Enterprise -- Visual Git Version Control Workbench'
-		width: 1180
+		title:  'Git Studio Pro Enterprise -- Visual Git Version Control Workbench'
+		width:  1180
 		height: 890
-		theme: 'github_dark'
+		theme:  'github_dark'
 	)
 
 	win.heading('🐙 Git Studio Pro Enterprise')
@@ -147,7 +159,8 @@ fn main() {
 
 	// Commit Section
 	win.row_start()
-	win.input_named('commit_msg', 'Enter commit message...', 'feat: update application workbench', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.input_named('commit_msg', 'Enter commit message...', 'feat: update application workbench',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.button('🚀 Commit Staged Changes', fn (w &simplegui.SimpleWindow, _ string) {
 		msg := w.get('commit_msg').trim_space()
 		if msg == '' {
@@ -170,7 +183,9 @@ fn main() {
 	win.box_start('📋 Working Tree Status & Unified Diff Inspector')
 	win.subheading('Modified & Untracked Files')
 	status_headers := ['Flag', 'File Path', 'Staging Status']
-	win.table_named('git_status_table', status_headers, [['--', 'Loading status...', 'Pending']], fn (w &simplegui.SimpleWindow, idx string) {
+	win.table_named('git_status_table', status_headers, [
+		['--', 'Loading status...', 'Pending'],
+	], fn (w &simplegui.SimpleWindow, idx string) {
 		w.toast_info('Inspecting file row #${idx}')
 	})
 
@@ -189,13 +204,16 @@ fn main() {
 			padding: 10px;
 		}
 	</style>')
-	win.textarea_named('git_diff_view', 'Git diff view...', 'Loading diff...', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('git_diff_view', 'Git diff view...', 'Loading diff...',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	// Commit History Box
 	win.box_start('📜 Recent Commit History (git log)')
 	commit_headers := ['Hash', 'Author', 'Commit Message', 'Date']
-	win.table_named('git_commit_table', commit_headers, [['-', 'Loading...', 'Fetching history', '-']], fn (w &simplegui.SimpleWindow, idx string) {
+	win.table_named('git_commit_table', commit_headers, [
+		['-', 'Loading...', 'Fetching history', '-'],
+	], fn (w &simplegui.SimpleWindow, idx string) {
 		w.toast_info('Viewing commit #${idx}')
 	})
 	win.box_end()

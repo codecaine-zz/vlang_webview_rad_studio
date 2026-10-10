@@ -26,7 +26,8 @@ fn main() {
 	}
 
 	input := if additional_args.len > 0 { additional_args.join(' ') } else { 'Hello, RAD Studio!' }
-	mode_count := int(is_b64_enc) + int(is_b64_dec) + int(is_hex_enc) + int(is_hex_dec) + int(show_all)
+	mode_count := int(is_b64_enc) + int(is_b64_dec) + int(is_hex_enc) + int(is_hex_dec) +
+		int(show_all)
 	if mode_count > 1 {
 		eprintln('Error: Encoding, decoding, and --all modes are mutually exclusive')
 		exit(2)

@@ -149,7 +149,8 @@ fn scan_dir_rec(root string, current string, mut snapshot map[string]FileMeta, d
 
 		if os.is_dir(full_path) {
 			if recursive {
-				scan_dir_rec(root, full_path, mut snapshot, depth + 1, recursive, includes, excludes)
+				scan_dir_rec(root, full_path, mut snapshot, depth + 1, recursive, includes,
+					excludes)
 			}
 		} else {
 			if is_path_included(entry, includes) {
@@ -157,7 +158,7 @@ fn scan_dir_rec(root string, current string, mut snapshot map[string]FileMeta, d
 				snapshot[full_path] = FileMeta{
 					mtime: u64(st.mtime)
 					ctime: u64(st.ctime)
-					size: u64(st.size)
+					size:  u64(st.size)
 				}
 			}
 		}
@@ -293,6 +294,7 @@ fn run_watcher_loop(mut ctx WatcherContext) {
 			'2000ms' { 2000 }
 			else { 350 }
 		}
+
 		time.sleep(delay_ms * time.millisecond)
 
 		if isnil(ctx.win.wv) {
@@ -336,15 +338,15 @@ fn run_watcher_loop(mut ctx WatcherContext) {
 				if meta.mtime != old.mtime || meta.size != old.size || meta.ctime != old.ctime {
 					events << FileChangeEvent{
 						event_type: 'modified'
-						full_path: file_path
-						rel_path: rel
+						full_path:  file_path
+						rel_path:   rel
 					}
 				}
 			} else {
 				events << FileChangeEvent{
 					event_type: 'created'
-					full_path: file_path
-					rel_path: rel
+					full_path:  file_path
+					rel_path:   rel
 				}
 			}
 		}
@@ -355,8 +357,8 @@ fn run_watcher_loop(mut ctx WatcherContext) {
 				rel := get_relative_display_path(canonical_dir, file_path)
 				events << FileChangeEvent{
 					event_type: 'deleted'
-					full_path: file_path
-					rel_path: rel
+					full_path:  file_path
+					rel_path:   rel
 				}
 			}
 		}
@@ -381,7 +383,8 @@ fn run_watcher_loop(mut ctx WatcherContext) {
 			mut dur_display := '0ms'
 
 			if auto_exec {
-				_, code, dur := execute_command_pipeline(mut ctx, ev.event_type, ev.full_path, ev.rel_path, canonical_dir)
+				_, code, dur := execute_command_pipeline(mut ctx, ev.event_type, ev.full_path,
+					ev.rel_path, canonical_dir)
 				dur_display = dur
 				status = if code == 0 { 'Triggered (0)' } else { 'Failed (${code})' }
 			} else {
@@ -392,13 +395,14 @@ fn run_watcher_loop(mut ctx WatcherContext) {
 			}
 
 			event_label := 'File ' + ev.event_type.capitalize()
-			ctx.win.add_table_row('activity_log', [now_str, event_label, ev.rel_path, status, dur_display, ev.full_path])
+			ctx.win.add_table_row('activity_log', [now_str, event_label, ev.rel_path, status,
+				dur_display, ev.full_path])
 			ctx.add_audit_event(AuditEvent{
 				timestamp: now_str
-				event: event_label
-				rel_path: ev.rel_path
+				event:     event_label
+				rel_path:  ev.rel_path
 				exit_code: status
-				duration: dur_display
+				duration:  dur_display
 				full_path: ev.full_path
 			})
 
@@ -424,21 +428,21 @@ fn export_audit_log_csv(events []AuditEvent) string {
 
 fn main() {
 	mut ctx := &WatcherContext{
-		is_watching: true
-		is_busy: false
-		event_count: 0
-		exec_count: 0
-		success_cnt: 0
-		fail_cnt: 0
-		log_buffer: ''
+		is_watching:  true
+		is_busy:      false
+		event_count:  0
+		exec_count:   0
+		success_cnt:  0
+		fail_cnt:     0
+		log_buffer:   ''
 		audit_events: []AuditEvent{}
 	}
 
 	mut win := simplegui.new_window(
-		title: 'Watcher Studio Pro Enterprise -- Real-time File System Intelligence & Automation'
-		width: 1180
+		title:  'Watcher Studio Pro Enterprise -- Real-time File System Intelligence & Automation'
+		width:  1180
 		height: 890
-		theme: 'everforest'
+		theme:  'everforest'
 	)
 	ctx.win = win
 
@@ -456,7 +460,7 @@ fn main() {
 
 	// Configuration Box
 	win.box_start('⚙️ Watcher Target & Automation Pipeline')
-	
+
 	// Row 1: Target directory & quick helpers
 	win.row_start()
 	win.input_named('watch_dir', 'Target Directory Path to Watch...', '.', fn (w &simplegui.SimpleWindow, val string) {
@@ -496,11 +500,13 @@ fn main() {
 			'Preset: Voice Alert (macOS)' { 'say "Change in {filename}"' }
 			else { 'echo "⚡ [{event}] {file}"' }
 		}
+
 		w.set_value('trigger_cmd', cmd)
 		w.set_status('Loaded preset command: ' + cmd)
 		w.toast_info('Loaded: ' + val)
 	})
-	win.input_named('trigger_cmd', 'Command to execute on change...', 'echo "⚡ [Watcher] Event: {event} on {file} at \$(date)"', fn (w &simplegui.SimpleWindow, val string) {
+	win.input_named('trigger_cmd', 'Command to execute on change...',
+		'echo "⚡ [Watcher] Event: {event} on {file} at \$(date)"', fn (w &simplegui.SimpleWindow, val string) {
 		w.set_status('Trigger command configured: ${val}')
 	})
 	win.button('⚡ Test Run', fn [mut ctx] (w &simplegui.SimpleWindow, _ string) {
@@ -512,10 +518,12 @@ fn main() {
 		target_dir := w.get('watch_dir').trim_space()
 		canonical := os.real_path(if target_dir != '' { target_dir } else { '.' })
 		dummy_file := os.join_path(canonical, 'sample_test.v')
-		resolved, code, dur := execute_command_pipeline(mut ctx, 'test', dummy_file, 'sample_test.v', canonical)
+		resolved, code, dur := execute_command_pipeline(mut ctx, 'test', dummy_file,
+			'sample_test.v', canonical)
 		now_str := time.now().custom_format('HH:mm:ss')
 		status := if code == 0 { 'Manual (0)' } else { 'Failed (${code})' }
-		w.add_table_row('activity_log', [now_str, 'Manual Test', 'sample_test.v', status, dur, dummy_file])
+		w.add_table_row('activity_log', [now_str, 'Manual Test', 'sample_test.v', status, dur,
+			dummy_file])
 		if code == 0 {
 			w.toast_success('Manual command executed successfully [${dur}]')
 			w.set_status('Manual execution succeeded: ' + resolved)
@@ -531,7 +539,8 @@ fn main() {
 	win.input_named('include_pat', 'Include File Patterns (e.g. *, *.v, *.json)...', '*', fn (w &simplegui.SimpleWindow, val string) {
 		w.set_status('Include filter updated: ${val}')
 	})
-	win.input_named('exclude_pat', 'Exclude Patterns (comma separated)...', '.git, node_modules, .cache, *.tmp', fn (w &simplegui.SimpleWindow, val string) {
+	win.input_named('exclude_pat', 'Exclude Patterns (comma separated)...',
+		'.git, node_modules, .cache, *.tmp', fn (w &simplegui.SimpleWindow, val string) {
 		w.set_status('Exclude filter updated: ${val}')
 	})
 	intervals := ['200ms', '350ms', '500ms', '1000ms', '2000ms']
@@ -545,7 +554,11 @@ fn main() {
 	win.row_start()
 	win.toggle_named('auto_exec', 'Auto-Execute Command on Change', true, fn (w &simplegui.SimpleWindow, val string) {
 		enabled := val == 'true'
-		w.set_status(if enabled { 'Auto-execution enabled.' } else { 'Auto-execution paused (audit-only mode).' })
+		w.set_status(if enabled {
+			'Auto-execution enabled.'
+		} else {
+			'Auto-execution paused (audit-only mode).'
+		})
 		w.toast_info(if enabled { 'Auto-execution active' } else { 'Audit-only mode active' })
 	})
 	win.toggle_named('recursive', 'Recursive (Watch Subdirectories)', true, fn (w &simplegui.SimpleWindow, val string) {
@@ -571,7 +584,9 @@ fn main() {
 			padding: 10px;
 		}
 	</style>')
-	win.textarea_named('live_console', 'Real-time command execution output (stdout/stderr) will stream here when files change...', '', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('live_console',
+		'Real-time command execution output (stdout/stderr) will stream here when files change...',
+		'', fn (w &simplegui.SimpleWindow, _ string) {})
 	win.row_start()
 	win.button('🧹 Clear Console', fn [mut ctx] (w &simplegui.SimpleWindow, _ string) {
 		ctx.lock.lock()
@@ -619,7 +634,8 @@ fn main() {
 		ctx.is_watching = true
 		ctx.lock.unlock()
 		poll := w.get('poll_interval')
-		w.set_kpi('kpi_status', 'Active (Listening)', 'Poll: ' + (if poll != '' { poll } else { '350ms' }))
+		w.set_kpi('kpi_status', 'Active (Listening)', 'Poll: ' +
+			(if poll != '' { poll } else { '350ms' }))
 		w.set_status('Watcher engine resumed — actively monitoring file system.')
 		w.toast_success('Watcher engine active')
 	})

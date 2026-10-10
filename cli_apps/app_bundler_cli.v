@@ -29,11 +29,8 @@ fn main() {
 		eprintln('Error: Unsupported target "${target}"')
 		exit(2)
 	}
-	if name == '' || name in ['.', '..'] || name.bytes().any(!(it.is_alnum() || it in [
-		`-`,
-		`_`,
-		`.`,
-	])) {
+	if name == '' || name in ['.', '..'] || name.bytes().any(!(it.is_alnum()
+		|| it in [`-`, `_`, `.`])) {
 		eprintln('Error: Application name must contain only letters, numbers, ".", "-", and "_"')
 		exit(2)
 	}

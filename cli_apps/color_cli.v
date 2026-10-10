@@ -18,7 +18,11 @@ fn hex_to_rgb(hex_str string) ?ColorRGB {
 	r := ('0x' + clean[0..2]).int()
 	g := ('0x' + clean[2..4]).int()
 	b := ('0x' + clean[4..6]).int()
-	return ColorRGB{ r: r, g: g, b: b }
+	return ColorRGB{
+		r: r
+		g: g
+		b: b
+	}
 }
 
 fn rgb_to_hex(rgb ColorRGB) string {

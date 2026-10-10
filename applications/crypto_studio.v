@@ -44,7 +44,11 @@ fn update_crypto_hashes(w &simplegui.SimpleWindow, payload string, key string) {
 	sha256_val := system.hash_sha256(payload)
 	sha_prev := if sha256_val.len > 12 { sha256_val[..12] + '...' } else { sha256_val }
 
-	w.set_kpi('kpi_entropy', '${entropy:.2f} bits/byte', if entropy > 3.5 { 'High Entropy' } else { 'Low/Medium' })
+	w.set_kpi('kpi_entropy', '${entropy:.2f} bits/byte', if entropy > 3.5 {
+		'High Entropy'
+	} else {
+		'Low/Medium'
+	})
 	w.set_kpi('kpi_payload_size', '${payload.len} Bytes', '${payload.len * 8} bits')
 	w.set_kpi('kpi_sha256', sha_prev, 'SHA-256')
 	w.set_kpi('kpi_ciphers', '${rows.len} Primitives', 'Active')
@@ -79,10 +83,10 @@ fn main() {
 	default_key := 'secret-signing-key-2026'
 
 	mut win := simplegui.new_window(
-		title: 'Crypto Studio Pro Enterprise -- Cryptography & Security Workbench'
-		width: 1180
+		title:  'Crypto Studio Pro Enterprise -- Cryptography & Security Workbench'
+		width:  1180
 		height: 890
-		theme: 'midnight'
+		theme:  'midnight'
 	)
 
 	win.heading('🔒 Crypto Studio Pro Enterprise')
@@ -100,7 +104,8 @@ fn main() {
 	// Payload & HMAC Configuration Box
 	win.box_start('🔐 Payload & Secret Key Configuration')
 	win.subheading('Input Text Payload')
-	win.textarea_named('txt_payload', 'Enter plain text or Base64 payload to hash or encode...', default_payload, fn (w &simplegui.SimpleWindow, val string) {
+	win.textarea_named('txt_payload', 'Enter plain text or Base64 payload to hash or encode...',
+		default_payload, fn (w &simplegui.SimpleWindow, val string) {
 		key := w.get('txt_key')
 		update_crypto_hashes(w, val, key)
 	})
@@ -189,7 +194,8 @@ fn main() {
 			}
 			sha := system.hash_sha256(content)
 			md5_val := system.hash_md5(content)
-			w.modal_alert('File Checksums', 'File: ${os.file_name(path)} (${content.len} bytes)\n\nSHA-256:\n${sha}\n\nMD5:\n${md5_val}')
+			w.modal_alert('File Checksums',
+				'File: ${os.file_name(path)} (${content.len} bytes)\n\nSHA-256:\n${sha}\n\nMD5:\n${md5_val}')
 			w.toast_success('Computed file checksums!')
 		}
 	})

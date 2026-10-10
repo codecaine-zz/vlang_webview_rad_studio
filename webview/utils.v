@@ -9,14 +9,14 @@ pub enum ReturnKind {
 
 fn copy_char(s &char) &char {
 	if isnil(s) {
-		return &char(''.str)
+		return &char(c'')
 	}
 	return unsafe { &char(cstring_to_vstring(s).str) }
 }
 
 pub fn (e &Event) @return[T](result T, kind ReturnKind) {
 	$if result is voidptr {
-		C.webview_return(e.instance, e.event_id, int(kind), &char(''.str))
+		C.webview_return(e.instance, e.event_id, int(kind), &char(c''))
 	} $else $if result is string {
 		encoded := json2.encode[string](result)
 		C.webview_return(e.instance, e.event_id, int(kind), &char(encoded.str))

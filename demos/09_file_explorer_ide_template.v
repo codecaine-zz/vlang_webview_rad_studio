@@ -5,10 +5,10 @@ import os
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 9 - File Explorer & Workspace IDE Template'
-		width: 1000
+		title:  'Demo 9 - File Explorer & Workspace IDE Template'
+		width:  1000
 		height: 720
-		theme: 'gruvbox'
+		theme:  'gruvbox'
 	)
 
 	win.heading('📂 File Explorer & Lightweight Workspace IDE')
@@ -40,7 +40,7 @@ fn main() {
 	win.box_end()
 
 	win.box_start('Editor Code Buffer')
-	sample_code := 'module main\n\nimport webview\n\nfn main() {\n\tmut w := webview.create(debug: true)\n\tw.set_title(\'Hello from Vlang Webview!\')\n\tw.set_size(800, 600, .@none)\n\tw.set_html(\'<h1>Fast, Simple, Native</h1>\')\n\tw.run()\n}'
+	sample_code := "module main\n\nimport webview\n\nfn main() {\n\tmut w := webview.create(debug: true)\n\tw.set_title('Hello from Vlang Webview!')\n\tw.set_size(800, 600, .@none)\n\tw.set_html('<h1>Fast, Simple, Native</h1>')\n\tw.run()\n}"
 	win.textarea('Source Code Buffer', sample_code, fn (w &simplegui.SimpleWindow, _ string) {})
 	win.height(520)
 	win.box_end()

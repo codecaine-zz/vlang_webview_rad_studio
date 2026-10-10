@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 12 - Advanced Desktop App Controls'
-		width: 960
+		title:  'Demo 12 - Advanced Desktop App Controls'
+		width:  960
 		height: 700
-		theme: 'windows_11_fluent'
+		theme:  'windows_11_fluent'
 	)
 
 	win.heading('🖥️ Advanced Desktop App Controls & Navigation')

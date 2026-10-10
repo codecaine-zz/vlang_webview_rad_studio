@@ -187,16 +187,46 @@ fn main() {
 			println('🎨 Processing and packaging app icon from ${icon_source}...')
 			os.mkdir_all(iconset_dir) or {}
 			icon_sizes := [
-				IconSize{ name: 'icon_16x16.png', size: 16 },
-				IconSize{ name: 'icon_16x16@2x.png', size: 32 },
-				IconSize{ name: 'icon_32x32.png', size: 32 },
-				IconSize{ name: 'icon_32x32@2x.png', size: 64 },
-				IconSize{ name: 'icon_128x128.png', size: 128 },
-				IconSize{ name: 'icon_128x128@2x.png', size: 256 },
-				IconSize{ name: 'icon_256x256.png', size: 256 },
-				IconSize{ name: 'icon_256x256@2x.png', size: 512 },
-				IconSize{ name: 'icon_512x512.png', size: 512 },
-				IconSize{ name: 'icon_512x512@2x.png', size: 1024 },
+				IconSize{
+					name: 'icon_16x16.png'
+					size: 16
+				},
+				IconSize{
+					name: 'icon_16x16@2x.png'
+					size: 32
+				},
+				IconSize{
+					name: 'icon_32x32.png'
+					size: 32
+				},
+				IconSize{
+					name: 'icon_32x32@2x.png'
+					size: 64
+				},
+				IconSize{
+					name: 'icon_128x128.png'
+					size: 128
+				},
+				IconSize{
+					name: 'icon_128x128@2x.png'
+					size: 256
+				},
+				IconSize{
+					name: 'icon_256x256.png'
+					size: 256
+				},
+				IconSize{
+					name: 'icon_256x256@2x.png'
+					size: 512
+				},
+				IconSize{
+					name: 'icon_512x512.png'
+					size: 512
+				},
+				IconSize{
+					name: 'icon_512x512@2x.png'
+					size: 1024
+				},
 			]
 			for isz in icon_sizes {
 				out_p := os.join_path(iconset_dir, isz.name)
@@ -242,7 +272,6 @@ fn main() {
 		os.execute('codesign --force --deep --sign - ${os.quoted_path(app_dir)}')
 		os.execute('xattr -cr ${os.quoted_path(app_dir)}')
 		println('\n🎉 Success! macOS .app bundle created at: ${app_dir}')
-
 	} else if target == 'windows' {
 		println('📦 Compiling Windows standalone binary...')
 		out_exe := os.join_path(out_folder, '${app_exe}.exe')
@@ -254,7 +283,6 @@ fn main() {
 			exit(1)
 		}
 		println('\n🎉 Success! Windows binary created at: ${out_exe}')
-
 	} else {
 		// Linux ELF binary
 		println('📦 Compiling Linux standalone binary...')

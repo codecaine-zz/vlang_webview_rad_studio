@@ -14,7 +14,9 @@ pub fn write_file_atomic(file_path string, content string) ! {
 	resolved := resolve_user_path(file_path)
 	parent_dir := os.dir(resolved)
 	if parent_dir != '' && !os.exists(parent_dir) {
-		os.mkdir_all(parent_dir) or { return error('Failed to create parent directory: ${parent_dir} (${err.msg()})') }
+		os.mkdir_all(parent_dir) or {
+			return error('Failed to create parent directory: ${parent_dir} (${err.msg()})')
+		}
 	}
 
 	rand_id := '${os.getpid()}_${time.now().unix_nano()}'

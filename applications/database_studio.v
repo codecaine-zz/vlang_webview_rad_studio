@@ -30,8 +30,8 @@ fn execute_sql_query(path string, query string) !QueryResult {
 
 	if result.len == 0 {
 		return QueryResult{
-			headers: ['Status']
-			rows: [['Query executed successfully. 0 rows returned.']]
+			headers:  ['Status']
+			rows:     [['Query executed successfully. 0 rows returned.']]
 			duration: dur_str
 		}
 	}
@@ -52,8 +52,8 @@ fn execute_sql_query(path string, query string) !QueryResult {
 	}
 
 	return QueryResult{
-		headers: col_headers
-		rows: rows
+		headers:  col_headers
+		rows:     rows
 		duration: dur_str
 	}
 }
@@ -82,7 +82,7 @@ fn export_query_results_csv(headers []string, rows [][]string) string {
 	mut lines := []string{}
 	lines << headers.map('"${it}"').join(',')
 	for r in rows {
-		lines << r.map('"${it.replace("\"", "\"\"")}"').join(',')
+		lines << r.map('"${it.replace('"', '""')}"').join(',')
 	}
 	return lines.join('\n')
 }
@@ -92,10 +92,10 @@ fn main() {
 	mut last_rows := [][]string{}
 
 	mut win := simplegui.new_window(
-		title: 'Database Studio Pro Enterprise -- SQLite Query & Schema Workbench'
-		width: 1180
+		title:  'Database Studio Pro Enterprise -- SQLite Query & Schema Workbench'
+		width:  1180
 		height: 890
-		theme: 'one_dark_pro'
+		theme:  'one_dark_pro'
 	)
 
 	win.heading('🗄️ Database Studio Pro Enterprise')
@@ -155,8 +155,11 @@ fn main() {
 			'Template: Table Schema Information' {
 				"PRAGMA table_info('products');"
 			}
-			else { 'SELECT 1;' }
+			else {
+				'SELECT 1;'
+			}
 		}
+
 		w.set_value('sql_query', query)
 		w.toast_info('Loaded SQL preset: ' + val)
 	})
@@ -183,7 +186,9 @@ fn main() {
 	})
 	win.row_end()
 
-	win.textarea_named('sql_query', 'Enter SQL query (SELECT, INSERT, UPDATE, CREATE TABLE)...', 'SELECT 1 AS id, "Alice" AS name, "admin" AS role, "active" AS status\nUNION ALL SELECT 2, "Bob", "developer", "active"\nUNION ALL SELECT 3, "Charlie", "designer", "pending";', fn (w &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('sql_query', 'Enter SQL query (SELECT, INSERT, UPDATE, CREATE TABLE)...',
+		'SELECT 1 AS id, "Alice" AS name, "admin" AS role, "active" AS status\nUNION ALL SELECT 2, "Bob", "developer", "active"\nUNION ALL SELECT 3, "Charlie", "designer", "pending";',
+		fn (w &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	// Query Results Table Box

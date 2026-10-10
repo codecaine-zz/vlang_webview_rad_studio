@@ -87,15 +87,15 @@ fn scan_directory(dir_path string, sort_mode string, filter_text string) ![]File
 		}
 
 		items << FileItem{
-			name: entry
-			path: full_path
-			is_dir: is_dir
-			size_bytes: size_bytes
+			name:           entry
+			path:           full_path
+			is_dir:         is_dir
+			size_bytes:     size_bytes
 			formatted_size: formatted_size
-			type_name: type_name
-			icon: icon
-			permissions: perms
-			mod_time: mod_time_str
+			type_name:      type_name
+			icon:           icon
+			permissions:    perms
+			mod_time:       mod_time_str
 		}
 	}
 
@@ -154,8 +154,16 @@ fn generate_quicklook_preview(item_path string) string {
 			'',
 			'Subdirectory Contents Preview:',
 			'-------------------------------------------------------------------',
-			children[..if children.len > 30 { 30 } else { children.len }].join('\n'),
-			if children.len > 30 { '... and ${children.len - 30} more items.' } else { '' },
+			children[..if children.len > 30 {
+				30
+			} else {
+				children.len
+			}].join('\n'),
+			if children.len > 30 {
+				'... and ${children.len - 30} more items.'
+			} else {
+				''
+			},
 		].join('\n')
 	}
 
@@ -166,10 +174,14 @@ fn generate_quicklook_preview(item_path string) string {
 
 	// Determine if text-previewable
 	is_text := match ext {
-		'.v', '.c', '.h', '.cpp', '.py', '.js', '.ts', '.json', '.csv', '.tsv',
-		'.md', '.txt', '.log', '.html', '.css', '.xml', '.yaml', '.yml', '.sql',
-		'.sh', '.vsh', '.conf', '.env', '.toml', '.ini', '.mod' { true }
-		else { false }
+		'.v', '.c', '.h', '.cpp', '.py', '.js', '.ts', '.json', '.csv', '.tsv', '.md', '.txt',
+		'.log', '.html', '.css', '.xml', '.yaml', '.yml', '.sql', '.sh', '.vsh', '.conf', '.env',
+		'.toml', '.ini', '.mod' {
+			true
+		}
+		else {
+			false
+		}
 	}
 
 	if is_text {
@@ -187,7 +199,11 @@ fn generate_quicklook_preview(item_path string) string {
 			'',
 			'--- Content Preview (First 120 lines) ------------------------------',
 			preview_lines,
-			if lines.len > 120 { '\n[... preview truncated; file has ${lines.len} total lines ...]' } else { '' },
+			if lines.len > 120 {
+				'\n[... preview truncated; file has ${lines.len} total lines ...]'
+			} else {
+				''
+			},
 		].join('\n')
 	}
 
@@ -203,7 +219,11 @@ fn generate_quicklook_preview(item_path string) string {
 		'Last Modified:    ${mod_time}',
 		'File Extension:   ${ext}',
 		'SHA-256 Digest:   ${hash}',
-		'Permissions:      ${if os.is_executable(real_path) { '-rwxr-xr-x (Executable)' } else { '-rw-r--r-- (Regular)' }}',
+		'Permissions:      ${if os.is_executable(real_path) {
+			'-rwxr-xr-x (Executable)'
+		} else {
+			'-rw-r--r-- (Regular)'
+		}}',
 		'',
 		'Binary file format cannot be rendered as plain text preview.',
 		'Click "🚀 Open in System App" above to view with your default OS viewer.',
@@ -254,7 +274,8 @@ fn refresh_finder_gui(w &simplegui.SimpleWindow, target_dir string) {
 	w.set_kpi('kpi_current_dir', os.file_name(real_dir), real_dir)
 	w.set_kpi('kpi_items', '${items.len} Total', '${folder_count} Folders, ${file_count} Files')
 	w.set_kpi('kpi_size', system.format_bytes(total_dir_bytes), 'Files on Disk')
-	w.set_kpi('kpi_disk_free', system.format_bytes(disk_info.free_bytes), '${disk_info.mount_point} Free')
+	w.set_kpi('kpi_disk_free', system.format_bytes(disk_info.free_bytes),
+		'${disk_info.mount_point} Free')
 
 	w.set_table_rows('file_table', table_rows)
 
@@ -282,10 +303,10 @@ fn main() {
 	start_dir := os.getwd()
 
 	mut win := simplegui.new_window(
-		title: 'Finder & File Explorer Studio Pro Enterprise'
-		width: 1240
+		title:  'Finder & File Explorer Studio Pro Enterprise'
+		width:  1240
 		height: 920
-		theme: 'dracula'
+		theme:  'dracula'
 	)
 
 	win.heading('🗂️ Finder & File Explorer Studio Pro Enterprise')
@@ -306,7 +327,8 @@ fn main() {
 			init_files++
 			init_size += item.size_bytes
 		}
-		init_rows << [item.icon, item.name, item.type_name, item.formatted_size, item.permissions, item.mod_time]
+		init_rows << [item.icon, item.name, item.type_name, item.formatted_size, item.permissions,
+			item.mod_time]
 	}
 	if init_rows.len == 0 {
 		init_rows << ['📁', 'Empty directory', '-', '-', '-', '-']
@@ -317,9 +339,12 @@ fn main() {
 	// 1. Top Directory Telemetry KPI Cards
 	win.row_start()
 	win.kpi_card_named('kpi_current_dir', 'Current Directory', os.file_name(start_dir), start_dir)
-	win.kpi_card_named('kpi_items', 'Directory Contents', '${init_items.len} Total', '${init_folders} Folders, ${init_files} Files')
-	win.kpi_card_named('kpi_size', 'Total Content Size', system.format_bytes(init_size), 'Files on Disk')
-	win.kpi_card_named('kpi_disk_free', 'Volume Free Space', system.format_bytes(disk.free_bytes), '${disk.mount_point} Free')
+	win.kpi_card_named('kpi_items', 'Directory Contents', '${init_items.len} Total',
+		'${init_folders} Folders, ${init_files} Files')
+	win.kpi_card_named('kpi_size', 'Total Content Size', system.format_bytes(init_size),
+		'Files on Disk')
+	win.kpi_card_named('kpi_disk_free', 'Volume Free Space', system.format_bytes(disk.free_bytes),
+		'${disk.mount_point} Free')
 	win.row_end()
 
 	// 2. Navigation Quick-Jumps & Breadcrumbs Bar
@@ -406,7 +431,8 @@ fn main() {
 	// 3. Search & Sorting Toolbar
 	win.box_start('🔍 Search Filter & Sort Mode')
 	win.row_start()
-	win.input_named('file_filter', 'Filter files and folders by name or extension (e.g. .v, json, main)...', '', fn (w &simplegui.SimpleWindow, _ string) {
+	win.input_named('file_filter',
+		'Filter files and folders by name or extension (e.g. .v, json, main)...', '', fn (w &simplegui.SimpleWindow, _ string) {
 		cur := w.get_value('path_input')
 		refresh_finder_gui(w, cur)
 	})
@@ -570,7 +596,8 @@ fn main() {
 			padding: 8px !important;
 		}
 	</style>')
-	win.textarea_named('preview_pane', 'QuickLook preview...', generate_quicklook_preview(start_dir), fn (_ &simplegui.SimpleWindow, _ string) {})
+	win.textarea_named('preview_pane', 'QuickLook preview...',
+		generate_quicklook_preview(start_dir), fn (_ &simplegui.SimpleWindow, _ string) {})
 	win.box_end()
 
 	win.status_bar('Finder & File Explorer Studio Enterprise • ${init_items.len} items • Ready')

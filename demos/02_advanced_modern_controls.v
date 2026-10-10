@@ -4,10 +4,10 @@ import simplegui
 
 fn main() {
 	mut win := simplegui.new_window(
-		title: 'Demo 2 - Advanced Modern Controls & Helper Wrappers'
-		width: 960
+		title:  'Demo 2 - Advanced Modern Controls & Helper Wrappers'
+		width:  960
 		height: 720
-		theme: 'tokyo_night'
+		theme:  'tokyo_night'
 	)
 
 	win.heading('🚀 Advanced Modern Control Palette & Dynamic Helpers')

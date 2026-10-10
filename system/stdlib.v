@@ -68,7 +68,7 @@ pub fn http_get(url string) HttpResponse {
 	res := http.get(url) or {
 		return HttpResponse{
 			status_code: 0
-			body: 'Error: ${err}'
+			body:        'Error: ${err}'
 		}
 	}
 	mut headers_map := map[string]string{}
@@ -77,8 +77,8 @@ pub fn http_get(url string) HttpResponse {
 	}
 	return HttpResponse{
 		status_code: res.status_code
-		body: res.body
-		headers: headers_map
+		body:        res.body
+		headers:     headers_map
 	}
 }
 
@@ -91,20 +91,18 @@ pub fn http_post(url string, data string, content_type string) HttpResponse {
 	mut req := http.new_request(.post, url, data)
 	ct := if content_type != '' { content_type } else { 'application/json' }
 	req.header.set(.content_type, ct)
-	res := req.do() or {
-		return HttpResponse{
-			status_code: 0
-			body: 'Error: ${err}'
-		}
-	}
+	res := req.do() or { return HttpResponse{
+		status_code: 0
+		body:        'Error: ${err}'
+	} }
 	mut headers_map := map[string]string{}
 	for h in res.header.keys() {
 		headers_map[h] = res.header.get_custom(h) or { '' }
 	}
 	return HttpResponse{
 		status_code: res.status_code
-		body: res.body
-		headers: headers_map
+		body:        res.body
+		headers:     headers_map
 	}
 }
 
@@ -123,24 +121,23 @@ pub fn http_request(method_name string, url string, data string, headers map[str
 		'HEAD' { http.Method.head }
 		else { http.Method.get }
 	}
+
 	mut req := http.new_request(method, url, data)
 	for k, v in headers {
 		req.header.set_custom(k, v) or {}
 	}
-	res := req.do() or {
-		return HttpResponse{
-			status_code: 0
-			body: 'Error: ${err}'
-		}
-	}
+	res := req.do() or { return HttpResponse{
+		status_code: 0
+		body:        'Error: ${err}'
+	} }
 	mut resp_headers := map[string]string{}
 	for h in res.header.keys() {
 		resp_headers[h] = res.header.get_custom(h) or { '' }
 	}
 	return HttpResponse{
 		status_code: res.status_code
-		body: res.body
-		headers: resp_headers
+		body:        res.body
+		headers:     resp_headers
 	}
 }
 
@@ -280,7 +277,9 @@ pub fn crypto_encrypt_aes(plain_text string, key_hex string) string {
 	mut key := decoded_key.clone()
 	if key.len != 16 && key.len != 24 && key.len != 32 {
 		if key.len < 16 {
-			for key.len < 16 { key << u8(0) }
+			for key.len < 16 {
+				key << u8(0)
+			}
 		} else {
 			key = key[..16].clone()
 		}
@@ -306,7 +305,9 @@ pub fn crypto_decrypt_aes(cipher_hex string, key_hex string) string {
 	mut key := decoded_key.clone()
 	if key.len != 16 && key.len != 24 && key.len != 32 {
 		if key.len < 16 {
-			for key.len < 16 { key << u8(0) }
+			for key.len < 16 {
+				key << u8(0)
+			}
 		} else {
 			key = key[..16].clone()
 		}
@@ -512,7 +513,9 @@ pub fn rand_choice_ints(items []int) int {
 pub fn rand_weighted_choice_strings(items []string, weights []f64) string {
 	if items.len == 0 || items.len != weights.len { return '' }
 	mut total := 0.0
-	for w in weights { total += w }
+	for w in weights {
+		total += w
+	}
 	if total <= 0.0 { return items[0] }
 	r := rand.f64_in_range(0.0, total) or { 0.0 }
 	mut acc := 0.0
@@ -526,7 +529,9 @@ pub fn rand_weighted_choice_strings(items []string, weights []f64) string {
 pub fn rand_weighted_choice_ints(items []int, weights []f64) int {
 	if items.len == 0 || items.len != weights.len { return 0 }
 	mut total := 0.0
-	for w in weights { total += w }
+	for w in weights {
+		total += w
+	}
 	if total <= 0.0 { return items[0] }
 	r := rand.f64_in_range(0.0, total) or { 0.0 }
 	mut acc := 0.0
@@ -589,19 +594,27 @@ pub mut:
 }
 
 pub fn (sc SimpleComplex) add(other SimpleComplex) SimpleComplex {
-	return SimpleComplex{ c: sc.c.add(other.c) }
+	return SimpleComplex{
+		c: sc.c.add(other.c)
+	}
 }
 
 pub fn (sc SimpleComplex) sub(other SimpleComplex) SimpleComplex {
-	return SimpleComplex{ c: sc.c.subtract(other.c) }
+	return SimpleComplex{
+		c: sc.c.subtract(other.c)
+	}
 }
 
 pub fn (sc SimpleComplex) mul(other SimpleComplex) SimpleComplex {
-	return SimpleComplex{ c: sc.c.multiply(other.c) }
+	return SimpleComplex{
+		c: sc.c.multiply(other.c)
+	}
 }
 
 pub fn (sc SimpleComplex) div(other SimpleComplex) SimpleComplex {
-	return SimpleComplex{ c: sc.c.divide(other.c) }
+	return SimpleComplex{
+		c: sc.c.divide(other.c)
+	}
 }
 
 pub fn (sc SimpleComplex) abs() f64 {
@@ -613,11 +626,15 @@ pub fn (sc SimpleComplex) arg() f64 {
 }
 
 pub fn (sc SimpleComplex) conj() SimpleComplex {
-	return SimpleComplex{ c: sc.c.conjugate() }
+	return SimpleComplex{
+		c: sc.c.conjugate()
+	}
 }
 
 pub fn (sc SimpleComplex) exp() SimpleComplex {
-	return SimpleComplex{ c: sc.c.exp() }
+	return SimpleComplex{
+		c: sc.c.exp()
+	}
 }
 
 pub fn (sc SimpleComplex) str() string {
@@ -625,22 +642,54 @@ pub fn (sc SimpleComplex) str() string {
 }
 
 pub fn complex_new(re f64, im f64) SimpleComplex {
-	return SimpleComplex{ c: complex.complex(re, im) }
+	return SimpleComplex{
+		c: complex.complex(re, im)
+	}
 }
 
-pub fn math_degrees(radians f64) f64 { return math.degrees(radians) }
-pub fn math_radians(degrees f64) f64 { return math.radians(degrees) }
-pub fn math_hypot(x f64, y f64) f64 { return math.hypot(x, y) }
-pub fn math_gcd(a i64, b i64) i64 { return math.gcd(a, b) }
-pub fn math_lcm(a i64, b i64) i64 { return math.lcm(a, b) }
+pub fn math_degrees(radians f64) f64 {
+	return math.degrees(radians)
+}
+
+pub fn math_radians(degrees f64) f64 {
+	return math.radians(degrees)
+}
+
+pub fn math_hypot(x f64, y f64) f64 {
+	return math.hypot(x, y)
+}
+
+pub fn math_gcd(a i64, b i64) i64 {
+	return math.gcd(a, b)
+}
+
+pub fn math_lcm(a i64, b i64) i64 {
+	return math.lcm(a, b)
+}
+
 pub fn math_remap(x f64, in_min f64, in_max f64, out_min f64, out_max f64) f64 {
 	return math.remap(x, in_min, in_max, out_min, out_max)
 }
-pub fn math_smoothstep(edge0 f64, edge1 f64, x f64) f64 { return math.smoothstep(edge0, edge1, x) }
-pub fn math_atan2(y f64, x f64) f64 { return math.atan2(y, x) }
-pub fn math_log10(x f64) f64 { return math.log10(x) }
-pub fn math_log2(x f64) f64 { return math.log2(x) }
-pub fn math_round_sig(x f64, sig_digits int) f64 { return math.round_sig(x, sig_digits) }
+
+pub fn math_smoothstep(edge0 f64, edge1 f64, x f64) f64 {
+	return math.smoothstep(edge0, edge1, x)
+}
+
+pub fn math_atan2(y f64, x f64) f64 {
+	return math.atan2(y, x)
+}
+
+pub fn math_log10(x f64) f64 {
+	return math.log10(x)
+}
+
+pub fn math_log2(x f64) f64 {
+	return math.log2(x)
+}
+
+pub fn math_round_sig(x f64, sig_digits int) f64 {
+	return math.round_sig(x, sig_digits)
+}
 
 pub struct MathStats {
 pub mut:
@@ -681,14 +730,14 @@ pub fn calculate_stats(values []f64) !MathStats {
 	std_dev := math.sqrt(variance)
 
 	return MathStats{
-		count: values.len
-		mean: mean
-		median: median
+		count:    values.len
+		mean:     mean
+		median:   median
 		variance: variance
-		std_dev: std_dev
-		min: min
-		max: max
-		sum: sum
+		std_dev:  std_dev
+		min:      min
+		max:      max
+		sum:      sum
 	}
 }
 
